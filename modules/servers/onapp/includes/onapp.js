@@ -42,7 +42,6 @@ $(document).ready(function(){
     });
 
 // replace values
-
     serverSelect = $("select[name$='packageconfigoption[1]']");
 
     serverSelected = serverSelect.val();
@@ -144,7 +143,6 @@ $(document).ready(function(){
     addIPSelect.val(addIPSelected);
 
 // get base table
-
     var table = $('table').eq(5);
     var tr = table.find('tr').eq(0);
 
@@ -292,23 +290,23 @@ $(document).ready(function(){
         tbody.append( cell_html('<b>'+templates_label+'</b>', create_template_filter_html()) );
         tbody.append( cell_html('', templates_html+create_templates_html()) );
         tbody.append( cell_html(build_auto_label, build_auto_html) );
+
+    // forth table
+        third_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
+        var forth_table = $('table').eq(8);
+        var tbody = forth_table.find('tbody');
+
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Additional Resources</b></td></tr>');
+        tbody.append( cell_html(addram_label, addram_html) );
+        tbody.append( cell_html(addcores_label, addcores_html) );
+        tbody.append( cell_html(addpriority_label, addpriority_html) );
+        tbody.append( cell_html(adddisk_label, adddisk_html) );
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Product addons</b></td></tr>');
+        tbody.append( cell_html(backup_label, backup_html) );
+        tbody.append( cell_html(ip_label, ip_html) );
     };
 
-// forth table
-    third_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
-    var forth_table = $('table').eq(7);
-    var tbody = forth_table.find('tbody');
-
-    tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Additional Resources</b></td></tr>');
-    tbody.append( cell_html(addram_label, addram_html) );
-    tbody.append( cell_html(addcores_label, addcores_html) );
-    tbody.append( cell_html(addpriority_label, addpriority_html) );
-    tbody.append( cell_html(adddisk_label, adddisk_html) );
-    tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Product addons</b></td></tr>');
-    tbody.append( cell_html(backup_label, backup_html) );
-    tbody.append( cell_html(ip_label, ip_html) );
-
-// **
+// assign server select onChange action
     serverSelect = $("select[name$='packageconfigoption[1]']");
 
     serverSelect.change( function () {
