@@ -5,6 +5,7 @@ $(document).ready(function(){
     form.submit(function() {
         if (! check_vars ) return true;
 
+        input2  = $("select[name$='selected_tpl[]']");
         input3  = $("input[name$='packageconfigoption[3]']");
         input5  = $("input[name$='packageconfigoption[5]']");
         input7  = $("input[name$='packageconfigoption[7]']");
@@ -12,7 +13,9 @@ $(document).ready(function(){
         input9  = $("input[name$='packageconfigoption[9]']");
         input11 = $("input[name$='packageconfigoption[11]']");
 
-        if ( parseInt(input3.val()).toString() != input3.val() ) {
+        if ( input2.text() == "" ) {
+            alert('Template must be set');
+        } else if ( parseInt(input3.val()).toString() != input3.val() ) {
             alert('RAM must be integer betwen 0..99999');
             input3.focus();
         } else if ( parseInt(input5.val()).toString() != input5.val() ) {
@@ -38,18 +41,9 @@ $(document).ready(function(){
         return false;
     });
 
-    var table = $('table').eq(5);
-    var tr = table.find('tr').eq(0);
-
 // replace values
 
     serverSelect = $("select[name$='packageconfigoption[1]']");
-
-    serverSelect.change( function () {
-        check_vars = false;
-        form = $("form[name$='packagefrm']");
-        form.submit();
-    } );
 
     serverSelected = serverSelect.val();
 
@@ -60,8 +54,6 @@ $(document).ready(function(){
     serverSelect.html(selectHTML);
     serverSelect.val(serverSelected);
     serverSelect.width(180);
-
-    check_vars = true;
 
     templateSelect = $("input[name$='packageconfigoption[2]']");
     templateSelected = templateSelect.val();
@@ -150,6 +142,11 @@ $(document).ready(function(){
 
     addIPSelect.html(selectHTML);
     addIPSelect.val(addIPSelected);
+
+// get base table
+
+    var table = $('table').eq(5);
+    var tr = table.find('tr').eq(0);
 
 // get servers
     var servers_label = tr.find('td').eq(0).html();
@@ -311,7 +308,18 @@ $(document).ready(function(){
     tbody.append( cell_html(backup_label, backup_html) );
     tbody.append( cell_html(ip_label, ip_html) );
 
+// **
+    serverSelect = $("select[name$='packageconfigoption[1]']");
 
+    serverSelect.change( function () {
+        check_vars = false;
+        form = $("form[name$='packagefrm']");
+        form.submit();
+    } );
+
+    serverSelect.val(serverSelected);
+
+    check_vars = true;
 });
 
 function cell_html(label, html) {
