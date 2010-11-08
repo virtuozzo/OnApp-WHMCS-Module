@@ -207,6 +207,8 @@ function clientareaproducts() {
             else {
                 $services[ $service['id'] ]['obj'] = $not_resolved_vms[$service['serverid'] ][$service['vmid']]['vm'];
                 unset($not_resolved_vms[$service['serverid'] ][$service['vmid']]);
+                if (count($not_resolved_vms[$service['serverid'] ]) == 0 )
+                    unset($not_resolved_vms[$service['serverid'] ]);
             };
         };
 
