@@ -1,0 +1,22 @@
+.input-with-slider .slider {
+	float:left;
+	margin:0 20px;
+	width:360px;
+}
+
+.slider {
+	background:url("slider-bg.png") repeat-x scroll left center transparent;
+	height:34px;
+	margin:0 15px;
+	position:relative;
+}
+
+.slider a {
+	background:url("handle-bg.png") repeat-x scroll left center transparent;
+	cursor:pointer;
+	height:28px;
+	margin-left:-10px;
+	position:absolute;
+	top:1px;
+	width:21px;
+}

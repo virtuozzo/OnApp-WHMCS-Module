@@ -1,0 +1,27 @@
+.vm-overview strong {
+}
+
+.vm-overview .hostname {
+  padding-left: 25px;
+  padding-top: 5px;
+  background: transparent url(label-icons.png) no-repeat scroll 0 0px;
+}
+
+.vm-overview .login {
+  padding-left: 25px;
+  padding-top: 5px;
+  background: transparent url(label-icons.png) no-repeat scroll 0 -60px;
+}
+
+.vm-overview .status {
+  padding-left: 25px;
+  padding-top: 5px;
+  background: transparent url(label-icons.png) no-repeat scroll 0 -30px;
+}
+
+.vm-overview .template {
+  padding-left: 25px;
+  padding-top: 5px;
+  background: transparent url(label-icons.png) no-repeat scroll 0 -90px;
+}
+
