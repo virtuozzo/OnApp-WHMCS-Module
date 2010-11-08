@@ -279,11 +279,11 @@ function _actions_vm($action) {
 
     if ( isset($_ONAPPVARS['vm']) && ! is_null($_ONAPPVARS['vm']->error) )
         $_ONAPPVARS['error'] = is_array($_ONAPPVARS['vm']->error) ?
-            implode(', ', $_ONAPPVARS['vm']->error) :
+            implode('.<br>', $_ONAPPVARS['vm']->error) :
             $_ONAPPVARS['vm']->error;
     elseif ( isset($_ONAPPVARS['vm']) && ! is_null($_ONAPPVARS['vm']->_obj->error) )
         $_ONAPPVARS['error'] = is_array($_ONAPPVARS['vm']->_obj->error) ?
-            implode(', ', $_ONAPPVARS['vm']->_obj->error) :
+            implode('.<br>', $_ONAPPVARS['vm']->_obj->error) :
             $_ONAPPVARS['vm']->_obj->error;
 
     if ( ! isset($_ONAPPVARS['error']) )
@@ -334,7 +334,7 @@ function showproduct() {
 
     if ( ! is_null($_ONAPPVARS['vm']->error) ) {
         $_ONAPPVARS['error'] = is_array($_ONAPPVARS['vm']->error) ?
-            implode(', ', $_ONAPPVARS['vm']->error) :
+            implode('.<br>', $_ONAPPVARS['vm']->error) :
             $_ONAPPVARS['vm']->error;
 
         clientareaproducts();
@@ -665,7 +665,7 @@ function _action_backup_add( $id, $diskid ) {
     if ( ! is_null($backup->_obj->error) )
         return array(
             'error' => is_array($backup->_obj->error) ?
-                implode(', ', $backup->_obj->error) :
+                implode('.<br>', $backup->_obj->error) :
                 $backup->_obj->error
         );
     elseif ( is_null($backup->_obj->_id) )
@@ -702,7 +702,7 @@ function _action_backup_restore( $id, $backupid ) {
     if ( ! is_null($backup->_obj->error) )
         return array(
             'error' => is_array($backup->_obj->error) ?
-                "Can't create Backup<br/>\n " . implode(', ', $backup->_obj->error) :
+                "Can't create Backup<br/>\n " . implode('.<br>', $backup->_obj->error) :
                 "Can't create Backup '" . $backup->_obj->error
         );
 }

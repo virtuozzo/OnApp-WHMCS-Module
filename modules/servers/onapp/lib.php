@@ -268,7 +268,7 @@ function get_onapp_client( $service_id ) {
 
         if ( ! is_null($user->_obj->error) )
             return array('error' => is_array($user->_obj->error) ?
-                "Can't create OnApp User<br/>\n " . implode(', ', $user->_obj->error) :
+                "Can't create OnApp User<br/>\n " . implode('.<br/>', $user->_obj->error) :
                 "Can't create OnApp User<br/>\n " . $user->_obj->error);
         elseif ( is_null($user->_obj->_id) )
             return array( "error" => "Can't create OnApp User");
@@ -651,7 +651,7 @@ function _action_ip_delete($id, $ipid) {
 
     if ( ! is_null($ip_join->_obj->error) ) {
         return array('error' => is_array($ip_join->_obj->error) ?
-            "Can't delete IP Address<br/>\n " . implode(', ', $ip_join->_obj->error) :
+            "Can't delete IP Address<br/>\n " . implode('.<br>', $ip_join->_obj->error) :
             "Can't delete IP Address " . $ip_join->_obj->error);
     };
 
