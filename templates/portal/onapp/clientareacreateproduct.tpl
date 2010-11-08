@@ -52,11 +52,23 @@
   <tbody>
     <tr>
       <td>&nbsp;</td>
-      <td><strong>Memory</strong></td>
-      <td>{math equation="x + y" x=$service.configoption3 y=$service.additionalram} MB</td>
+      <td><strong>Memory</strong></td
+      <td>
+      {if $service.configoption3 eq "" }
+        {$service.additionalram} MB
+      {else}
+        {math equation="x + y" x=$service.configoption3 y=$service.additionalram} MB
+      {/if}
+      </td>
       <td>&nbsp;</td>
       <td><strong>CPU(s)</strong></td>
-      <td>{math equation="x + y" x=$service.configoption5 y=$service.additionalcpus} CPU(s)</td>
+      <td>
+      {if $service.configoption5 eq "" }
+        {$service.additionalcpus} CPU(s)
+      {else}
+        {math equation="x + y" x=$service.configoption5 y=$service.additionalcpus} CPU(s)
+      {/if}
+      </td>
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -64,12 +76,24 @@
       <td>{$service.configoption8} Mbps ( Unlimited if not set )</td>
       <td>&nbsp;</td>
       <td><strong>CPU Priority</strong></td>
-      <td>{math equation="x + y" x=$service.configoption7 y=$service.additionalcpushares} %</td>
+      <td>
+      {if $service.configoption7 eq ""}
+        {$service.additionalcpushares} %
+      {else}
+        {math equation="x + y" x=$service.configoption7 y=$service.additionalcpushares} %
+      {/if}
+      </td>
     </tr>
     <tr>
       <td>&nbsp;</td>
       <td><strong>Primary disk size</strong></td>
-      <td>{math equation="x + y" x=$service.configoption11 y=$service.additionaldisksize} GB</td>
+      <td>
+      {if $service.configoption11 eq ""}
+        {$service.additionaldisksize} GB
+      {else}
+        {math equation="x + y" x=$service.configoption11 y=$service.additionaldisksize} GB
+       {/if}
+      </td>
       <td>&nbsp;</td>
       <td><strong>Swap disk size</strong></td>
       <td>{$service.configoption9} GB</td>
