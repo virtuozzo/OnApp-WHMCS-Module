@@ -705,7 +705,6 @@ function create_vm( $service_id, $domain, $template_id) {
 
     if ( ! is_null($vm->_obj->error) ) {
         $vm->error = $vm->_obj->error;
-
         return $vm;
     } elseif ( is_null($vm->_obj->_id) ) {
         $vm->error = "Can't create virtual machine for service #".$service_id;

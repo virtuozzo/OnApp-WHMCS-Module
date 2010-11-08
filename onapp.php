@@ -167,11 +167,14 @@ function clientareaproducts() {
             decrypt($onapp_user["password"])
         );
 
-        foreach($vm->getList() as $tmp_vm)
-            $not_resolved_vms[ $onapp_user["server_id"] ][$tmp_vm->_id] = array(
-              'vm' => $tmp_vm,
-              'server' => $onapp_user
-            );
+        $tmp_vms = $vm->getList();
+
+        if ( is_array($tmp_vms) )
+            foreach($tmp_vms as $tmp_vm)
+                $not_resolved_vms[ $onapp_user["server_id"] ][$tmp_vm->_id] = array(
+                  'vm' => $tmp_vm,
+                  'server' => $onapp_user
+                );
     };
 
 // Get services

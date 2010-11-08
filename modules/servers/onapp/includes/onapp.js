@@ -256,6 +256,7 @@ $(document).ready(function(){
 
     if ( error_msg != "" ) {
         table.after( '<br/>'+error_msg+'<br/>' );
+        check_vars = false;
     } else {
 
     // second table
@@ -317,7 +318,7 @@ $(document).ready(function(){
 
     serverSelect.val(serverSelected);
 
-    check_vars = true;
+    check_vars = error_msg == "";
 });
 
 function cell_html(label, html) {
