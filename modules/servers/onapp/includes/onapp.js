@@ -41,6 +41,116 @@ $(document).ready(function(){
     var table = $('table').eq(5);
     var tr = table.find('tr').eq(0);
 
+// replace values
+
+    serverSelect = $("select[name$='packageconfigoption[1]']");
+
+    serverSelect.change( function () {
+        check_vars = false;
+        form = $("form[name$='packagefrm']");
+        form.submit();
+    } );
+
+    serverSelected = serverSelect.val();
+
+    selectHTML = '';
+    for ( var option in serverOptions )
+            selectHTML += '<option value="'+option+'">'+serverOptions[option]+'</option>';
+
+    serverSelect.html(selectHTML);
+    serverSelect.val(serverSelected);
+    serverSelect.width(180);
+
+    check_vars = true;
+
+    templateSelect = $("input[name$='packageconfigoption[2]']");
+    templateSelected = templateSelect.val();
+    templateSelect.val(templateSelected);
+    templateSelect.width(selectWidth);
+    templateSelect.css('display', 'none');
+
+    hvSelect = $("select[name$='packageconfigoption[4]']");
+    hvSelected = hvSelect.val();
+
+    selectHTML = '';
+    for ( var option in hvOptions )
+            selectHTML += '<option value="'+option+'">'+hvOptions[option]+'</option>';
+
+    hvSelect.html(selectHTML);
+    hvSelect.val(hvSelected);
+    hvSelect.width(selectWidth);
+
+    networkSelect = $("select[name$='packageconfigoption[6]']");
+    networkSelected = networkSelect.val();
+
+    selectHTML = '';
+    for ( var option in networkOptions )
+            selectHTML += '<option value="'+option+'">'+networkOptions[option]+'</option>';
+
+    networkSelect.html(selectHTML);
+    networkSelect.val(networkSelected);
+    networkSelect.width(selectWidth);
+
+    addRAMSelect = $("select[name$='packageconfigoption[12]']");
+    addRAMSelected = addRAMSelect.val();
+    addRAMSelect.width(selectWidth);
+    selectHTML = '';
+    for ( var option in configOptions )
+            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
+
+    addRAMSelect.html(selectHTML);
+    addRAMSelect.val(addRAMSelected);
+
+    addCoresSelect = $("select[name$='packageconfigoption[13]']");
+    addCoresSelected = addCoresSelect.val();
+    addCoresSelect.width(selectWidth);
+    selectHTML = '';
+    for ( var option in configOptions )
+            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
+
+    addCoresSelect.html(selectHTML);
+    addCoresSelect.val(addCoresSelected);
+
+    addPrioritySelect = $("select[name$='packageconfigoption[14]']");
+    addPrioritySelected = addPrioritySelect.val();
+    addPrioritySelect.width(selectWidth);
+    selectHTML = '';
+    for ( var option in configOptions )
+            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
+
+    addPrioritySelect.html(selectHTML);
+    addPrioritySelect.val(addPrioritySelected);
+
+    addDiskSelect = $("select[name$='packageconfigoption[15]']");
+    addDiskSelected = addDiskSelect.val();
+    addDiskSelect.width(selectWidth);
+    selectHTML = '';
+    for ( var option in configOptions )
+            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
+
+    addDiskSelect.html(selectHTML);
+    addDiskSelect.val(addDiskSelected);
+
+    addBackupSelect = $("select[name$='packageconfigoption[16]']");
+    addBackupSelected = addBackupSelect.val();
+    addBackupSelect.width(selectWidth);
+    selectHTML = '';
+    for ( var option in productAddons )
+            selectHTML += '<option value="'+option+'">'+productAddons[option]+'</option>';
+
+    addBackupSelect.html(selectHTML);
+    addBackupSelect.val(addBackupSelected);
+
+    addIPSelect = $("select[name$='packageconfigoption[17]']");
+    addIPSelected = addIPSelect.val();
+    addIPSelect.width(selectWidth);
+    selectHTML = '';
+    for ( var option in productAddons )
+            selectHTML += '<option value="'+option+'">'+productAddons[option]+'</option>';
+
+    addIPSelect.html(selectHTML);
+    addIPSelect.val(addIPSelected);
+
 // get servers
     var servers_label = tr.find('td').eq(0).html();
     var servers_html  = tr.find('td').eq(1).html();
@@ -201,115 +311,6 @@ $(document).ready(function(){
     tbody.append( cell_html(backup_label, backup_html) );
     tbody.append( cell_html(ip_label, ip_html) );
 
-// replace values
-
-    serverSelect = $("select[name$='packageconfigoption[1]']");
-
-    serverSelect.change( function () {
-        check_vars = false;
-        form = $("form[name$='packagefrm']");
-        form.submit();
-    } );
-
-    serverSelected = serverSelect.val();
-
-    selectHTML = '';
-    for ( var option in serverOptions )
-            selectHTML += '<option value="'+option+'">'+serverOptions[option]+'</option>';
-
-    serverSelect.html(selectHTML);
-    serverSelect.val(serverSelected);
-    serverSelect.width(180);
-
-    check_vars = true;
-
-    templateSelect = $("input[name$='packageconfigoption[2]']");
-    templateSelected = templateSelect.val();
-    templateSelect.val(templateSelected);
-    templateSelect.width(selectWidth);
-    templateSelect.css('display', 'none');
-
-    hvSelect = $("select[name$='packageconfigoption[4]']");
-    hvSelected = hvSelect.val();
-
-    selectHTML = '';
-    for ( var option in hvOptions )
-            selectHTML += '<option value="'+option+'">'+hvOptions[option]+'</option>';
-
-    hvSelect.html(selectHTML);
-    hvSelect.val(hvSelected);
-    hvSelect.width(selectWidth);
-
-    networkSelect = $("select[name$='packageconfigoption[6]']");
-    networkSelected = networkSelect.val();
-
-    selectHTML = '';
-    for ( var option in networkOptions )
-            selectHTML += '<option value="'+option+'">'+networkOptions[option]+'</option>';
-
-    networkSelect.html(selectHTML);
-    networkSelect.val(networkSelected);
-    networkSelect.width(selectWidth);
-
-    addRAMSelect = $("select[name$='packageconfigoption[12]']");
-    addRAMSelected = addRAMSelect.val();
-    addRAMSelect.width(selectWidth);
-    selectHTML = '';
-    for ( var option in configOptions )
-            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
-
-    addRAMSelect.html(selectHTML);
-    addRAMSelect.val(addRAMSelected);
-
-    addCoresSelect = $("select[name$='packageconfigoption[13]']");
-    addCoresSelected = addCoresSelect.val();
-    addCoresSelect.width(selectWidth);
-    selectHTML = '';
-    for ( var option in configOptions )
-            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
-
-    addCoresSelect.html(selectHTML);
-    addCoresSelect.val(addCoresSelected);
-
-    addPrioritySelect = $("select[name$='packageconfigoption[14]']");
-    addPrioritySelected = addPrioritySelect.val();
-    addPrioritySelect.width(selectWidth);
-    selectHTML = '';
-    for ( var option in configOptions )
-            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
-
-    addPrioritySelect.html(selectHTML);
-    addPrioritySelect.val(addPrioritySelected);
-
-    addDiskSelect = $("select[name$='packageconfigoption[15]']");
-    addDiskSelected = addDiskSelect.val();
-    addDiskSelect.width(selectWidth);
-    selectHTML = '';
-    for ( var option in configOptions )
-            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
-
-    addDiskSelect.html(selectHTML);
-    addDiskSelect.val(addDiskSelected);
-
-    addBackupSelect = $("select[name$='packageconfigoption[16]']");
-    addBackupSelected = addBackupSelect.val();
-    addBackupSelect.width(selectWidth);
-    selectHTML = '';
-    for ( var option in productAddons )
-            selectHTML += '<option value="'+option+'">'+productAddons[option]+'</option>';
-
-    addBackupSelect.html(selectHTML);
-    addBackupSelect.val(addBackupSelected);
-
-    addIPSelect = $("select[name$='packageconfigoption[17]']");
-    addIPSelected = addIPSelect.val();
-    addIPSelect.width(selectWidth);
-    selectHTML = '';
-    for ( var option in productAddons )
-            selectHTML += '<option value="'+option+'">'+productAddons[option]+'</option>';
-
-    addIPSelect.html(selectHTML);
-    addIPSelect.val(addIPSelected);
 
 });
 

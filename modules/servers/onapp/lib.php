@@ -243,7 +243,7 @@ function get_onapp_client( $service_id ) {
         );
 
         $sql_select_client = sprintf(
-            "SELECT * FROM tblclients WHERE id = '%'",
+            "SELECT * FROM tblclients WHERE id = '%s'",
             $service['userid']
         );
 
@@ -693,7 +693,7 @@ function create_vm( $service_id, $domain, $template_id) {
     $vm->_cpus                           = $cpus;
     $vm->_cpu_shares                     = $cpu_shares;
     $vm->_primary_disk_size              = $primary_disk_size;
-    $vm->_swap_disk_size                 = $sevice['configoption9'];
+    $vm->_swap_disk_size                 = $service['configoption9'];
     $vm->_label                          = $domain;
     $vm->_remote_access_password         = decrypt( $service['password'] );
     $vm->_initial_root_password          = decrypt( $service['password'] );
