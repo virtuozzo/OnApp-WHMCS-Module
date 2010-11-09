@@ -509,7 +509,7 @@ $js_error;
 function onapp_CreateAccount($params) {
     global $_LANG;
 
-    $getvm = get_vm($params['accountid']);
+    $getvm = get_vm($params['serviceid']);
 
     if( isset($getvm->_id) )
         return $_LANG["onappvmexist"];
@@ -539,7 +539,7 @@ function onapp_CreateAccount($params) {
 function onapp_TerminateAccount( $params ) {
     global $_LANG;
     
-    $vm = delete_vm($params['accountid']);
+    $vm = delete_vm($params['serviceid']);
 
     if ( ! is_null($vm->error) )
         return is_array($vm->error) ?
@@ -551,6 +551,17 @@ function onapp_TerminateAccount( $params ) {
             $_LANG["onappcantdeletevm"] . $vm->_obj->error;
 
     return 'success';
+}
+
+function onapp_ClientArea($params) {
+    global $_LANG;
+
+    $service = get_service($params['serviceid']);
+
+    if ( ! is_null($service["vmid"]) )
+        return '<a href="onapp.php?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmsettings"] . '</a>';
+    else 
+        return '<a href="onapp.php?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmcreate"] . '</a>';
 }
 
 ?>

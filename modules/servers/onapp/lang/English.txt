@@ -46,3 +46,6 @@ $_LANG["onappvmnotfound"] = "<font color='red'>Vitual Machine #%s has not been f
 $_LANG["onappactionnotfound"] = "Can't find '%s' action";
 $_LANG["onapptemplatenotset"] = "Operating system template must be set.";
 $_LANG["onappvmnotfoundonserver"] = "Can't find #%s virtual machine on %s server";
+$_LANG["onappvmsettings"] = "Virtual Machine settings";
+$_LANG["onappvmcreate"] = "Create Virtual Machine";
+

@@ -686,7 +686,6 @@ function create_vm( $service_id, $domain, $template_id) {
     $vm->_template_id                    = $template_id;
     $vm->_hypervisor_id                  = $service['configoption4'];
     $vm->_primary_network_id             = $service['configoption6'];
-    $vm->_built                          = 'false';
     $vm->_required_virtual_machine_build = 'false';
     $vm->_hostname                       = $domain;
     $vm->_memory                         = $memory;
