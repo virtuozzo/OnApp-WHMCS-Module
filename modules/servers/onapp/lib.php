@@ -658,7 +658,7 @@ function _action_ip_delete($id, $ipid) {
     return true;
 }
 
-function create_vm( $service_id, $domain, $template_id) {
+function create_vm( $service_id, $hostname, $template_id) {
 
     $vm = new ONAPP_VirtualMachine();
 
@@ -687,13 +687,13 @@ function create_vm( $service_id, $domain, $template_id) {
     $vm->_hypervisor_id                  = $service['configoption4'];
     $vm->_primary_network_id             = $service['configoption6'];
     $vm->_required_virtual_machine_build = 'false';
-    $vm->_hostname                       = $domain;
+    $vm->_hostname                       = $hostname;
     $vm->_memory                         = $memory;
     $vm->_cpus                           = $cpus;
     $vm->_cpu_shares                     = $cpu_shares;
     $vm->_primary_disk_size              = $primary_disk_size;
     $vm->_swap_disk_size                 = $service['configoption9'];
-    $vm->_label                          = $domain;
+    $vm->_label                          = $hostname;
     $vm->_remote_access_password         = decrypt( $service['password'] );
     $vm->_initial_root_password          = decrypt( $service['password'] );
     $vm->_required_ip_address_assignment = '1';

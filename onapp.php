@@ -301,20 +301,20 @@ function _actions_vm($action) {
 function _action_vm_create() {
     global $_ONAPPVARS, $_LANG;
 
-    foreach ( array('templateid', 'domain' ) as $val )
+    foreach ( array('templateid', 'hostname' ) as $val )
         $_ONAPPVARS[$val] = get_value($val);
 
     if( isset($_ONAPPVARS['vm']) )
         $_ONAPPVARS['error'] =  $_LANG["onappvmexist"];
-    elseif ( ! isset($_ONAPPVARS['domain'] ) || $_ONAPPVARS['domain'] == "" )
-        $_ONAPPVARS['error'] =  $_LANG["onappdomainnotfound"];
+    elseif ( ! isset($_ONAPPVARS['hostname'] ) || $_ONAPPVARS['hostname'] == "" )
+        $_ONAPPVARS['error'] =  $_LANG["onapphostnamenotfound"];
     elseif ( ! isset($_ONAPPVARS['templateid']) )
         $_ONAPPVARS['error'] = $_LANG["onapptemplatenotset"];
 
     if ( isset($_ONAPPVARS['error']) )
         return false;
 
-    $_ONAPPVARS['vm'] = create_vm($_ONAPPVARS['id'], $_ONAPPVARS['domain'], $_ONAPPVARS['templateid'] );
+    $_ONAPPVARS['vm'] = create_vm($_ONAPPVARS['id'], $_ONAPPVARS['hostname'], $_ONAPPVARS['templateid'] );
 
     return true;
 }

@@ -20,11 +20,11 @@
 {if $service.domain != "" }
       <td>
           {$service.domain}
-          <input type="hidden" name="domain" value="{$service.domain}">
+          <input type="hidden" name="hostname" value="{$service.domain}">
       </td>
 {else}
       <td>
-          <input type="text" size="15" name="domain">
+          <input type="text" size="15" name="hostname">
       </td>
 {/if}
       </td>

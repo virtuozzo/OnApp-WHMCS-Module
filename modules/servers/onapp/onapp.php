@@ -514,7 +514,7 @@ function onapp_CreateAccount($params) {
     if( isset($getvm->_id) )
         return $_LANG["onappvmexist"];
     elseif ( $params['domain'] == "" )
-        return $_LANG["onappdomainnotfound"];
+        return $_LANG["onapphostnamenotfound"];
     elseif( $params['configoption2'] == "" || count(explode(',', $params['configoption2'])) != 1 )
         return $_LANG["onapptemplatenotone"];
 
