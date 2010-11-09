@@ -64,83 +64,85 @@ $(document).ready(function(){
     hvSelected = hvSelect.val();
 
     selectHTML = '';
-    for ( var option in hvOptions )
-            selectHTML += '<option value="'+option+'">'+hvOptions[option]+'</option>';
+    for ( var option in hvOptions ) {
+        selected = (option == hvSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+hvOptions[option]+'</option>';
+    }
 
     hvSelect.html(selectHTML);
-    hvSelect.val(hvSelected);
     hvSelect.width(selectWidth);
 
     networkSelect = $("select[name$='packageconfigoption[6]']");
     networkSelected = networkSelect.val();
 
     selectHTML = '';
-    for ( var option in networkOptions )
-            selectHTML += '<option value="'+option+'">'+networkOptions[option]+'</option>';
+    for ( var option in networkOptions ) {
+        selected = (option == networkSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+networkOptions[option]+'</option>';
+    }
 
     networkSelect.html(selectHTML);
-    networkSelect.val(networkSelected);
     networkSelect.width(selectWidth);
 
     addRAMSelect = $("select[name$='packageconfigoption[12]']");
     addRAMSelected = addRAMSelect.val();
     addRAMSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions )
-            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
-
+    for ( var option in configOptions ) {
+        selected = (option == addRAMSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
     addRAMSelect.html(selectHTML);
-    addRAMSelect.val(addRAMSelected);
 
     addCoresSelect = $("select[name$='packageconfigoption[13]']");
     addCoresSelected = addCoresSelect.val();
     addCoresSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions )
-            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
-
+    for ( var option in configOptions ) {
+        selected = (option == addCoresSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
     addCoresSelect.html(selectHTML);
-    addCoresSelect.val(addCoresSelected);
 
     addPrioritySelect = $("select[name$='packageconfigoption[14]']");
     addPrioritySelected = addPrioritySelect.val();
     addPrioritySelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions )
-            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
-
+    for ( var option in configOptions ) {
+        selected = (option == addPrioritySelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
     addPrioritySelect.html(selectHTML);
-    addPrioritySelect.val(addPrioritySelected);
 
     addDiskSelect = $("select[name$='packageconfigoption[15]']");
     addDiskSelected = addDiskSelect.val();
     addDiskSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions )
-            selectHTML += '<option value="'+option+'">'+configOptions[option]+'</option>';
-
+    for ( var option in configOptions ) {
+        selected = (option == addDiskSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
     addDiskSelect.html(selectHTML);
-    addDiskSelect.val(addDiskSelected);
 
     addBackupSelect = $("select[name$='packageconfigoption[16]']");
     addBackupSelected = addBackupSelect.val();
     addBackupSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in productAddons )
-            selectHTML += '<option value="'+option+'">'+productAddons[option]+'</option>';
-
+    for ( var option in productAddons ) {
+        selected = (option == addBackupSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+productAddons[option]+'</option>';
+    }
     addBackupSelect.html(selectHTML);
-    addBackupSelect.val(addBackupSelected);
 
     addIPSelect = $("select[name$='packageconfigoption[17]']");
     addIPSelected = addIPSelect.val();
     addIPSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in productAddons )
-            selectHTML += '<option value="'+option+'">'+productAddons[option]+'</option>';
-
+    for ( var option in productAddons ) {
+        selected = (option == addIPSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+productAddons[option]+'</option>';
+    }
     addIPSelect.html(selectHTML);
-    addIPSelect.val(addIPSelected);
 
 // get base table
     var table = $('table').eq(5);
