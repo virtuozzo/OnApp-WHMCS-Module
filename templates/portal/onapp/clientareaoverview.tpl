@@ -110,7 +110,10 @@ function showconsole(id) {
         //   -->
         </script>
 {/literal}
+<!--
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=unlock">Unlock Virtual Machine</a>
+-->
+        <p align="center"><b>Virtual Machine is locked</b></p>
       </td>
     </tr>
   </tbody>
