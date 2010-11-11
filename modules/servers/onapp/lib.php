@@ -16,7 +16,6 @@ require_once LIB_WRAPPER_DIR.'/VirtualMachine/NetworkInterface.php';
 $ONAPP_DEFAULT_ROLE  = 2;
 $ONAPP_DEFAULT_GROUP = 1;
 
-
 /**
  * Load $_LANG from language file
  */

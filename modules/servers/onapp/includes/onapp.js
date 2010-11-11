@@ -144,6 +144,16 @@ $(document).ready(function(){
     }
     addIPSelect.html(selectHTML);
 
+    addIPBaseSelect = $("select[name$='packageconfigoption[18]']");
+    addIPBaseSelected = addIPBaseSelect.val();
+    addIPBaseSelect.width(selectWidth);
+    selectHTML = '';
+    for ( var option in productAddons ) {
+        selected = (option == addIPBaseSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+productAddons[option]+'</option>';
+    }
+    addIPBaseSelect.html(selectHTML);
+
 // get base table
     var table = $('table').eq(5);
     var tr = table.find('tr').eq(0);
@@ -248,6 +258,14 @@ $(document).ready(function(){
     var ip_label = tr.find('td').eq(0).html();
     var ip_html  = tr.find('td').eq(1).html();
 
+// get IP Address
+    var ipbase_label = tr.find('td').eq(2).html();
+    var ipbase_html  = tr.find('td').eq(3).html();
+
+// remove row
+    tr.remove();
+    var tr = table.find('tr').eq(0);
+
 // remove row
     tr.remove();
 
@@ -275,12 +293,14 @@ $(document).ready(function(){
         var disk_slider = create_slider_html(disk_html, 240, 0, 1, 11);
         var swap_slider = create_slider_html(swap_html, 240, 0, 1, 9);
         var port_speed_slider = create_slider_html(port_speed_html, 1000, 0, 1, 8);
+        var ip_address_slider = create_slider_html(ipbase_html, 20, 1, 1, 18);
 
         tbody.append( cell_html(ram_label, ram_slider) );
         tbody.append( cell_html(cores_label, cores_slider) );
         tbody.append( cell_html(priority_label, priority_slider) );
         tbody.append( cell_html(disk_label, disk_slider) );
         tbody.append( cell_html(swap_label, swap_slider) );
+        tbody.append( cell_html(ipbase_label, ip_address_slider) );
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Network Configuration </b></td></tr>');
         tbody.append( cell_html(networks_label, networks_html) );
         tbody.append( cell_html(port_speed_label, port_speed_slider) );

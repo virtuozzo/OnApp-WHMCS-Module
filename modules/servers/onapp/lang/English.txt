@@ -49,3 +49,4 @@ $_LANG["onappvmnotfoundonserver"] = "Can't find #%s virtual machine on %s server
 $_LANG["onappvmsettings"] = "Virtual Machine settings";
 $_LANG["onappvmcreate"] = "Create Virtual Machine";
 
+$_LANG["onappincludedips"] = "Included IP addresses";

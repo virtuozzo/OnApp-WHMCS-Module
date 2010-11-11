@@ -10,11 +10,6 @@ require_once dirname(__FILE__).'/lib.php';
 
 load_language();
 
-// Change log
-
-$ONAPP_DEFAULT_ROLE  = 2;
-$ONAPP_DEFAULT_GROUP = 1;
-
 function onapp_createTables() {
     global $_LANG;
 
@@ -495,6 +490,11 @@ $js_error;
         $_LANG["onappipaddress"] => array(
             "Type"        => "dropdown",
             "Options"     => "0,".implode(',', $productaddons),
+            "Description" => "",
+        ),
+        $_LANG["onappincludedips"] => array(
+            "Type"        => "text",
+            "Size"        => "5",
             "Description" => "",
         ),
         "&nbsp;" => array(
