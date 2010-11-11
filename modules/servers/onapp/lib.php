@@ -76,12 +76,9 @@ function get_onapp_config($id){
 
     // Error if server not found in DB
     if ( $onapp_config ) {
-        $adress = $onapp_config["ipaddress"] != "" ? 
-            $onapp_config["ipaddress"] : 
-            $onapp_config["hostname"];
         $onapp_config["password"] = decrypt($onapp_config["password"]);
         $onapp_config["adress"] = $onapp_config["ipaddress"] != "" ? 
-            $onapp_config["ipaddress"] : 
+            "http://" . $onapp_config["ipaddress"] : 
             $onapp_config["hostname"];
         $onapp_config[] = $onapp_config["adress"];
     } else
