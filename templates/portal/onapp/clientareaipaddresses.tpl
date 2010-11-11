@@ -1,10 +1,10 @@
 <link href="modules/servers/onapp/includes/power_buttons.css" rel="stylesheet" type="text/css">
 <div class="contentbox">
-    <a href="onapp.php?page=productdetails&id={$id}">Overview</a>
-    | <a href="onapp.php?page=cpuusage&id={$id}">CPU Usage</a>
+    <a title="{$LANG.onappoverview}" href="onapp.php?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
+    | <a title="{$LANG.onappcpuusage}" href="onapp.php?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
     | <strong>IP Addresses</strong>
-    | <a href="onapp.php?page=disks&id={$id}">Disks</a>
-    | <a href="onapp.php?page=backups&id={$id}">Backups</a>
+    | <a title="{$LANG.onappdisks}" href="onapp.php?page=disks&id={$id}">{$LANG.onappdisks}</a>
+    | <a title="{$LANG.onappbackups}" href="onapp.php?page=backups&id={$id}">{$LANG.onappbackups}</a>
 </div>
 {if isset($error)}
 <div class="errorbox">

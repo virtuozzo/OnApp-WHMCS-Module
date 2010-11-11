@@ -1,10 +1,10 @@
 <link href="modules/servers/onapp/includes/power_buttons.css" rel="stylesheet" type="text/css">
 <div class="contentbox">
-    <a href="onapp.php?page=productdetails&id={$id}">Overview</a>
-    | <a href="onapp.php?page=cpuusage&id={$id}">CPU Usage</a>
-    | <a href="onapp.php?page=ipaddresses&id={$id}">IP Addresses</a>
+    <a title="{$LANG.onappoverview}" href="onapp.php?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
+    | <a title="{$LANG.onappcpuusage}" href="onapp.php?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
+    | <a title="{$LANG.onappipaddresses}" href="onapp.php?page=ipaddresses&id={$id}">{$LANG.onappipaddresses}</a>
     | <strong>Disks</strong>
-    | <a href="onapp.php?page=backups&id={$id}">Backups</a>
+    | <a title="{$LANG.onappbackups}" href="onapp.php?page=backups&id={$id}">{$LANG.onappbackups}</a>
 </div>
 <p>This page lists the Disks in your OnApp cluster. Click the icons to edit Disk size, manage Backups and Schedules, and delete the Disk. Use caution when changing Disk settings. Please consult OnApp support if you're unsure about anything (support@onapp.com).</p>
 <h2 class="heading2">Disks Settings</h2>

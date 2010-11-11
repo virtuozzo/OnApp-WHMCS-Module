@@ -50,3 +50,33 @@ $_LANG["onappvmsettings"] = "Virtual Machine settings";
 $_LANG["onappvmcreate"] = "Create Virtual Machine";
 
 $_LANG["onappincludedips"] = "Included IP addresses";
+$_LANG["onappoverview"] = "Overview";
+$_LANG["onappcpuusage"] = "CPU Usage";
+$_LANG["onappipaddresses"] = "IP Addresses";
+$_LANG["onappdisks"] = "Disks";
+$_LANG["onappbackups"] = "Backups";
+$_LANG["onappoverviewtitle"] = "This page shows details of the selected Virtual Machine. The On/Off buttons change its Power status. The Actions section lets you perform common tasks. The Activity Log shows VM transactions and lets you cancel pending tasks. Use the navigation at the top of the page to explore different aspects of this Virtual Machine.";
+$_LANG["onappvmdetails"] = "Virtual Machine Details";
+$_LANG["onappvmsettings"] = "Virtual Machine Settings";
+$_LANG["onapphostname"] = "Hostname";
+$_LANG["onappstatus"] = "Status";
+$_LANG["onapplogin"] = "Login";
+$_LANG["onapptemplate"] = "Template";
+$_LANG["onappmem"] = "Memory";
+$_LANG["onappcpus"] = "CPU(s)";
+$_LANG["onappcpupriority"] = "CPU Priority";
+$_LANG["onappactions"] = "Actions";
+$_LANG["onappvmlocked"] = "Virtual Machine is locked";
+
+$_LANG["onappvmbuild"] = "Build Virtual Machine";
+$_LANG["onappvmdel"] = "Delete Virtual Machine";
+$_LANG["onappvmstart"] = "Startup Virtual Machine";
+$_LANG["onappvmstop"] = "Shut down Virtual Machine";
+$_LANG["onappvmreboot"] = "Reboot Virtual Machine";
+$_LANG["onappvmrebuild"] = "Rebuild Virtual Machine";
+$_LANG["onappvmconsole"] = "Virtual Machine Console";
+$_LANG["onappvmmanagedisks"] = "Manage Disks";
+$_LANG["onappvmmanageips"] = "Manage IP Addresses";
+
+$_LANG["onapppassword"] = "password";
+$_LANG["onappcpuusagetitle"] = "These charts show the CPU utilization for this Virtual Machine. The top chart shows utilization for the last 24 hours. The bottom chart shows the last 3 months. You can zoom into a specific time period by clicking and dragging in a chart. To zoom out, click the 'show all' button.";

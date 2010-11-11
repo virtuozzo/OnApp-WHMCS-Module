@@ -1,12 +1,12 @@
 <link href="modules/servers/onapp/includes/power_buttons.css" rel="stylesheet" type="text/css">
 <div class="contentbox">
-    <a href="onapp.php?page=productdetails&id={$id}">Overview</a>
+    <a title="{$LANG.onappoverview}" href="onapp.php?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
     | <strong>CPU Usage</strong>
-    | <a href="onapp.php?page=ipaddresses&id={$id}">IP Addresses</a>
-    | <a href="onapp.php?page=disks&id={$id}">Disks</a>
-    | <a href="onapp.php?page=backups&id={$id}">Backups</a>
+    | <a title="{$LANG.onappipaddresses}" href="onapp.php?page=ipaddresses&id={$id}">{$LANG.onappipaddresses}</a>
+    | <a title="{$LANG.onappdisks}" href="onapp.php?page=disks&id={$id}">{$LANG.onappdisks}</a>
+    | <a title="{$LANG.onappbackups}" href="onapp.php?page=backups&id={$id}">{$LANG.onappbackups}</a>
 </div>
-<p>These charts show the CPU utilization for this Virtual Machine. The top chart shows utilization for the last 24 hours. The bottom chart shows the last 3 months. You can zoom into a specific time period by clicking and dragging in a chart. To zoom out, click the 'show all' button.</p>
+<p>{$LANG.onappcpuusagetitle}</p>
 <br/>
 {if $xaxis != "" || $yaxis != ""}
 <script type="text/javascript" src="modules/servers/onapp/includes/swfobject.js"></script>
