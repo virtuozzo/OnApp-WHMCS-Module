@@ -1,4 +1,4 @@
-# Versiov 0.1
+# Version 0.1
 $_LANG["onapp"] = "OnApp";
 $_LANG["onapperrtablecreate"] = "Error creating %s table";
 $_LANG["onapperrtemplatecreate"] = "Error adding '%s' template";
@@ -49,6 +49,10 @@ $_LANG["onappvmnotfoundonserver"] = "Can't find #%s virtual machine on %s server
 $_LANG["onappvmsettings"] = "Virtual Machine settings";
 $_LANG["onappvmcreate"] = "Create Virtual Machine";
 
+#Version 0.2
+$_LANG["onappcreatevmtitle"] = "To add a new Virtual Machine, complete the form below and click the Create Virtual Machine button at the bottom of the page.";
+$_LANG["onappcreatevm"] = "Create Virtual Machine";
+$_LANG["onappnetspeed"] = "Network Speed";
 $_LANG["onappincludedips"] = "Included IP addresses";
 $_LANG["onappoverview"] = "Overview";
 $_LANG["onappcpuusage"] = "CPU Usage";
@@ -67,7 +71,6 @@ $_LANG["onappcpus"] = "CPU(s)";
 $_LANG["onappcpupriority"] = "CPU Priority";
 $_LANG["onappactions"] = "Actions";
 $_LANG["onappvmlocked"] = "Virtual Machine is locked";
-
 $_LANG["onappvmbuild"] = "Build Virtual Machine";
 $_LANG["onappvmdel"] = "Delete Virtual Machine";
 $_LANG["onappvmstart"] = "Startup Virtual Machine";
@@ -77,6 +80,30 @@ $_LANG["onappvmrebuild"] = "Rebuild Virtual Machine";
 $_LANG["onappvmconsole"] = "Virtual Machine Console";
 $_LANG["onappvmmanagedisks"] = "Manage Disks";
 $_LANG["onappvmmanageips"] = "Manage IP Addresses";
-
 $_LANG["onapppassword"] = "password";
 $_LANG["onappcpuusagetitle"] = "These charts show the CPU utilization for this Virtual Machine. The top chart shows utilization for the last 24 hours. The bottom chart shows the last 3 months. You can zoom into a specific time period by clicking and dragging in a chart. To zoom out, click the 'show all' button.";
+$_LANG["onappipaddressestitle"] = "This page lists the IP Addresses allocated to this Virtual Machine. When a machine is built, these will automatically be configured. However, if they are allocated after the machine has been built, you will need to configure them yourself.";
+$_LANG["onappvmipaddresses"] = "IP Addresses for this Virtual Machine";
+$_LANG["onappid"] = "ID";
+$_LANG["onappipaddress"] = "IP Address";
+$_LANG["onappnetmask"] = "Netmask";
+$_LANG["onappgateway"] = "Gateway";
+$_LANG["onappnotresolvedips"] = "Not Resolved IP Addresses for this Virtual Machine";
+$_LANG["onappresolve"] = "Resolve";
+$_LANG["onappdelete"] = "Delete";
+$_LANG["onappbuy"] = "Buy";
+$_LANG["onappresolveall"] = "Resolve All";
+$_LANG["onappnotresolvedipaddons"] = "Not Resolved IP Addresses Addons for this Virtual Machine";
+$_LANG["onappaddnewip"] = "Add New IP Address";
+$_LANG["onappdiskstitle"] = "This page lists the Disks in your OnApp cluster. Click the icons to edit Disk size, manage Backups and Schedules, and delete the Disk. Use caution when changing Disk settings. Please consult OnApp support if you're unsure about anything (support@onapp.com).";
+$_LANG["onappdiskssettings"] = "Disks Settings";
+$_LANG["onappisize"] = "Size";
+$_LANG["onapptype"] = "Type";
+$_LANG["onappbuilt"] = "Built?";
+$_LANG["onappautobackup"] = "Autobackup?";
+$_LANG["onappbackupstitle"] = "This page lists the Backups which have been taken or are waiting to be taken for this Virtual Machine. Click the relevant links to convert a Backup to a template, or restore the disk from a Backup. Click the icon on the right to delete that Backup.";
+$_LANG["onappvmbackups"] = "Backups for this Virtual Machine";
+$_LANG["onappdatetime"] = "Date/Time";
+$_LANG["onappdisk"] = "Disk";
+$_LANG["onappbackupsize"] = "Backup Size";
+$_LANG["onappbackuptype"] = "Backup Type";

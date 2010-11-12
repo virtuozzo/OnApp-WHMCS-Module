@@ -6,21 +6,21 @@
     | <strong>Disks</strong>
     | <a title="{$LANG.onappbackups}" href="onapp.php?page=backups&id={$id}">{$LANG.onappbackups}</a>
 </div>
-<p>This page lists the Disks in your OnApp cluster. Click the icons to edit Disk size, manage Backups and Schedules, and delete the Disk. Use caution when changing Disk settings. Please consult OnApp support if you're unsure about anything (support@onapp.com).</p>
-<h2 class="heading2">Disks Settings</h2>
+<p>{$LANG.onappdiskstitle}</p>
+<h2 class="heading2">{$LANG.onappdiskssettings}</h2>
 <table cellspacing="0" cellpadding="10" border="0" width="100%" class="data">
 <tr>
-    <th>Disk</th>
-    <th>Size</th>
-    <th>Type</th>
-    <th>Built?</th>
+    <th>{$LANG.onappid} #</th>
+    <th>{$LANG.onappisize}</th>
+    <th>{$LANG.onapptype}</th>
+    <th>{$LANG.onappbuilt}</th>
 <!--    <th>Backups</th> -->
-    <th>Autobackup?</th>
+    <th>{$LANG.onappautobackup}</th>
     <th>&nbsp;</th>
 </tr>
 {foreach item=disk from=$disks}
 <tr>
-    <td>#{$disk->_id}</td>
+    <td>{$disk->_id}</td>
     <td align="right">{$disk->_disk_size} GB</td>
     <td>
 {if $disk->_primary == "true"}
@@ -37,9 +37,7 @@
 {else}
         NO
 {/if}
-    </td>
-<!--    <td></td> -->
-    <td>
+    </td>&nbsp;<td>
 {if $disk->_has_autobackups == "true"}
         <a class="power off-inactive" rel="nofollow">NO</a>
         <a class="power on-active">YES</a>

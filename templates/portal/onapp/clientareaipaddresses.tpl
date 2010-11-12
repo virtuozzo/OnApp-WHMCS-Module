@@ -11,14 +11,14 @@
     {$error}
 </div>
 {/if}
-<p>This page lists the IP Addresses allocated to this Virtual Machine. When a machine is built, these will automatically be configured. However, if they are allocated after the machine has been built, you will need to configure them yourself.</p>
-<h2 class="heading2">IP Addresses for this Virtual Machine</h2>
+<p>{$LANG.onappipaddressestitle}</p>
+<h2 class="heading2">{$LANG.onappvmipaddresses}</h2>
 <table cellspacing="0" cellpadding="10" border="0" width="100%" class="data">
   <tr>
-    <th>ID #</th>
-    <th>IP Address</th>
-    <th>Netmask</th>
-    <th>Gateway</th>
+    <th>{$LANG.onappid} #</th>
+    <th>{$LANG.onappipaddress}</th>
+    <th>{$LANG.onappnetmask}</th>
+    <th>{$LANG.onappgateway}</th>
     <th>&nbsp;</th>
   </tr>
 {foreach item=resolved_ip key=ID from=$resolved_ips}
@@ -38,13 +38,13 @@
 <br/>
 
 {if count($not_resolved_ips) > 0 }
-<h2 class="heading2" style="color: red;">{ $not_resolved_ips|@count } Not Resolved IP Addresses for this Virtual Machine</h2>
+<h2 class="heading2" style="color: red;">{ $not_resolved_ips|@count } {$LANG.onappnotresolvedips}</h2>
 <table cellspacing="0" cellpadding="10" border="0" width="100%" class="data">
   <tr>
-    <th>ID #</th>
-    <th>IP Address</th>
-    <th>Netmask</th>
-    <th>Gateway</th>
+    <th>{$LANG.onappid} #</th>
+    <th>{$LANG.onappipaddress}</th>
+    <th>{$LANG.onappnetmask}</th>
+    <th>{$LANG.onappgateway}</th>
     <th>&nbsp;</th>
   </tr>
 {foreach item=not_resolved_ip from=$not_resolved_ips}
@@ -55,26 +55,26 @@
     <td>{$not_resolved_ip->_gateway}</td>
     <td>
 {if count($not_resolved_addons) > 0 }
-        <a href="onapp.php?page=ipaddresses&id={$id}&action=resolve&ipid={$not_resolved_ip->_id}">Resolve</a> |
+        <a href="onapp.php?page=ipaddresses&id={$id}&action=resolve&ipid={$not_resolved_ip->_id}">{$LANG.onappresolve}</a> |
 {elseif $service.configoption17 != 0 }
-        <a href="cart.php?gid=addons&pid={$id}">Buy</a> |
+        <a href="cart.php?gid=addons&pid={$id}">{$LANG.onappbuy}</a> |
 {/if}
-        <a href="onapp.php?page=ipaddresses&id={$id}&action=delete&ipid={$not_resolved_ip->_id}">Delete</a>
+        <a href="onapp.php?page=ipaddresses&id={$id}&action=delete&ipid={$not_resolved_ip->_id}">{$LANG.onappdelete}</a>
     </td>
   </tr>
 {/foreach}
 </table>
 <div align="right">
-    <a href="onapp.php?page=ipaddresses&id={$id}&action=resolveall">Resolve All</a>&nbsp;
+    <a href="onapp.php?page=ipaddresses&id={$id}&action=resolveall">{$LANG.onappresolveall}</a>&nbsp;
 </div>
 <br/>
 {elseif count($not_resolved_addons) > 0 }
-<h2 class="heading2" style="color: red;">{ $not_resolved_addons|@count } Not Resolved IP Addresses Addons for this Virtual Machine</h2>
+<h2 class="heading2" style="color: red;">{ $not_resolved_addons|@count } {$LANG.onappnotresolvedipaddons}</h2>
 <table cellspacing="0" cellpadding="10" border="0" width="100%" class="data">
   <tr>
-    <th>ID #</th>
-    <th>Pricing</th>
-    <th>Next Due Date</th>
+    <th>{$LANG.onappid} #</th>
+    <th>{$LANG.clientareaaddonpricing}</th>
+    <th>{$LANG.clientareahostingnextduedate}</th>
     <th>&nbsp;</th>
   </tr>
 {foreach item=not_resolved_addon key=ID from=$not_resolved_addons}
@@ -83,14 +83,14 @@
     <td>{$not_resolved_addon.pricing}</td>
     <td>{$not_resolved_addon.nextduedate}</td>
     <td>
-        <a href="onapp.php?page=ipaddresses&id={$id}&action=resolveaddon&addonid={$not_resolved_addon.id}">Add IP</a>
+        <a href="onapp.php?page=ipaddresses&id={$id}&action=resolveaddon&addonid={$not_resolved_addon.id}">{$LANG.onappaddip}</a>
     </td>
   </tr>
 {/foreach}
 </table>
 {elseif $service.configoption17 != 0 }
 <div align="right">
-  <a href="cart.php?gid=addons&pid={$id}">Add New IP Address</a>&nbsp;
+  <a href="cart.php?gid=addons&pid={$id}">{$LANG.onappaddnewip}</a>&nbsp;
 </div>
 <br/>
 {/if}

@@ -5,8 +5,8 @@
     {$error}
 </div>
 {/if}
-<p>To add a new Virtual Machine, complete the form below and click the Create Virtual Machine button at the bottom of the page.</p>
-<h2 class="heading2">Virtual Machine Details</h2>
+<p>{$LANG.onappcreatevmtitle}</p>
+<h2 class="heading2">{$LANG.onappvmdetails}</h2>
 <form name="create_vm" method="get" action="onapp.php">
     <input type="hidden" name="page" value="productdetails">
     <input type="hidden" name="id" value="{$service.id}">
@@ -15,7 +15,7 @@
   <tbody>
     <tr class="vm-overview">
       <td>&nbsp;</td>
-      <td><div class="hostname"><strong>Hostname</strong></div></td>
+      <td><div class="hostname"><strong>{$LANG.onapphostname}</strong></div></td>
       <td>
 {if $service.domain != "" }
       <td>
@@ -29,7 +29,7 @@
 {/if}
       </td>
       <td>&nbsp;</td>
-      <td><div class="template"><strong>Template</strong></div></td>
+      <td><div class="template"><strong>{$LANG.onapptemplate}</strong></div></td>
       <td>
 { if count($templates) > 1 }
         <select name="templateid">
@@ -47,12 +47,12 @@
     </tr>
   </tbody>
 </table>
-<h2 class="heading2">Virtual Machine Settings</h2>
+<h2 class="heading2">{$LANG.onappvmsettings}</h2>
 <table cellspacing="5" cellpadding="10" border="0" align="center" width="100%">
   <tbody>
     <tr>
       <td>&nbsp;</td>
-      <td><strong>Memory</strong></td
+      <td><strong>{$LANG.onappmem}</strong></td>
       <td>
       {if $service.configoption3 eq "" }
         {$service.additionalram} MB
@@ -61,10 +61,10 @@
       {/if}
       </td>
       <td>&nbsp;</td>
-      <td><strong>CPU(s)</strong></td>
+      <td><strong>{$LANG.onappcpus}</strong></td>
       <td>
       {if $service.configoption5 eq "" }
-        {$service.additionalcpus} CPU(s)
+        {$service.additionalcpus} {$LANG.onappcpus}
       {else}
         {math equation="x + y" x=$service.configoption5 y=$service.additionalcpus} CPU(s)
       {/if}
@@ -72,10 +72,10 @@
     </tr>
     <tr>
       <td>&nbsp;</td>
-      <td><strong>Network Speed</strong></td>
+      <td><strong>{$LANG.onappnetspeed}</strong></td>
       <td>{$service.configoption8} Mbps ( Unlimited if not set )</td>
       <td>&nbsp;</td>
-      <td><strong>CPU Priority</strong></td>
+      <td><strong>{$LANG.onappcpupriority}</strong></td>
       <td>
       {if $service.configoption7 eq ""}
         {$service.additionalcpushares} %
@@ -86,7 +86,7 @@
     </tr>
     <tr>
       <td>&nbsp;</td>
-      <td><strong>Primary disk size</strong></td>
+      <td><strong>{$LANG.onappprivarydisksize}</strong></td>
       <td>
       {if $service.configoption11 eq ""}
         {$service.additionaldisksize} GB
@@ -95,7 +95,7 @@
        {/if}
       </td>
       <td>&nbsp;</td>
-      <td><strong>Swap disk size</strong></td>
+      <td><strong>{$LANG.onappswapsize}</strong></td>
       <td>{$service.configoption9} GB</td>
     </tr>
   </tbody>
@@ -106,7 +106,7 @@
   <tbody>
     <tr>
       <td align="center">
-        <a href="#" onClick="create_vm.submit();; return false;">Create Virtual Machine</a>
+        <a href="#" onClick="create_vm.submit();; return false;">{$LANG.onappcreatevm}</a>
       </td>
     </tr>
   </tbody>

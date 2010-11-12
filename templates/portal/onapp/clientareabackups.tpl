@@ -11,15 +11,15 @@
     {$error}
 </div>
 {/if}
-<p>This page lists the Backups which have been taken or are waiting to be taken for this Virtual Machine. Click the relevant links to convert a Backup to a template, or restore the disk from a Backup. Click the icon on the right to delete that Backup.</p>
-<h2 class="heading2">Backups for this Virtual Machine</h2>
+<p>{$LANG.onappbackupstitle}</p>
+<h2 class="heading2">{$LANG.onappvmbackups}</h2>
 <table cellspacing="0" cellpadding="10" border="0" width="100%" class="data">
 <tr>
-    <th>Date/Time</th>
-    <th>Disk</th>
-    <th>Status</th>
-    <th>Backup Size</th>
-    <th>Backup Type</th>
+    <th>{$LANG.onappdatetime}</th>
+    <th>{$LANG.onappdisk}</th>
+    <th>{$LANG.onappstatus}</th>
+    <th>{$LANG.onappbackupsize}</th>
+    <th>{$LANG.onappbackuptype}</th>
     <th>&nbsp;</th>
 </tr>
 {foreach item=backup from=$backups}
@@ -53,7 +53,7 @@
 {if $backup->_built != "true"}
         &nbsp;
 {else}
-       <a href="onapp.php?page=backups&id={$id}&action=restore&backupid={$backup->_id}">Restore</a>
+       <a href="onapp.php?page=backups&id={$id}&action=restore&backupid={$backup->_id}">{$LANG.onapprestore}</a>
 {/if}
     </td>
 </tr>
