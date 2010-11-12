@@ -324,9 +324,13 @@ $(document).ready(function(){
         tbody.append( cell_html(addcores_label, addcores_html) );
         tbody.append( cell_html(addpriority_label, addpriority_html) );
         tbody.append( cell_html(adddisk_label, adddisk_html) );
+
+    // fives table
+/*
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Product addons</b></td></tr>');
         tbody.append( cell_html(backup_label, backup_html) );
         tbody.append( cell_html(ip_label, ip_html) );
+*/
     };
 
 // assign server select onChange action
