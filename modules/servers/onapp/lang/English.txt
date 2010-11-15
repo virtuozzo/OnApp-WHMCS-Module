@@ -93,7 +93,7 @@ $_LANG["onappresolve"] = "Resolve";
 $_LANG["onappdelete"] = "Delete";
 $_LANG["onappbuy"] = "Buy";
 $_LANG["onappresolveall"] = "Resolve All";
-$_LANG["onappnotresolvedipaddons"] = "Not Resolved IP Addresses Addons for this Virtual Machine";
+$_LANG["onappnotresolvedipaddons"] = "Not Resolved IP Address Addons for this Virtual Machine";
 $_LANG["onappaddnewip"] = "Add New IP Address";
 $_LANG["onappdiskstitle"] = "This page lists the Disks in your OnApp cluster. Click the icons to edit Disk size, manage Backups and Schedules, and delete the Disk. Use caution when changing Disk settings. Please consult OnApp support if you're unsure about anything (support@onapp.com).";
 $_LANG["onappdiskssettings"] = "Disks Settings";
@@ -107,3 +107,5 @@ $_LANG["onappdatetime"] = "Date/Time";
 $_LANG["onappdisk"] = "Disk";
 $_LANG["onappbackupsize"] = "Backup Size";
 $_LANG["onappbackuptype"] = "Backup Type";
+#version 0.3
+$_LANG["onappupgradedowngrade"] = "Upgrade/Downgrade";
