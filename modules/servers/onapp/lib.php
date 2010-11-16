@@ -742,7 +742,7 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm->_remote_access_password         = decrypt( $service['password'] );
     $vm->_initial_root_password          = decrypt( $service['password'] );
     $vm->_required_ip_address_assignment = '1';
-    $vm->_required_automatic_backup      = '0';
+    $vm->_required_automatic_backup      = 'false';
     $vm->_rate_limit                     = $service['configoption8'];
 
     $vm->save();

@@ -271,7 +271,7 @@ function _actions_vm($action) {
                 $_ONAPPVARS['vm']->shutdown();
                 break;
             case 'reboot':
-                $_ONAPPVARS['vm']->reboot();
+                _action_vm_reboot();
                 break;
             case 'delete':
                 _action_vm_delete();
@@ -326,6 +326,71 @@ function _action_vm_delete() {
     global $_ONAPPVARS;
 
     $_ONAPPVARS['vm'] = delete_vm( $_ONAPPVARS['id'] );
+
+    return true;
+}
+
+function _action_vm_reboot() {
+    global $_ONAPPVARS;
+
+
+    $vm           = $_ONAPPVARS['vm']->_obj;
+    $service      = $_ONAPPVARS['service'];
+    $user         = get_onapp_client( $_ONAPPVARS['id'] );
+    $onapp_config = get_onapp_config( $service['serverid'] );
+
+    $memory            = $service['configoption3']  + $service['additionalram'];
+    $cpus              = $service['configoption5']  + $service['additionalcpus'];
+    $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];
+    $primary_disk_size = $service['configoption11'] + $service['additionaldisksize'];
+
+    // if upgraded
+    if ( $vm->_memory != $memory ||
+         $vm->_cpus != $cpus ||
+         $vm->_cpu_shares != $cpu_shares ||
+         $vm->_primary_disk_size != $primary_disk_size
+    ) {
+        $_ONAPPVARS['vm']->_memory            = $memory;
+        $_ONAPPVARS['vm']->_cpus              = $cpus;
+        $_ONAPPVARS['vm']->_cpu_shares        = $cpu_shares;
+        $_ONAPPVARS['vm']->_primary_disk_size = $primary_disk_size;
+
+        $_ONAPPVARS['vm']->save();
+
+        if(! is_null($_ONAPPVARS['vm']->_obj->error) || ! is_null($_ONAPPVARS['vm']->error))
+            return false;
+    };
+
+    $disks = new ONAPP_Disk();
+
+    $disks->auth(
+        $onapp_config["adress"],
+        $user["email"],
+        $user["password"]
+    );
+
+    $primary_disk = null;
+
+    foreach($disks->getList( $_ONAPPVARS['vm']->_id ) as $disk )
+        if( $disk->_primary == "true" )
+            $primary_disk = $disk;
+
+    if ( $primary_disk->_disk_size != $primary_disk_size ) {
+        $primary_disk->_disk_size = $primary_disk_size;
+
+        $primary_disk->auth(
+            $onapp_config["adress"],
+            $user["email"],
+            $user["password"]
+        );
+
+        $primary_disk->save();
+
+        if(! is_null($primary_disk->_obj->error) || ! is_null($primary_disk->error))
+            return false;
+    };
+
+    $_ONAPPVARS['vm']->reboot();
 
     return true;
 }
