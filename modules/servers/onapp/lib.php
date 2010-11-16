@@ -109,6 +109,7 @@ function get_service($service_id) {
         tblhosting.domain as domain,
         tblhosting.orderid as orderid,
         tblproducts.name as product,
+        tblproducts.configoptionsupgrade,
         tblproducts.configoption1,
         tblproducts.configoption2,
         tblproducts.configoption3,
@@ -138,6 +139,7 @@ function get_service($service_id) {
         servertype = 'onapp'
         AND tblhosting.id = '$service_id'";
 
+
     $service_rows = full_query($select_service);
 
     if ( ! $service_rows )
@@ -147,10 +149,16 @@ function get_service($service_id) {
 
     $select_config ="
     SELECT 
-        options.configid, 
+        optionssub.id,
+        optionssub.optionname,
+        options.configid,
+        tblproductconfigoptions.optionname as configoptionname, 
+        tblproductconfigoptions.optiontype,
+        tblproductconfigoptions.qtymaximum AS max,
+        tblproductconfigoptions.qtyminimum AS min,
         options.qty, 
-        sub.sortorder, 
-        tblproductconfigoptions.optiontype 
+        optionssub.sortorder, 
+        options.optionid as active
     FROM 
         tblhostingconfigoptions AS options 
         LEFT JOIN tblproductconfigoptionssub AS sub 
@@ -158,6 +166,8 @@ function get_service($service_id) {
             AND optionid = sub.id 
         LEFT JOIN tblproductconfigoptions 
             ON tblproductconfigoptions.id = options.configid 
+        LEFT JOIN tblproductconfigoptionssub AS optionssub 
+            ON optionssub.configid = tblproductconfigoptions.id
     WHERE
         relid = '$service_id';";
 
@@ -166,31 +176,71 @@ function get_service($service_id) {
     if ( ! $config_rows )
         return false;
 
-    while ( $row = mysql_fetch_assoc($config_rows) ) {
-        switch ( $row['optiontype'] ) {
-            case '1': // Dropdown
-                $row['order'] = $row['sortorder'];
-                break;
-            case '2': // Radio
-                $row['order'] = $row['sortorder'];
-                break;
-            case '3': // Yes/No
-                $row['order'] = 0;
-                break;
-            case '4': // Quantity
-                $row['order'] = $row['qty'] * $row['sortorder'];
-                break;
-        };
+    $onappconfigoptions = array(
+        $service["configoption12"], // additional ram
+        $service["configoption13"], // additional cpus
+        $service["configoption14"], // additional cpu shares
+        $service["configoption15"]  // additional disk size
+    );
 
-        if ($service["configoption12"] == $row["configid"])
-            $service["additionalram"] = $row["order"];
-        elseif ($service["configoption13"] == $row["configid"])
-            $service["additionalcpus"] = $row["order"];
-        elseif ($service["configoption14"] == $row["configid"])
-            $service["additionalcpushares"] = $row["order"];
-        elseif ($service["configoption15"] == $row["configid"])
-            $service["additionaldisksize"] = $row["order"];
-    };
+    $service["configoptions"] = array();
+
+    while ( $row = mysql_fetch_assoc($config_rows) )
+        if ( in_array($row["configid"], $onappconfigoptions ) ) {
+            switch ( $row['optiontype'] ) {
+                case '1': // Dropdown
+                    $row['order'] = $row['sortorder'];
+                    break;
+                case '2': // Radio
+                    $row['order'] = $row['sortorder'];
+                    break;
+                case '3': // Yes/No
+                    $row['order'] = 0;
+                    break;
+                case '4': // Quantity
+                    $row['order'] = $row['qty'] * $row['sortorder'];
+                    break;
+            };
+
+            if(!isset($service["configoptions"][$row['configid']]))
+                $service["configoptions"][$row['configid']] = array(
+                    'name'       => $row['configoptionname'],
+                    'active'     => $row['active'],
+                    'optiontype' => $row['optiontype'],
+                    'step'       => 1
+                );
+
+            if ( $row["id"] == $row["active"]) {
+                if ($service["configoption12"] == $row["configid"]) {
+                    $service["additionalram"] = $row["order"];
+                    $service["configoptions"][$row['configid']]['order'] = $service['configoption3'];
+                    $service["configoptions"][$row['configid']]['step'] = 4;
+                    $service["configoptions"][$row['configid']]['prefix'] = 'MB';
+                } elseif ($service["configoption13"] == $row["configid"]) {
+                    $service["additionalcpus"] = $row["order"];
+                    $service["configoptions"][$row['configid']]['order'] = $service['configoption5'];
+                    $service["configoptions"][$row['configid']]['prefix'] = '';
+                } elseif ($service["configoption14"] == $row["configid"]) {
+                    $service["additionalcpushares"] = $row["order"];
+                    $service["configoptions"][$row['configid']]['order'] = $service['configoption7'];
+                    $service["configoptions"][$row['configid']]['prefix'] = '%';
+                } elseif ($service["configoption15"] == $row["configid"]) {
+                    $service["additionaldisksize"] = $row["order"];
+                    $service["configoptions"][$row['configid']]['order'] = $service['configoption11'];
+                    $service["configoptions"][$row['configid']]['prefix'] = 'GB';
+                };
+
+                $service["configoptions"][$row['configid']]['value'] = $row['qty'];
+            };
+
+            $service["configoptions"][$row['configid']]['options'][$row['sortorder']] = array(
+                'id'   => $row['id'],
+                'name' => $row['optionname'],
+                'max'  => $row['max'],
+                'min'  => $row['min']
+            );
+            
+        };
 
     return $service;
 }

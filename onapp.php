@@ -85,6 +85,9 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
             $breadcrumbnav .= ' &gt; <a href="onapp.php?page=backups&id='.$id.'">'.$_LANG["onappbackups"].'</a>';
             productbackups();
             break;
+        case 'upgrade':
+            productupgrade();
+            break;
         default:
             $_ONAPPVARS['error'] = sprintf( $_LANG["onapppagenotfound"], $_ONAPPVARS['page'] );
             productdetails();
@@ -353,9 +356,10 @@ function showproduct() {
         show_template(
             "onapp/clientareaoverview",
             array(
-                'virtualmachine' => $_ONAPPVARS['vm']->_obj,
-                'id'             => $_ONAPPVARS['id'],
-                'error'          => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+                'virtualmachine'       => $_ONAPPVARS['vm']->_obj,
+                'id'                   => $_ONAPPVARS['id'],
+                'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+                'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
             )
         );
 }
@@ -412,12 +416,13 @@ function productcpuusage() {
     show_template(
         "onapp/clientareacpuusage",
         array(
-            'id'        => $_ONAPPVARS['id'],
-            'templates' => $templates,
-            'xaxis'     => $xaxis,
-            'yaxis'     => $yaxis,
-            'address'   => $onapp_config["adress"],
-            'error'     => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'id'                   => $_ONAPPVARS['id'],
+            'templates'            => $templates,
+            'xaxis'                => $xaxis,
+            'yaxis'                => $yaxis,
+            'address'              => $onapp_config["adress"],
+            'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
         )
     );
 }
@@ -538,12 +543,13 @@ function clientareaipaddresses() {
     show_template(
         "onapp/clientareaipaddresses",
         array(
-            'resolved_ips'        => $resolved_ips,
-            'not_resolved_ips'    => $not_resolved_ips,
-            'not_resolved_addons' => $not_resolved_addons,
-            'id'                  => $_ONAPPVARS['id'],
-            'service'             => $_ONAPPVARS['service'],
-            'error'               => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'resolved_ips'         => $resolved_ips,
+            'not_resolved_ips'     => $not_resolved_ips,
+            'not_resolved_addons'  => $not_resolved_addons,
+            'id'                   => $_ONAPPVARS['id'],
+            'service'              => $_ONAPPVARS['service'],
+            'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
         )
     );
 }
@@ -569,9 +575,10 @@ function productdisks() {
     show_template(
         "onapp/clientareadisks",
         array(
-            'disks'      => $disks->getList( $_ONAPPVARS['vm']->_id ),
-            'id'         => $_ONAPPVARS['id'],
-            'error'      => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'disks'                => $disks->getList( $_ONAPPVARS['vm']->_id ),
+            'id'                   => $_ONAPPVARS['id'],
+            'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
         )
     );
 }
@@ -632,9 +639,10 @@ function clientareabackups() {
     show_template(
         "onapp/clientareabackups",
         array(
-            'backups'    => $backups->getList(),
-            'id'         => $_ONAPPVARS['id'],
-            'error'      => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'backups'              => $backups->getList(),
+            'id'                   => $_ONAPPVARS['id'],
+            'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
         )
     );
 }
@@ -707,6 +715,40 @@ function _action_backup_restore( $id, $backupid ) {
             'error' => is_array($backup->_obj->error) ?
                 "Can't create Backup<br/>\n " . implode('.<br>', $backup->_obj->error) :
                 "Can't create Backup '" . $backup->_obj->error
+        );
+}
+
+function productupgrade() {
+    global $_ONAPPVARS, $_LANG;
+
+    $onapp_config = get_onapp_config($_ONAPPVARS['service']['serverid']);
+
+    $service = $_ONAPPVARS['service'];
+
+    if ( ! is_null($_ONAPPVARS['vm']->error) ) {
+        $_ONAPPVARS['error'] = is_array($_ONAPPVARS['vm']->error) ?
+            implode(', ', $_ONAPPVARS['vm']->error) :
+            $_ONAPPVARS['vm']->error;
+
+        clientareaproducts();
+    } elseif ( is_null($_ONAPPVARS['vm']->_id) ) {
+        $_ONAPPVARS['error'] = sprintf(
+            $_LANG["onappvmnotfoundonserver"],
+            $_ONAPPVARS['service']['vmid'],
+            $onapp_config["adress"]
+        );
+
+        clientareaproducts();
+    } else
+        show_template(
+            "onapp/clientareaupgrade",
+            array(
+                'virtualmachine' => $_ONAPPVARS['vm']->_obj,
+                'service'        => $service,
+                'configoptions'  => $service['configoptions'],
+                'id'             => $_ONAPPVARS['id'],
+                'error'          => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            )
         );
 }
 

@@ -361,8 +361,8 @@ function create_slider_html(input_html, max, min, step, target_id){
 function create_templates_html(){
     tplHTML =
         '<div>'+
-        '   <div class="available_tpl" style="float:left;">'+
-        '       <select name="available_tpl[]" id="available_tpl" multiple="multiple" style="height: 280px;width:280px;">'+create_available_tpl_otions()+'</select>'+
+        '   <div class="available_tpl" style="float:left;width:35%;max-width:280px;">'+
+        '       <select name="available_tpl[]" id="available_tpl" multiple="multiple" style="height:280px;width:100%;">'+create_available_tpl_otions()+'</select>'+
         '   </div>'+
         '   <div class="pick-buttons" style="float:left; width: 40px; text-align:center;padding:80px 20px">'+
         '       <input type="button" title="Choose available and add" value="&gt;" class="button addButton" name="add" id="add" style="width:30px;" />'+
@@ -370,8 +370,8 @@ function create_templates_html(){
         '       <input type="button" title="Add all" value="&gt;&gt;" class="button addAllButton" name="addAll" id="addAll" style="width:30px;" />'+
         '       <input type="button" title="Remove all" value="&lt;&lt;" class="button removeAllButton" name="removeAll" id="removeAll" style="width:30px;" />'+
         '   </div>'+
-        '   <div class="selected_tpl" style="float:left;">'+
-        '       <select name="selected_tpl[]" id="selected_tpl" multiple="multiple" style="height: 280px;width:280px;"></select>'+
+        '   <div class="selected_tpl" style="float:left;width:35%;max-width:280px;">'+
+        '       <select name="selected_tpl[]" id="selected_tpl" multiple="multiple" style="height:280px;width:100%;"></select>'+
         '   </div>'+
         '   <div class="clear"></div>'+
         '</div>';
