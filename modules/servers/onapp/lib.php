@@ -139,7 +139,6 @@ function get_service($service_id) {
         servertype = 'onapp'
         AND tblhosting.id = '$service_id'";
 
-
     $service_rows = full_query($select_service);
 
     if ( ! $service_rows )

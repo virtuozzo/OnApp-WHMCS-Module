@@ -109,3 +109,5 @@ $_LANG["onappbackupsize"] = "Backup Size";
 $_LANG["onappbackuptype"] = "Backup Type";
 #version 0.3
 $_LANG["onappupgradedowngrade"] = "Upgrade/Downgrade";
+$_LANG["onappincludedinpack"]  = "Included in Package";
+$_LANG["onappadditional"] = "Additional";

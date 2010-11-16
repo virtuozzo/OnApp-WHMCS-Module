@@ -15,7 +15,7 @@
 </div>
 {/if}
 <p></p>
-<h2 class="heading2">Upgrade/Downgrade</h2>
+<h2 class="heading2">{$LANG.onappupgradedowngrade}</h2>
 <form action="upgrade.php" method="post">
 <input type="hidden" value="2" name="step">
 <input type="hidden" value="configoptions" name="type">
@@ -23,9 +23,9 @@
 <table cellspacing="0" cellpadding="10" border="0" align="center" width="100%">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Included in Package</th>
-      <th>Additional</th>
+      <th>{$LANG.supportticketsclientname}</th>
+      <th>{$LANG.onappincludedinpack}</th>
+      <th>{$LANG.onappadditional}</th>
     </tr>
   </thead>
   <tbody>
@@ -35,10 +35,10 @@
       <td>{$configoption.order} {$configoption.prefix}</td>
       <td>
         {if $configoption.optiontype eq 1}
-        <select style="margin:5px 15px 0 5px; width:200px;" width="200" name="configoption[{$id}]">
+        <select style="margin:5px 15px 0 5px; width:270px;" width="270" name="configoption[{$id}]">
         {foreach from=$configoption.options item=option}
           {if $option.id eq $configoption.active}
-            <option selected='selected' value="{$option.id}">{$option.name} (No Change)</option>
+            <option selected='selected' value="{$option.id}">{$option.name} ({$LANG.upgradenochange})</option>
           {else}
             <option value="{$option.id}">{$option.name}</option>
           {/if}
@@ -47,9 +47,9 @@
         {elseif $configoption.optiontype eq 2}
         {foreach from=$configoption.options item=option}
           {if $option.id eq $configoption.active}
-            <input style="margin:5px 5px 0 5px;" type="radio" checked="checked" value="{$option.id}" name="configoption[{$id}]">{$option.name} (No Change)<br />
+            <input style="margin:5px 5px 0 5px;" type="radio" checked="checked" value="{$option.id}" name="configoption[{$id}]">{$option.name}&nbsp;({$LANG.upgradenochange})<br />
           {else}
-            <input style="margin:5px 5px 0 5px;" type="radio" value="{$option.id}" name="configoption[{$id}]"> {$option.name}<br />
+            <input style="margin:5px 5px 0 5px;" type="radio" value="{$option.id}" name="configoption[{$id}]">{$option.name}<br />
           {/if}
         {/foreach}
         {elseif $configoption.optiontype eq 3}
@@ -64,6 +64,6 @@
     {/foreach}
   </tbody>
 </table>
-<input type="submit" value="Click to Continue &gt;&gt;">
+<input type="submit" value="{$LANG.ordercontinuebutton}">
 </form>
 <br/>
