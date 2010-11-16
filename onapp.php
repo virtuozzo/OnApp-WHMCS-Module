@@ -333,7 +333,6 @@ function _action_vm_delete() {
 function _action_vm_reboot() {
     global $_ONAPPVARS;
 
-
     $vm           = $_ONAPPVARS['vm']->_obj;
     $service      = $_ONAPPVARS['service'];
     $user         = get_onapp_client( $_ONAPPVARS['id'] );
@@ -344,7 +343,7 @@ function _action_vm_reboot() {
     $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];
     $primary_disk_size = $service['configoption11'] + $service['additionaldisksize'];
 
-    // if upgraded
+    // Adjust Resource Allocations
     if ( $vm->_memory != $memory ||
          $vm->_cpus != $cpus ||
          $vm->_cpu_shares != $cpu_shares ||
@@ -361,6 +360,7 @@ function _action_vm_reboot() {
             return false;
     };
 
+    // Change Disk size
     $disks = new ONAPP_Disk();
 
     $disks->auth(
@@ -390,6 +390,7 @@ function _action_vm_reboot() {
             return false;
     };
 
+    // Reboot VM
     $_ONAPPVARS['vm']->reboot();
 
     return true;
