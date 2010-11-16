@@ -14,8 +14,8 @@
     {$error}
 </div>
 {/if}
-<p></p>
-<h2 class="heading2">{$LANG.onappupgradedowngrade}</h2>
+<p>{$LANG.onappupgradedowngradetitle}</p>
+<h2 class="heading2">{$LANG.onappresources}</h2>
 <form action="upgrade.php" method="post">
 <input type="hidden" value="2" name="step">
 <input type="hidden" value="configoptions" name="type">
@@ -56,7 +56,8 @@
         {elseif $configoption.optiontype eq 4}
         <div class="input-with-slider">
           <input type="text" value="{$configoption.value}" size="4" name="configoption[{$id}]" readonly="">
-          <div class="slider" style="float:left; margin:5px 15px 0 5px; width:200px;" max="{$configoption.max}" min="{$configoption.min}" step="{$configoption.step}" target="configoption[{$id}]" width="200"></div>
+          <div class="slider" style="float:left; margin:5px 15px 0 5px; width:200px;" max="{$configoption.max}" min="{$configoption.min}" step="{$configoption.step}" target="configoption[{$id}]" width="200">
+          </div>
         </div>
         {/if}
       </td>
@@ -64,6 +65,8 @@
     {/foreach}
   </tbody>
 </table>
+<h2>{$LANG.onappipaddresses}</h2>
+<br/>
 <input type="submit" value="{$LANG.ordercontinuebutton}">
 </form>
 <br/>

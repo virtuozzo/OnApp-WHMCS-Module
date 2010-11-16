@@ -5,6 +5,24 @@
 function showconsole(id) {
     window.open("modules/servers/onapp/console.php?id="+id,"popup","width=820,height=640,scrollbars=0,resizable=0,toolbar=0,directories=0,location=0,menubar=0,status=0,left=50,top=50");
 }
+
+function rebuildvm(id) {
+      if( confirm("{/literal}{$LANG.onappconfirmrebuildvm}{literal}") ) {
+        window.location="/onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=rebuild";
+    };
+}
+
+function deletevm(id) {
+    if ( confirm("{/literal}{$LANG.onappconfirmdeletevm}{literal}") ) {
+        window.location="/onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=delete";
+    };
+}
+
+function stopvm(id) {
+    if ( confirm("{/literal}{$LANG.onappconfirmstopvm}{literal}") ) {
+        window.location="/onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=stop";
+    }
+}
 </script>
 {/literal}
 <div class="contentbox">
@@ -42,7 +60,7 @@ function showconsole(id) {
     {if $virtualmachine->_locked eq "true" || $virtualmachine->_built eq "false" }
         <a class="power pending">Pending</a>
     {elseif $virtualmachine->_booted eq "true"}
-        <a rel="nofollow" class="power off-inactive" href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=stop">OFF</a>
+        <a rel="nofollow" class="power off-inactive" href="#" onclick="stopvm();; return false;">OFF</a>
         <a class="power on-active">ON</a>
     {elseif $virtualmachine->_booted eq "false"}
         <a class="power off-active">OFF</a>
@@ -124,10 +142,10 @@ function showconsole(id) {
   <tbody>
     <tr>
       <td width="33%">
-        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=build">{$LANG.onappvmbuild}</a>
+        <a href="#" onclick="rebuildvm();; return false;">{$LANG.onappvmrebuild}</a>
       </td>
       <td width="33%">
-        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=delete">{$LANG.onappvmdel}</a>
+        <a  href="#" onclick="deletevm();; return false;">{$LANG.onappvmdel}</a>
       </td>
       <td>&nbsp;</td>
     </tr>
@@ -138,13 +156,13 @@ function showconsole(id) {
   <tbody>
     <tr>
       <td width="33%">
-        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=stop">{$LANG.onappvmstop}</a>
+        <a  href="#" onclick="stopvm();; return false;">{$LANG.onappvmstop}</a>
       </td>
       <td width="33%">
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=reboot">{$LANG.onappvmreboot}</a>
       </td>
       <td>
-        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=rebuild">{$LANG.onappvmrebuild}</a>
+        <a href="#" onclick="rebuildvm();; return false;">{$LANG.onappvmrebuild}</a>
       </td>
     </tr>
     <tr>
@@ -168,10 +186,10 @@ function showconsole(id) {
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=start">{$LANG.onappvmstart}</a>
       </td>
       <td width="33%">
-        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=rebuild">{$LANG.onappvmrebuild}</a>
+        <a href="#" onclick="rebuildvm();; return false;">{$LANG.onappvmrebuild}</a>
       </td>
       <td>
-        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=delete">{$LANG.onappvmdel}</a>
+        <a  href="#" onclick="deletevm();; return false;">{$LANG.onappvmdel}</a>
       </td>
     </tr>
     <tr>
