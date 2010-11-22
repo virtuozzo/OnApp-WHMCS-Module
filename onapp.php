@@ -390,6 +390,9 @@ function _action_vm_reboot() {
             return false;
     };
 
+    // resolve all IPs
+    _ips_resolve_all($service['serverid']);
+
     // Reboot VM
     $_ONAPPVARS['vm']->reboot();
 
@@ -518,9 +521,12 @@ function productipaddresses() {
             case 'assignadditional':
                 $return = _action_ip_add($_ONAPPVARS['id'], 0);
                 break;
-//            case 'delete':
-//                $return = _action_ip_delete($_ONAPPVARS['id'], $_ONAPPVARS['ipid']);
-//                break;
+            case 'resolveall':
+                $return = _ips_resolve_all($_ONAPPVARS['id']);
+                break;
+            case 'delete':
+                $return = _action_ip_delete($_ONAPPVARS['id'], $_ONAPPVARS['ipid']);
+                break;
             default:
                 $_ONAPPVARS['error'] = sprintf($_LANG["onappactionnotfound"], $action);
                 break;

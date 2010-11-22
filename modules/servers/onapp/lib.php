@@ -595,8 +595,37 @@ function _action_ip_add($service_id, $isbase) {
 }
 
 
-function _ips_resolve_all() {
-////////
+function _ips_resolve_all($service_id) {
+    $service = get_service($service_id);
+    $ips     = get_vm_ips($service_id);
+
+    $ips_count = $service['configoption18'] - count($ips['base']);
+    for ( $i=0; $i < $ips_count; $i++ ) {
+        if (count($ips['notresolved']) > 0) {
+            $notresolvedip = array_shift($ips['notresolved']);
+            _action_ip_setbase($service_id, $notresolvedip->_id);
+        } else {
+            _action_ip_add($service_id, 1);
+        };
+
+        $ips = get_vm_ips($service_id);
+    };
+//remove last base IPs if need to not reolved
+    $ips_count = $service['additionalips']  - count($ips['additional']);
+    for ( $i=0; $i < $ips_count; $i++ ) {
+        if (count($ips['notresolved']) > 0) {
+            $notresolvedip = array_shift($ips['notresolved']);
+            _action_ip_setadditional($service_id, $notresolvedip->_id);
+        } else {
+            _action_ip_add($service_id, 0);
+        };
+
+        $ips = get_vm_ips($service_id);
+    };
+//remove last base IPs if need to not reolved
+
+//remove not reolved
+
 };
 
 function _ips_unassign_all($service_id) {
@@ -612,20 +641,15 @@ function _ips_unassign_all($service_id) {
 /**
  * Action delete IP
  */
-/*
-function _action_ip_delete($id, $ipid) {
-    if ( is_null($ipid) )
-        return array('error' => 'IP ID not set');
 
-    $vm      = get_vm($id);
-    $vm_ips  = get_vm_ips($id);
-    $service = get_service($id);
+function _action_ip_delete($service_id, $ipid) {
+    $service      = get_service($service_id);
+    $vm           = get_vm($service_id);
+    $ips          = get_vm_ips($service_id);
     $onapp_config = get_onapp_config($service['serverid']);
 
-    if ( ! isset( $vm_ips[$ipid] ) )
-        return array('error' => "IP adress with id #$ipid does not exist");
-    elseif ( $vm_ips[$ipid]['resolved'] )
-        return array('error' => "IP adress #$ipid is resolved");
+    if ( ! isset( $ips['notresolved'][$ipid] ) )
+        return array('error' => "IP adress #$ipid is resolved or does not exist");
 
     $ipaddressjoin = new ONAPP_VirtualMachine_IpAddressJoin();
 
@@ -655,11 +679,11 @@ function _action_ip_delete($id, $ipid) {
         return array('error' => is_array($ip_join->_obj->error) ?
             "Can't delete IP Address<br/>\n " . implode('.<br>', $ip_join->_obj->error) :
             "Can't delete IP Address " . $ip_join->_obj->error);
+    } else {
+        return true;
     };
-
-    return true;
 }
-*/
+
 function create_vm( $service_id, $hostname, $template_id) {
 
     $vm = new ONAPP_VirtualMachine();
@@ -739,8 +763,11 @@ function create_vm( $service_id, $hostname, $template_id) {
             full_query($sql_username_update);
 
         if ( full_query($sql_replace) ) {
-            if ( $service['configoption10'] == 'on' )
+            if ( $service['configoption10'] == 'on' ) {
+                _ips_resolve_all($service_id);
+
                 $vm->build();
+            };
 
             sendmessage('Virtual Machine Created', $service_id);
 
