@@ -139,7 +139,8 @@ function get_service($service_id) {
         LEFT JOIN tblonappservices ON service_id = tblhosting.id
     WHERE
         servertype = 'onapp'
-        AND tblhosting.id = '$service_id'";
+        AND tblhosting.id = '$service_id'
+        AND tblhosting.domainstatus = 'Active'";
 
     $service_rows = full_query($select_service);
 
