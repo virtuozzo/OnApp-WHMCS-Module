@@ -599,8 +599,14 @@ function _ips_resolve_all() {
 ////////
 };
 
-function _ips_unassign_all() {
-////////
+function _ips_unassign_all($service_id) {
+    $delete_ips = "DELETE FROM tblonappips WHERE
+        serviceid  = '$service_id'";
+
+    if( ! full_query($delete_ips) )
+        return array('error' => "Can't delete IP addresses");
+
+    return array('success' => true);
 }
 
 /**
@@ -682,7 +688,7 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm->_template_id                    = $template_id;
     $vm->_hypervisor_id                  = $service['configoption4'];
     $vm->_primary_network_id             = $service['configoption6'];
-    $vm->_required_virtual_machine_build = 'false';
+    $vm->_required_virtual_machine_build = '0';
     $vm->_hostname                       = $hostname;
     $vm->_memory                         = $memory;
     $vm->_cpus                           = $cpus;
@@ -775,11 +781,7 @@ function delete_vm( $service_id ) {
         return $vm;
     };
 
-//    $sql_delete_ip = "DELETE FROM tblonappaddonips WHERE orderid = '" . $_ONAPPVARS['service']['orderid'] . "';";
-//    if ( ! full_query($sql_delete_ip) ) {
-//        $_ONAPPVARS['error'] = "Can't delete data from tblonappips";
-//        return false;
-//    };
+    _ips_unassign_all($service_id);
 
     sendmessage('Virtual Machine Deleted', $service_id );
 
