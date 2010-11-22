@@ -391,7 +391,7 @@ function _action_vm_reboot() {
     };
 
     // resolve all IPs
-    _ips_resolve_all($service['serverid']);
+    _ips_resolve_all($_ONAPPVARS['id']);
 
     // Reboot VM
     $_ONAPPVARS['vm']->reboot();

@@ -599,6 +599,7 @@ function _ips_resolve_all($service_id) {
     $service = get_service($service_id);
     $ips     = get_vm_ips($service_id);
 
+    // resolve base ips after upgrade
     $ips_count = $service['configoption18'] - count($ips['base']);
     for ( $i=0; $i < $ips_count; $i++ ) {
         if (count($ips['notresolved']) > 0) {
@@ -610,8 +611,26 @@ function _ips_resolve_all($service_id) {
 
         $ips = get_vm_ips($service_id);
     };
-//remove last base IPs if need to not reolved
-    $ips_count = $service['additionalips']  - count($ips['additional']);
+
+    // resolve base ips after downgrade
+    if ( count($ips['base']) > $service['configoption18'] ) {
+        $ips_count = count($ips['base']) - $service['configoption18'];
+        $remove = array();
+        for ( $i = 0; $i < $ips_count; $i++) {
+            $ip = array_pop($ips['base']);
+            $remove[] = $ip->_id;
+        };
+
+        $sql_delete_ips_base = "DELETE FROM tblonappips WHERE
+            serviceid  = '$service_id'
+            and ipid in (" . implode(',',$remove)  . ")";
+
+        full_query($sql_delete_ips_base);
+        $ips = get_vm_ips($service_id);
+    };
+
+    // resolve additional ips after upgrade
+    $ips_count = $service['additionalips'] - count($ips['additional']);
     for ( $i=0; $i < $ips_count; $i++ ) {
         if (count($ips['notresolved']) > 0) {
             $notresolvedip = array_shift($ips['notresolved']);
@@ -622,10 +641,28 @@ function _ips_resolve_all($service_id) {
 
         $ips = get_vm_ips($service_id);
     };
-//remove last base IPs if need to not reolved
 
-//remove not reolved
+    // resolve additional ips after downgrade
+    if ( count($ips['additional'] ) > $service['additionalips'] ){
+        $ips_count = count($ips['additional']) - $service['additionalips'];
+        $remove = array();
+        for ( $i = 0; $i < $ips_count; $i++) {
+            $ip = array_pop($ips['additional']);
+            $remove[] = $ip->_id;
+        };
 
+        $sql_delete_ips_base = "DELETE FROM tblonappips WHERE
+            serviceid  = '$service_id'
+            and ipid in (" . implode(',',$remove)  . ")";
+
+        full_query($sql_delete_ips_base);
+        $ips = get_vm_ips($service_id);
+    };
+
+    // remove not resolved IPs
+    foreach($ips['notresolved'] as $ip) {
+        _action_ip_delete($service_id, $ip->_id);
+    };
 };
 
 function _ips_unassign_all($service_id) {
