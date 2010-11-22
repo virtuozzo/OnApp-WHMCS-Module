@@ -124,25 +124,25 @@ $(document).ready(function(){
     }
     addDiskSelect.html(selectHTML);
 
-    addBackupSelect = $("select[name$='packageconfigoption[16]']");
-    addBackupSelected = addBackupSelect.val();
-    addBackupSelect.width(selectWidth);
-    selectHTML = '';
-    for ( var option in productAddons ) {
-        selected = (option == addBackupSelected) ? ' selected="selected"' : '';
-        selectHTML += '<option value="'+option+'"'+selected+'>'+productAddons[option]+'</option>';
-    }
-    addBackupSelect.html(selectHTML);
-
-    addIPSelect = $("select[name$='packageconfigoption[17]']");
+    addIPSelect = $("select[name$='packageconfigoption[16]']");
     addIPSelected = addIPSelect.val();
     addIPSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in productAddons ) {
+    for ( var option in configOptions ) {
         selected = (option == addIPSelected) ? ' selected="selected"' : '';
-        selectHTML += '<option value="'+option+'"'+selected+'>'+productAddons[option]+'</option>';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
     addIPSelect.html(selectHTML);
+
+    addBackupSelect = $("select[name$='packageconfigoption[17]']");
+    addBackupSelected = addBackupSelect.val();
+    addBackupSelect.width(selectWidth);
+    selectHTML = '';
+    for ( var option in configOptions ) {
+        selected = (option == addBackupSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
+    addBackupSelect.html(selectHTML);
 
     addIPBaseSelect = $("select[name$='packageconfigoption[18]']");
     addIPBaseSelected = addIPBaseSelect.val();
@@ -246,17 +246,17 @@ $(document).ready(function(){
     var adddisk_label = tr.find('td').eq(0).html();
     var adddisk_html  = tr.find('td').eq(1).html();
 
-// get backup
-    var backup_label = tr.find('td').eq(2).html();
-    var backup_html  = tr.find('td').eq(3).html();
+// get IP Address
+    var ip_label = tr.find('td').eq(2).html();
+    var ip_html  = tr.find('td').eq(3).html();
 
 // remove row
     tr.remove();
     var tr = table.find('tr').eq(0);
 
-// get IP Address
-    var ip_label = tr.find('td').eq(0).html();
-    var ip_html  = tr.find('td').eq(1).html();
+// get backup
+    var backup_label = tr.find('td').eq(0).html();
+    var backup_html  = tr.find('td').eq(1).html();
 
 // get IP Address
     var ipbase_label = tr.find('td').eq(2).html();
@@ -324,13 +324,8 @@ $(document).ready(function(){
         tbody.append( cell_html(addcores_label, addcores_html) );
         tbody.append( cell_html(addpriority_label, addpriority_html) );
         tbody.append( cell_html(adddisk_label, adddisk_html) );
-
-    // fives table
-/*
-        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Product addons</b></td></tr>');
-        tbody.append( cell_html(backup_label, backup_html) );
         tbody.append( cell_html(ip_label, ip_html) );
-*/
+//        tbody.append( cell_html(backup_label, backup_html) );
     };
 
 // assign server select onChange action

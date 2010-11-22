@@ -127,10 +127,12 @@ function get_service($service_id) {
         tblproducts.configoption15,
         tblproducts.configoption16,
         tblproducts.configoption17,
+        tblproducts.configoption18,
         0 as additionalram,
         0 as additionalcpus,
         0 as additionalcpushares,
-        0 as additionaldisksize
+        0 as additionaldisksize,
+        0 as additionalips
     FROM
         tblhosting
         LEFT JOIN tblproducts ON tblproducts.id = packageid
@@ -179,7 +181,8 @@ function get_service($service_id) {
         $service["configoption12"], // additional ram
         $service["configoption13"], // additional cpus
         $service["configoption14"], // additional cpu shares
-        $service["configoption15"]  // additional disk size
+        $service["configoption15"], // additional disk size
+        $service["configoption16"]  // additional ips
     );
 
     $service["configoptions"] = array();
@@ -227,6 +230,10 @@ function get_service($service_id) {
                     $service["additionaldisksize"] = $row["order"];
                     $service["configoptions"][$row['configid']]['order'] = $service['configoption11'];
                     $service["configoptions"][$row['configid']]['prefix'] = 'GB';
+                } elseif ($service["configoption16"] == $row["configid"]) {
+                    $service["additionalips"] = $row["order"];
+                    $service["configoptions"][$row['configid']]['order'] = $service['configoption18'];
+                    $service["configoptions"][$row['configid']]['prefix'] = '';
                 };
 
                 $service["configoptions"][$row['configid']]['value'] = $row['qty'];
@@ -406,179 +413,125 @@ function get_templates($serverid, $templatesid) {
 }
 
 /**
- * Get free addons ids which assigned or can be assigned to VM IP addresses
- */
-function get_ip_addons($id) {
-
-    $service = get_service($id);
-
-    $orderid = $service["orderid"];
-    $addonid = $service["configoption17"];
-
-    $vm  = get_vm($id);
-
-    $ips = array();
-
-    if ( is_array($vm->_obj->_ip_addresses) )
-        foreach( $vm->_obj->_ip_addresses as $ip )
-            array_push($ips, $ip->_id);
-
-    $addons = array();
-
-// SELECT base IP order
-    $select_order = "
-      SELECT
-        ipid
-      FROM
-        tblonappbaseips
-      WHERE
-        orderid='$orderid';";
-
-    if ( $order = mysql_fetch_assoc(full_query($select_order)) ) {
-        if( in_array($order['ipid'], array_values($ips))) {
-            $addons[0] = $order['ipid'];
-        } else {
-            $addons[0] = NULL;
-        }
-    } else
-        $addons[0] = NULL;
-
-//SELECT addons IPs
-    $select_addons = "
-      SELECT
-        tblhostingaddons.id as id,
-        tblonappaddonips.ipid,
-        tblhostingaddons.setupfee,
-        tblhostingaddons.recurring
-      FROM
-        tblorders
-        LEFT JOIN tblhostingaddons ON
-          tblhostingaddons.orderid = tblorders.id
-        LEFT JOIN tblonappaddonips ON
-          tblonappaddonips.addonid = tblhostingaddons.id
-     WHERE
-          tblhostingaddons.id IS NOT NULL
-          AND tblhostingaddons.status = 'Active'
-          AND tblhostingaddons.hostingid = '$id'
-          AND tblhostingaddons.addonid='$addonid'
-     ORDER BY tblhostingaddons.id ASC;";
-
-    $addons_rows = full_query($select_addons);
-
-    if ($addons_rows)
-        while ( $row = mysql_fetch_assoc($addons_rows) )
-            if( in_array($row['ipid'], $ips))
-                $addons[$row["id"]]= $row["ipid"];
-            else
-                $addons[$row["id"]]= NULL;
-
-    return $addons;
-}
-
-/**
  * Get VM IPs
  */
 function get_vm_ips($service_id) {
-    $vm         = get_vm($service_id);
-
-    $addons     = get_ip_addons($service_id);
-
-    $addons_ips = array_diff(array_values($addons), array(NULL));
+    $vm             = get_vm($service_id);
+    $service        = get_service($service_id);
+    $base_ips       = array();
+    $additional_ips = array();
 
     $ips = array();
 
     if (is_array($vm->_obj->_ip_addresses) )
-        foreach( $vm->_obj->_ip_addresses as $ip ) {
-            $ips[$ip->_id]['ip'] = $ip;
-            $ips[$ip->_id]['resolved'] = in_array( $ip->_id, $addons_ips );
-        };
+        foreach( $vm->_obj->_ip_addresses as $ip )
+            $ips[$ip->_id] = $ip;
 
-    return $ips;
+    $select_ips = sprintf("
+        SELECT
+            serviceid,
+            ipid,
+            isbase
+        FROM tblonappips
+        WHERE serviceid = '%s'",
+        addslashes($service_id)
+    );
+
+    $ips_rows = full_query($select_ips);
+
+    while ( $row = mysql_fetch_assoc($ips_rows) ) {
+        if ( $row['isbase'] == 1 ) {
+            $base_ips[$row['ipid']] = $ips[$row['ipid']];
+            unset($ips[$row['ipid']]);
+        } else {
+            $additional_ips[$row['ipid']] = $ips[$row['ipid']];
+            unset($ips[$row['ipid']]);      
+        }
+    };
+
+    return array(
+        'notresolved' => $ips,
+        'base'        => $base_ips,
+        'additional'  => $additional_ips,
+    );
 }
 
 /**
- * Action resolve IP
+ * Action resolve IP set base
  */
-function _action_ip_resolve($id, $ipid) {
+function _action_ip_setbase($service_id, $ipid) {
+    $vm      = get_vm($service_id);
+    $service = get_service($service_id);
 
-    if ( is_null($ipid) )
-        return array('error' => "IP ID not set");
+    $ips = get_vm_ips($service_id);
 
-    $vm_ips = get_vm_ips($id);
+    if( $ipid == "" || ! isset($ips['notresolved'][$ipid]) )
+        return array(
+            'error' => "Can't found not resolved IP with id #".$ipid,
+        );
 
-    if ( ! isset( $vm_ips[$ipid] ) )
-        return array('error' => "IP adress with id #$ipid does not exist");
-    elseif ( $vm_ips[$ipid]['resolved'] )
-        return array('error' => "IP adress #$ipid is resolved");
+    if ( $service['configoption18'] - count($ips['base']) < 1 )
+        return array(
+            'error' => "Can't found not not assigned base IPs ",
+        );
 
-    $addons = get_ip_addons($id);
-
-    if ( ! in_array(NULL, array_values($addons)) )
-        return array('error' => "Can't found free addons for IP #$ipid");
-
-    foreach($addons as $addon => $value)
-        if ( is_null($value) ) {
-            $addonid = $addon;
-            break;
-        };
-
-    if ($addonid != 0 )
-        $sql_insert_ip = "REPLACE tblonappaddonips SET
-            addonid  = '$addonid' ,
-            ipid     = '$ipid';";
-    else {
-        $service = get_service($id);
-        $orderid = $service["orderid"];
-
-        $sql_insert_ip = "REPLACE tblonappbaseips SET
-            orderid  = '$orderid',
-            ipid     = '$ipid';";
-    };
+    $sql_insert_ip = "REPLACE tblonappips SET
+        serviceid  = '$service_id' ,
+        ipid       = '$ipid',
+        isbase     = 1";
 
     if( ! full_query($sql_insert_ip) )
         return array('error' => "Can't resolve IP address");
 
-    return true;
+    return array('success' => true);
 }
 
 /**
- * Action resolve all IPs
+ * Action resolve IP set additional
  */
-function _action_ip_resolveall($id) {
-    $vm_ips = get_vm_ips($id);
+function _action_ip_setadditional($service_id, $ipid) {
+    $vm      = get_vm($service_id);
+    $service = get_service($service_id);
 
-    $addons = get_ip_addons($id);
+    $ips = get_vm_ips($service_id);
 
-    if ( ! in_array(NULL, array_values($addons)) )
-        return array('error' => "Can't found free addons");
+    if( $ipid == "" || ! isset($ips['notresolved'][$ipid]) )
+        return array(
+            'error' => "Can't found not resolved IP with id #".$ipid,
+        );
 
-    foreach ( $vm_ips as $ip )
-        if( ! $ip['resolved'] ) {
-            $result = _action_ip_resolve( $id, $ip['ip']->_id );
+    if ( $service['additionalips']  - count($ips['additional']) < 1 )
+        return array(
+            'error' => "Can't found not not assigned additional IPs ",
+        );
 
-            if ( ! isset ( $result['error'] ) )
-                return array('error' => $result['error'] );
-        };
+    $sql_insert_ip = "REPLACE tblonappips SET
+        serviceid  = '$service_id' ,
+        ipid       = '$ipid',
+        isbase     = 0";
 
-    return true;
+    if( ! full_query($sql_insert_ip) )
+        return array('error' => "Can't resolve IP address");
+
+    return array('success' => true);
 }
 
 /**
- * Action add IP adress
+ * Action assign IP
  */
-function _action_ip_resolveaddon($id, $addonid) {
+function _action_ip_add($service_id, $isbase) {
+    $service = get_service($service_id);
+    $vm      = get_vm($service_id);
+    $ips = get_vm_ips($service_id);
 
-    if ( is_null($addonid) )
-        return array('error' => "Addon ID not set");
-
-    $addons = get_ip_addons($id);
-
-    if ( ! in_array($addonid, array_keys($addons)) )
-        return array('error' => "Can't found addon #$addonid");
-
-    $service = get_service($id);
-
-    $vm  = get_vm($id);
+    if ( $isbase == 1 && $service['configoption18'] - count($ips['base']) < 1 )
+        return array(
+            'error' => "Can't found not not assigned base IPs ",
+        );
+    elseif ( $isbase != 1 && $service['additionalips'] - count($ips['additional']) < 1 )
+        return array(
+            'error' => "Can't found not not assigned additional IPs ",
+        );
 
     $onapp_config = get_onapp_config($service['serverid']);
 
@@ -590,10 +543,12 @@ function _action_ip_resolveaddon($id, $addonid) {
         $onapp_config['password']
     );
 
-    foreach( $ipaddress->getList($service["configoption6"]) as $ip) {
-        if( $ip->_free == "true" && ! isset($free_ip) )
-            $free_ip = $ip;
-    };
+    $ips = $ipaddress->getList($service["configoption6"]);
+
+    if ($ips)
+        foreach( $ips as $ip)
+            if( $ip->_free == "true" && ! isset($free_ip) )
+                $free_ip = $ip;
 
     if ( ! isset($free_ip) || is_null($free_ip) )
         return array('error' => "Can't found free IP");
@@ -633,29 +588,25 @@ function _action_ip_resolveaddon($id, $addonid) {
     if ( ! isset($ipaddressjoin->_ip_address_id) )
         return array('error' => "Can't save IP address");
 
-    $ipid = $ipaddressjoin->_ip_address_id;
-// TODO delete previous addon resolver
-    if ($addonid != 0 )
-        $sql_insert_ip = "REPLACE tblonappaddonips SET
-            addonid  = '$addonid' ,
-            ipid     = '$ipid';";
-    else {
-        $orderid = $service["orderid"];
+    if ( $isbase == 1 )
+        return _action_ip_setbase($service_id, $ipaddressjoin->_ip_address_id);
+    else 
+        return _action_ip_setadditional($service_id, $ipaddressjoin->_ip_address_id);
+}
 
-        $sql_insert_ip = "REPLACE tblonappbaseips SET
-            orderid  = '$orderid',
-            ipid     = '$ipid';";
-    };
 
-    if( ! full_query($sql_insert_ip) )
-        return array('error' => "Can't resolve IP address");
+function _ips_resolve_all() {
+////////
+};
 
-    return true;
+function _ips_unassign_all() {
+////////
 }
 
 /**
  * Action delete IP
  */
+/*
 function _action_ip_delete($id, $ipid) {
     if ( is_null($ipid) )
         return array('error' => 'IP ID not set');
@@ -702,7 +653,7 @@ function _action_ip_delete($id, $ipid) {
 
     return true;
 }
-
+*/
 function create_vm( $service_id, $hostname, $template_id) {
 
     $vm = new ONAPP_VirtualMachine();
@@ -742,7 +693,7 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm->_remote_access_password         = decrypt( $service['password'] );
     $vm->_initial_root_password          = decrypt( $service['password'] );
     $vm->_required_ip_address_assignment = '1';
-    $vm->_required_automatic_backup      = 'false';
+    $vm->_required_automatic_backup      = '0';
     $vm->_rate_limit                     = $service['configoption8'];
 
     $vm->save();

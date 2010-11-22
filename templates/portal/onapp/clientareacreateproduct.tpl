@@ -73,7 +73,13 @@
     <tr>
       <td>&nbsp;</td>
       <td><strong>{$LANG.onappnetspeed}</strong></td>
-      <td>{$service.configoption8} Mbps ( Unlimited if not set )</td>
+      <td>
+        {if $service.configoption8 eq 0}
+          Unlimited
+        {else}
+          {$service.configoption8} Mbps
+        {/if}
+      </td>
       <td>&nbsp;</td>
       <td><strong>{$LANG.onappcpupriority}</strong></td>
       <td>
@@ -97,6 +103,14 @@
       <td>&nbsp;</td>
       <td><strong>{$LANG.onappswapsize}</strong></td>
       <td>{$service.configoption9} GB</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td><strong>{$LANG.onappincludedips}</strong></td>
+      <td>
+        {math equation="x + y" x=$service.configoption18 y=$service.additionalips} IP(s)
+      </td>
+      <td colspan="2">&nbsp;</td>
     </tr>
   </tbody>
 </table>

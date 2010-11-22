@@ -117,3 +117,5 @@ $_LANG["onappresources"] = "Resources";
 $_LANG["onappconfirmrebuildvm"] = "Do you really want to rebuild VM";
 $_LANG["onappconfirmdeletevm"] = "Do you really want to delete VM";
 $_LANG["onappconfirmstopvm"] = "Do you really want to stop VM";
+$_LANG["onappvmipaddressesadditional"] = "Additional IP Addresses for this Virtual Machine";
+$_LANG["onappvmipaddressesnotassigned"] = "Not assigned IP Addresses for this Virtual Machine";

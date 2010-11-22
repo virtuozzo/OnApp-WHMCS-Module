@@ -74,7 +74,7 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
             productcpuusage();
             break;
         case 'ipaddresses':
-            $breadcrumbnav .= ' &gt; <a href="onapp.php?page=ipaddresses&id='.$id.'">'.$_LANG["onappipaddress"].'</a>';
+            $breadcrumbnav .= ' &gt; <a href="onapp.php?page=ipaddresses&id='.$id.'">'.$_LANG["onappipaddresses"].'</a>';
             productipaddresses();
             break;
         case 'disks':
@@ -499,25 +499,28 @@ function productcpuusage() {
 function productipaddresses() {
     global $_ONAPPVARS, $_LANG;
 
-    foreach ( array('ipid', 'addonid' ) as $val )
+    foreach ( array('ipid' ) as $val )
         $_ONAPPVARS[$val] = get_value($val);
 
     $action = $_ONAPPVARS['action'];
 
     if( ! is_null($action) && $action != "" )
         switch ( $action ) {
-            case 'resolve':
-                $return = _action_ip_resolve($_ONAPPVARS['id'], $_ONAPPVARS['ipid']);
+            case 'setbase':
+                $return = _action_ip_setbase($_ONAPPVARS['id'], $_ONAPPVARS['ipid']);
                 break;
-            case 'resolveall':
-                $return = _action_ip_resolveall($_ONAPPVARS['id']);
+            case 'setadditional':
+                $return = _action_ip_setadditional($_ONAPPVARS['id'], $_ONAPPVARS['ipid']);
                 break;
-            case 'resolveaddon':
-                $return = _action_ip_resolveaddon($_ONAPPVARS['id'], $_ONAPPVARS['addonid']);
+            case 'assignbase':
+                $return = _action_ip_add($_ONAPPVARS['id'], 1);
                 break;
-            case 'delete':
-                $return = _action_ip_delete($_ONAPPVARS['id'], $_ONAPPVARS['ipid']);
+            case 'assignadditional':
+                $return = _action_ip_add($_ONAPPVARS['id'], 0);
                 break;
+//            case 'delete':
+//                $return = _action_ip_delete($_ONAPPVARS['id'], $_ONAPPVARS['ipid']);
+//                break;
             default:
                 $_ONAPPVARS['error'] = sprintf($_LANG["onappactionnotfound"], $action);
                 break;
@@ -538,84 +541,22 @@ function productipaddresses() {
 function clientareaipaddresses() {
     global $_ONAPPVARS;
 
-    $vm_ips = get_vm_ips($_ONAPPVARS['id']);
+    $service = $_ONAPPVARS['service'];
 
-    $resolved_ips     = array();
-    $not_resolved_ips = array();
-
-    if (is_array($vm_ips))
-        foreach ($vm_ips as $ip) {
-            if ( $ip['resolved'] )
-                array_push( $resolved_ips, $ip );
-            else
-                array_push( $not_resolved_ips, $ip['ip'] );
-        };
-
-    $addons = get_ip_addons( $_ONAPPVARS['id'] );
-
-    $not_resolved_addons = array();
-
-    if ( in_array(NULL, array_values($addons)) ) {
-
-        $not_resolved_addons_ids = array();
-
-        foreach ($addons as $key => $value)
-            if ( is_null($value) )
-                $not_resolved_addons_ids[] = $key;
-
-        $select_addons = "
-        SELECT
-            tblhostingaddons.id AS id,
-            setupfee,
-            recurring,
-            billingcycle,
-            nextduedate,
-            tblcurrencies.prefix,
-            tblcurrencies.suffix
-        FROM
-            tblhostingaddons
-            LEFT JOIN tblcurrencies ON tblcurrencies.default = 1
-        WHERE
-            tblhostingaddons.id IN (".implode(',', $not_resolved_addons_ids).");";
-
-
-        $addons_rows = full_query($select_addons);
-
-        while ( $row = mysql_fetch_assoc($addons_rows) ) {
-            $row['pricing'] = '';
-
-            if ( $row['setupfee'] != '0.00' )
-                $row['pricing'] .= $row['prefix'].$row['setupfee'].' '.$row['suffix'].' Setup Fee';
-            if ( $row['setupfee'] != '0.00' && $row['recurring'] != '0.00' )
-                $row['pricing'] .= ' + ';
-            if ( $row['recurring'] != '0.00' )
-                $row['pricing'] .= $row['prefix'].$row['recurring'].' '.$row['suffix'].' '.$row['billingcycle'];
-
-            $not_resolved_addons[$row['id']] = $row;
-        };
-
-       if (is_null($addons[0]) )
-           $not_resolved_addons[0] = array(
-               'isorder'     => true, 
-               'pricing'     => 'Base IP assigned to order',
-               'id'          => '0',
-               'nextduedate' => '-'
-           );
-    };
-
-    if ( ! in_array(0, array_keys($addons)) )
-        $not_resolved_addons[0] = $_ONAPPVARS['service'];
+    $ips = get_vm_ips($_ONAPPVARS['id']);
 
     show_template(
         "onapp/clientareaipaddresses",
         array(
-            'resolved_ips'         => $resolved_ips,
-            'not_resolved_ips'     => $not_resolved_ips,
-            'not_resolved_addons'  => $not_resolved_addons,
-            'id'                   => $_ONAPPVARS['id'],
-            'service'              => $_ONAPPVARS['service'],
-            'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
-            'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
+            'base_ips'                => $ips['base'],
+            'additional_ips'          => $ips['additional'],
+            'not_resolved_ips'        => $ips['notresolved'],
+            'not_resloved_base'       => $service['configoption18'] - count($ips['base']),
+            'not_resloved_additional' => $service['additionalips']  - count($ips['additional']),
+            'id'                      => $_ONAPPVARS['id'],
+            'service'                 => $_ONAPPVARS['service'],
+            'error'                   => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'configoptionsupgrade'    => $_ONAPPVARS['service']['configoptionsupgrade'],
         )
     );
 }

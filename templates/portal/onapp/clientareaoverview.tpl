@@ -142,7 +142,7 @@ function stopvm(id) {
   <tbody>
     <tr>
       <td width="33%">
-        <a href="#" onclick="rebuildvm();; return false;">{$LANG.onappvmrebuild}</a>
+        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=build">{$LANG.onappvmbuild}</a>
       </td>
       <td width="33%">
         <a  href="#" onclick="deletevm();; return false;">{$LANG.onappvmdel}</a>

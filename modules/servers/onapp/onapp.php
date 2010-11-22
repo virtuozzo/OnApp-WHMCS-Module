@@ -36,20 +36,13 @@ function onapp_createTables() {
   KEY `service_id` (`service_id`)
 ) ENGINE=InnoDB;");
 
-    define("CREATE_TABLE_ADDON_IPS",
-"CREATE TABLE IF NOT EXISTS `tblonappaddonips` (
-  `addonid` int(11) NOT NULL,
+    define("CREATE_TABLE_IPS",
+"CREATE TABLE IF NOT EXISTS `tblonappips` (
+  `serviceid` int(11) NOT NULL,
   `ipid` int(11) NOT NULL,
-  PRIMARY KEY (`addonid`),
-  KEY `addonid` (`addonid`)
-) ENGINE=InnoDB;");
-
-    define("CREATE_TABLE_BASE_IPS",
-"CREATE TABLE IF NOT EXISTS `tblonappbaseips` (
-  `orderid` int(11) NOT NULL,
-  `ipid` int(11) NOT NULL,
-  PRIMARY KEY (`orderid`),
-  KEY `orderid` (`orderid`)
+  `isbase` TINYINT(1) DEFAULT 0 NOT NULL,
+  PRIMARY KEY (`serviceid`, `ipid`),
+  KEY `id` (`serviceid`, `ipid`)
 ) ENGINE=InnoDB;");
 
     if ( ! full_query( CREATE_TABLE_CLIENTS, $whmcsmysql ) ) {
@@ -60,17 +53,11 @@ function onapp_createTables() {
         return array( 
             "error" => sprintf($_LANG["onapperrtablecreate"], 'onappservices')
         );
-    } else if ( ! full_query( CREATE_TABLE_ADDON_IPS, $whmcsmysql ) ) {
+    } else if ( ! full_query( CREATE_TABLE_IPS, $whmcsmysql ) ) {
         return array(
             "error" => sprintf(
                 $_LANG["onapperrtablecreate"], 
-                'tblonappaddonips'
-            ));
-    } else if ( ! full_query( CREATE_TABLE_BASE_IPS, $whmcsmysql ) ) {
-        return array(
-            "error" => sprintf(
-                $_LANG["onapperrtablecreate"], 
-                'tblonappbaseips'));
+                'tblonappips'));
     };
 
 // Add VM creation template in to DB
@@ -336,29 +323,6 @@ $js_serverOptions
   // END Config options     //
   ////////////////////////////
 
-  ////////////////////////////
-  // BEGIN Product addons   //
-    $productaddons_query = full_query(
-        "SELECT
-            addons.id AS id,
-            addons.name AS name 
-        FROM 
-            tbladdons AS addons
-        WHERE
-            addons.packages LIKE('%,$serviceid,%') 
-            OR addons.packages LIKE('$serviceid,%')"
-    );
-
-    $js_ProductAddons = "    productAddons[0] = '" . $_LANG["onappselprodaddon"] . "';\n";
-    $productaddons = array();
-    while($productaddon = mysql_fetch_assoc($productaddons_query)){
-        $js_ProductAddons .= "    productAddons[".$productaddon['id']."] ='".addslashes($productaddon['name'])."';\n";
-        $productaddons[] = $productaddon['id'];
-    }
-
-  // END Product addons     //
-  ////////////////////////////
-
     $js_error = "    var error_msg = ";
 
     if ( count($hv_ids) == 0 )
@@ -482,14 +446,14 @@ $js_error;
             "Options"     => "0,".implode(',', $configoptions),
             "Description" => "",
         ),
-        $_LANG["onappbackup"] => array(
-            "Type"        => "dropdown",
-            "Options"     => "0,".implode(',', $productaddons),
-            "Description" => "",
-        ),
         $_LANG["onappipaddress"] => array(
             "Type"        => "dropdown",
-            "Options"     => "0,".implode(',', $productaddons),
+            "Options"     => "0,".implode(',', $configoptions),
+            "Description" => "",
+        ),
+        $_LANG["onappbackup"] => array(
+            "Type"        => "dropdown",
+            "Options"     => "0,".implode(',', $configoptions),
             "Description" => "",
         ),
         $_LANG["onappincludedips"] => array(
@@ -538,17 +502,21 @@ function onapp_CreateAccount($params) {
 
 function onapp_TerminateAccount( $params ) {
     global $_LANG;
-    
-    $vm = delete_vm($params['serviceid']);
 
-    if ( ! is_null($vm->error) )
-        return is_array($vm->error) ?
-            $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->error) :
-            $_LANG["onappcantdeletevm"] . $vm->error;
-    elseif ( ! is_null($vm->_obj->error) )
-        return is_array($vm->_obj->error) ?
-            $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
-            $_LANG["onappcantdeletevm"] . $vm->_obj->error;
+    $getvm = get_vm($params['serviceid']);
+
+    if ( ! is_null($getvm->_id) ) {
+        $vm = delete_vm($params['serviceid']);
+
+        if ( ! is_null($vm->error) )
+            return is_array($vm->error) ?
+                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->error) :
+                $_LANG["onappcantdeletevm"] . $vm->error;
+        elseif ( ! is_null($vm->_obj->error) )
+            return is_array($vm->_obj->error) ?
+                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
+                $_LANG["onappcantdeletevm"] . $vm->_obj->error;
+    };
 
     return 'success';
 }

@@ -21,13 +21,12 @@
 <input type="hidden" value="configoptions" name="type">
 <input type="hidden" value="{$id}" name="id">
 <table cellspacing="0" cellpadding="10" border="0" align="center" width="100%">
-  <thead>
-    <tr>
-      <th>{$LANG.supportticketsclientname}</th>
-      <th>{$LANG.onappincludedinpack}</th>
-      <th>{$LANG.onappadditional}</th>
-    </tr>
-  </thead>
+<table cellspacing="0" cellpadding="10" border="0" width="100%">
+  <tr>
+    <th>{$LANG.supportticketsclientname}</th>
+    <th>{$LANG.onappincludedinpack}</th>
+    <th>{$LANG.onappadditional}</th>
+  </tr>
   <tbody>
     {foreach from=$configoptions key=id item=configoption}
     <tr>
@@ -65,7 +64,6 @@
     {/foreach}
   </tbody>
 </table>
-<h2>{$LANG.onappipaddresses}</h2>
 <br/>
 <input type="submit" value="{$LANG.ordercontinuebutton}">
 </form>
