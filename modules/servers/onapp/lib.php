@@ -440,7 +440,13 @@ function get_vm_ips($service_id) {
     $ips_rows = full_query($select_ips);
 
     while ( $row = mysql_fetch_assoc($ips_rows) ) {
-        if ( $row['isbase'] == 1 ) {
+        if ( ! isset($ips[$row['ipid']]) ) {
+            full_query( "DELETE FROM tblonappips WHERE
+              serviceid  = '$service_id'
+              AND ipid = '" . $row['ipid'] . "'" 
+            );
+           // continue;
+        } elseif ( $row['isbase'] == 1 ) {
             $base_ips[$row['ipid']] = $ips[$row['ipid']];
             unset($ips[$row['ipid']]);
         } else {
