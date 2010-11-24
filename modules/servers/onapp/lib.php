@@ -808,8 +808,6 @@ function create_vm( $service_id, $hostname, $template_id) {
 
         if ( full_query($sql_replace) ) {
             if ( $service['configoption10'] == 'on' ) {
-                _ips_resolve_all($service_id);
-
                 $vm->build();
             };
 

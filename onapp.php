@@ -262,6 +262,7 @@ function _actions_vm($action) {
                 break;
             case 'build':
             case 'rebuild':
+                _ips_resolve_all($_ONAPPVARS['id']);
                 $_ONAPPVARS['vm']->build();
                 break;
             case 'start':
@@ -318,6 +319,7 @@ function _action_vm_create() {
         return false;
 
     $_ONAPPVARS['vm'] = create_vm($_ONAPPVARS['id'], $_ONAPPVARS['hostname'], $_ONAPPVARS['templateid'] );
+    _ips_resolve_all($_ONAPPVARS['id']);
 
     return true;
 }
