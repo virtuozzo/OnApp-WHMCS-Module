@@ -50,6 +50,7 @@
 </table>
 <br>
 
+{if $not_resloved_additional > 0}
 <h2 class="heading2">{$LANG.onappvmipaddressesadditional}</h2>
 <table cellspacing="0" cellpadding="10" border="0" width="100%" class="data">
   <tr>
@@ -83,6 +84,7 @@
 {/section}
 </table>
 <br>
+{/if}
 
 {if count($not_resolved_ips) > 0 }
 <h2 class="heading2">{$LANG.onappvmipaddressesnotassigned}</h2>
