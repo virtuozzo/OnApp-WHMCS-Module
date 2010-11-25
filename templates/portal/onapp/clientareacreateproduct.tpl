@@ -108,7 +108,11 @@
       <td>&nbsp;</td>
       <td><strong>{$LANG.onappincludedips}</strong></td>
       <td>
+      {if $service.configoption18 ne "" && $service.additionalips ne ""}
         {math equation="x + y" x=$service.configoption18 y=$service.additionalips} IP(s)
+      {else}
+         0 IP(s)
+      {/if}
       </td>
       <td colspan="2">&nbsp;</td>
     </tr>
