@@ -50,7 +50,7 @@
 </table>
 <br>
 
-{if $not_resloved_additional > 0}
+{if $not_resloved_additional > 0 || count($additional_ips) > 0}
 <h2 class="heading2">{$LANG.onappvmipaddressesadditional}</h2>
 <table cellspacing="0" cellpadding="10" border="0" width="100%" class="data">
   <tr>
