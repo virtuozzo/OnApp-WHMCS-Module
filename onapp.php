@@ -45,8 +45,8 @@ foreach ( array('id', 'page', 'action') as $val )
 $breadcrumbnav  = ' <a href="index.php">'.$_LANG["globalsystemname"].'</a>';
 $breadcrumbnav .= ' &gt; <a href="clientarea.php">'.$_LANG["clientareatitle"].'</a>';
 $breadcrumbnav .= ' &gt; <a href="onapp.php">'.$_LANG["onappmyvms"].'</a>';
-if ( in_array($_ONAPPVARS['page'], array('productdetails', 'disks', 'cpuusage', 'ipaddresses', 'backups') ) )
-    $breadcrumbnav .= ' &gt; <a href="onapp.php?page=productdetails&id='.$id.'">'.$_LANG["clientareaproductdetails"].'</a>';
+if ( in_array($_ONAPPVARS['page'], array('productdetails', 'disks', 'cpuusage', 'ipaddresses', 'backups', 'upgrade') ) )
+    $breadcrumbnav .= ' &gt; <a title="' .$_LANG["clientareaproductdetails"]. '" href="onapp.php?page=productdetails&id='.$id.'">'.$_LANG["clientareaproductdetails"].'</a>';
 
 /**
  * Check if service exist
@@ -70,22 +70,23 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
             productdetails();
             break;
         case 'cpuusage':
-            $breadcrumbnav .= ' &gt; <a href="onapp.php?page=cpuusage&id='.$id.'">'.$_LANG["onappcpuusage"].'</a>';
+            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappcpuusage"]. '" href="onapp.php?page=cpuusage&id='.$id.'">'.$_LANG["onappcpuusage"].'</a>';
             productcpuusage();
             break;
         case 'ipaddresses':
-            $breadcrumbnav .= ' &gt; <a href="onapp.php?page=ipaddresses&id='.$id.'">'.$_LANG["onappipaddresses"].'</a>';
+            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappipaddresses"]. '" href="onapp.php?page=ipaddresses&id='.$id.'">'.$_LANG["onappipaddresses"].'</a>';
             productipaddresses();
             break;
         case 'disks':
-            $breadcrumbnav .= ' &gt; <a href="onapp.php?page=disks&id='.$id.'">'.$_LANG["onappdisks"].'</a>';
+            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappdisks"]. '" href="onapp.php?page=disks&id='.$id.'">'.$_LANG["onappdisks"].'</a>';
             productdisks();
             break;
         case 'backups':
-            $breadcrumbnav .= ' &gt; <a href="onapp.php?page=backups&id='.$id.'">'.$_LANG["onappbackups"].'</a>';
+            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappbackups"]. '" href="onapp.php?page=backups&id='.$id.'">'.$_LANG["onappbackups"].'</a>';
             productbackups();
             break;
         case 'upgrade':
+            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappupgradedowngrade"] .'" href="onapp.php?page=upgrade&id='.$id.'">'.$_LANG["onappupgradedowngrade"].'</a>';
             productupgrade();
             break;
         default:
@@ -200,6 +201,7 @@ function clientareaproducts() {
     $services_rows = full_query($select_services);
 
     if ($services_rows)
+
         while ($service = mysql_fetch_assoc( $services_rows ) ) {
             $services[ $service['id'] ] = $service;
 
