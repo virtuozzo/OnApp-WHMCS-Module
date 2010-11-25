@@ -419,10 +419,16 @@ function get_templates($serverid, $templatesid) {
 function get_vm_ips($service_id) {
     $vm             = get_vm($service_id);
     $service        = get_service($service_id);
+    $ips            = array();
     $base_ips       = array();
     $additional_ips = array();
 
-    $ips = array();
+    if (is_null($vm->_id) )
+        return array(
+            'notresolved' => $ips,
+            'base'        => $base_ips,
+            'additional'  => $additional_ips,
+        );
 
     if (is_array($vm->_obj->_ip_addresses) )
         foreach( $vm->_obj->_ip_addresses as $ip )
@@ -440,21 +446,22 @@ function get_vm_ips($service_id) {
 
     $ips_rows = full_query($select_ips);
 
-    while ( $row = mysql_fetch_assoc($ips_rows) ) {
-        if ( ! isset($ips[$row['ipid']]) ) {
-            full_query( "DELETE FROM tblonappips WHERE
-              serviceid  = '$service_id'
-              AND ipid = '" . $row['ipid'] . "'" 
-            );
-           // continue;
-        } elseif ( $row['isbase'] == 1 ) {
-            $base_ips[$row['ipid']] = $ips[$row['ipid']];
-            unset($ips[$row['ipid']]);
-        } else {
-            $additional_ips[$row['ipid']] = $ips[$row['ipid']];
-            unset($ips[$row['ipid']]);      
-        }
-    };
+    if ($ips_rows)
+        while ( $row = mysql_fetch_assoc($ips_rows) ) {
+            if ( ! isset($ips[$row['ipid']]) ) {
+                full_query( "DELETE FROM tblonappips WHERE
+                  serviceid  = '$service_id'
+                  AND ipid = '" . $row['ipid'] . "'" 
+                );
+               // continue;
+            } elseif ( $row['isbase'] == 1 ) {
+                $base_ips[$row['ipid']] = $ips[$row['ipid']];
+                unset($ips[$row['ipid']]);
+            } else {
+                $additional_ips[$row['ipid']] = $ips[$row['ipid']];
+                unset($ips[$row['ipid']]);      
+            }
+        };
 
     return array(
         'notresolved' => $ips,
@@ -530,6 +537,9 @@ function _action_ip_add($service_id, $isbase) {
     $service = get_service($service_id);
     $vm      = get_vm($service_id);
     $ips = get_vm_ips($service_id);
+
+    if (is_null($vm->_id) )
+        return array('error' => "Can't save IP address");
 
     if ( $isbase == 1 && $service['configoption18'] - count($ips['base']) < 1 )
         return array(
