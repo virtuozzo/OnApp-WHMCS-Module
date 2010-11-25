@@ -8,19 +8,19 @@ function showconsole(id) {
 
 function rebuildvm(id) {
       if( confirm("{/literal}{$LANG.onappconfirmrebuildvm}{literal}") ) {
-        window.location="/onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=rebuild";
+        window.location="onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=rebuild";
     };
 }
 
 function deletevm(id) {
     if ( confirm("{/literal}{$LANG.onappconfirmdeletevm}{literal}") ) {
-        window.location="/onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=delete";
+        window.location="onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=delete";
     };
 }
 
 function stopvm(id) {
     if ( confirm("{/literal}{$LANG.onappconfirmstopvm}{literal}") ) {
-        window.location="/onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=stop";
+        window.location="onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=stop";
     }
 }
 </script>
