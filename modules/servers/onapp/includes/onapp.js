@@ -300,10 +300,12 @@ $(document).ready(function(){
         tbody.append( cell_html(priority_label, priority_slider) );
         tbody.append( cell_html(disk_label, disk_slider) );
         tbody.append( cell_html(swap_label, swap_slider) );
-        tbody.append( cell_html(ipbase_label, ip_address_slider) );
+
+    // second table
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Network Configuration </b></td></tr>');
         tbody.append( cell_html(networks_label, networks_html) );
         tbody.append( cell_html(port_speed_label, port_speed_slider) );
+        tbody.append( cell_html(ipbase_label, ip_address_slider) );
 
     // third table
         second_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
