@@ -351,7 +351,6 @@ function _action_vm_reboot() {
     if ( $vm->_memory != $memory ||
          $vm->_cpus != $cpus ||
          $vm->_cpu_shares != $cpu_shares ||
-         $vm->_primary_disk_size != $primary_disk_size
     ) {
         $_ONAPPVARS['vm']->_memory            = $memory;
         $_ONAPPVARS['vm']->_cpus              = $cpus;
