@@ -264,17 +264,19 @@ function _actions_vm($action) {
                 break;
             case 'build':
             case 'rebuild':
-                _ips_resolve_all($_ONAPPVARS['id']);
+                _action_update_res();
                 $_ONAPPVARS['vm']->build();
                 break;
             case 'start':
+                _action_update_res();
                 $_ONAPPVARS['vm']->startup();
                 break;
             case 'stop':
                 $_ONAPPVARS['vm']->shutdown();
                 break;
             case 'reboot':
-                _action_vm_reboot();
+                _action_update_res();
+                $_ONAPPVARS['vm']->reboot();
                 break;
             case 'delete':
                 _action_vm_delete();
@@ -334,7 +336,7 @@ function _action_vm_delete() {
     return true;
 }
 
-function _action_vm_reboot() {
+function _action_update_res() {
     global $_ONAPPVARS;
 
     $vm           = $_ONAPPVARS['vm']->_obj;
@@ -350,7 +352,7 @@ function _action_vm_reboot() {
     // Adjust Resource Allocations
     if ( $vm->_memory != $memory ||
          $vm->_cpus != $cpus ||
-         $vm->_cpu_shares != $cpu_shares ||
+         $vm->_cpu_shares != $cpu_shares
     ) {
         $_ONAPPVARS['vm']->_memory            = $memory;
         $_ONAPPVARS['vm']->_cpus              = $cpus;
@@ -395,9 +397,6 @@ function _action_vm_reboot() {
 
     // resolve all IPs
     _ips_resolve_all($_ONAPPVARS['id']);
-
-    // Reboot VM
-    $_ONAPPVARS['vm']->reboot();
 
     return true;
 }
