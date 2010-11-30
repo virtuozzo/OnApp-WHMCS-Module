@@ -368,10 +368,9 @@ $(document).ready(function(){
 
     ostemplatesSelect.change( function () {
       if (confirm("Do you want refresh data in Templates selection box ?")) {
-// TODO investigate how to reload templates
+        $('#removeAll').click();
         reload_template_from_addon_res();
-//        selected_tpls();
-//        osFilter();
+        selected_tpls();
       };
     } );
 
