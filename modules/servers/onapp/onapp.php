@@ -355,7 +355,6 @@ $js_ProductAddons
 $js_error;
 
 </script>
-
 <script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/jquery.multiselects.js\"></script>
 <script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/onapp.js\"></script>
 <script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/slider.js\"></script>
@@ -459,6 +458,11 @@ $js_error;
         $_LANG["onappincludedips"] => array(
             "Type"        => "text",
             "Size"        => "5",
+            "Description" => "",
+        ),
+        $_LANG["onappaddonresource"] => array(
+            "Type"        => "dropdown",
+            "Options"     => "0,".implode(',', $configoptions),
             "Description" => "",
         ),
         "&nbsp;" => array(

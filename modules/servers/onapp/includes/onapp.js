@@ -154,6 +154,16 @@ $(document).ready(function(){
     }
     addIPBaseSelect.html(selectHTML);
 
+    addTemplatesSelect = $("select[name$='packageconfigoption[19]']");
+    addTemplatesSelected = addTemplatesSelect.val();
+    addTemplatesSelect.width(selectWidth);
+    selectHTML = '';
+    for ( var option in configOptions ) {
+        selected = (option == addTemplatesSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
+    addTemplatesSelect.html(selectHTML);
+
 // get base table
     var table = $('table').eq(5);
     var tr = table.find('tr').eq(0);
@@ -266,10 +276,14 @@ $(document).ready(function(){
     tr.remove();
     var tr = table.find('tr').eq(0);
 
+// get OS Template
+    var ostemplates_label = tr.find('td').eq(0).html();
+    var ostemplates_html  = tr.find('td').eq(1).html();
+
 // remove row
     tr.remove();
 
-// first table
+// tables
     var tbody = table.find('tbody');
     tbody.append( cell_html(servers_label, servers_html) );
     tbody.append( cell_html(hypervisors_label, hypervisors_html) );
@@ -279,7 +293,7 @@ $(document).ready(function(){
         check_vars = false;
     } else {
 
-    // second table
+    // first table
         table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
         var second_table = $('table').eq(6); 
         var tbody = second_table.find('tbody');
@@ -314,6 +328,7 @@ $(document).ready(function(){
 
         tbody.append( cell_html('<b>'+templates_label+'</b>', create_template_filter_html()) );
         tbody.append( cell_html('', templates_html+create_templates_html()) );
+        tbody.append( cell_html(ostemplates_label, ostemplates_html) );
         tbody.append( cell_html(build_auto_label, build_auto_html) );
 
     // forth table
