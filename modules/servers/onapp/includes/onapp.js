@@ -343,6 +343,12 @@ $(document).ready(function(){
         tbody.append( cell_html(adddisk_label, adddisk_html) );
         tbody.append( cell_html(ip_label, ip_html) );
 //        tbody.append( cell_html(backup_label, backup_html) );
+
+        templateSelect = $("input[name$='packageconfigoption[2]']");
+        aditionallSelect = $("select[name$='packageconfigoption[19]']");
+        if ( aditionallSelect.val() != '0') {
+            templateSelect.val(configOptionsSub[aditionallSelect.val()]);
+        };
     };
 
 // assign server select onChange action
@@ -357,6 +363,19 @@ $(document).ready(function(){
     serverSelect.val(serverSelected);
 
     check_vars = error_msg == "";
+// assign os templates addons onChange action
+    ostemplatesSelect = $("select[name$='packageconfigoption[19]']");
+
+    ostemplatesSelect.change( function () {
+      if (confirm("Do you want refresh data in Templates selection box ?")) {
+// TODO investigate how to reload templates
+        reload_template_from_addon_res();
+//        selected_tpls();
+//        osFilter();
+      };
+    } );
+
+    reload_template_from_addon_res();
 });
 
 function cell_html(label, html) {
@@ -423,7 +442,6 @@ function create_filter_tpl_otions() {
 }
 
 function osFilter() {
-
     var os = $("#filter_tpl").val();
 
     if(os == 'all'){
@@ -466,6 +484,14 @@ function in_array(needle, haystack){
         if(needle == haystack[i])
             return true;
     return false;
+}
+
+function reload_template_from_addon_res() {
+    templateSelect = $("input[name$='packageconfigoption[2]']");
+    aditionallSelect = $("select[name$='packageconfigoption[19]']");
+    if ( aditionallSelect.val() != '0') {
+        templateSelect.val(configOptionsSub[aditionallSelect.val()]);
+    };
 }
 
 function get_saved_tpls(){

@@ -311,7 +311,16 @@ function _action_vm_create() {
 
     foreach ( array('templateid', 'hostname' ) as $val )
         $_ONAPPVARS[$val] = get_value($val);
-
+/* TODO check template
+    $templates = get_templates($_ONAPPVARS['service']['serverid'], $_ONAPPVARS['service']["configoption2"]);
+    $os = $_ONAPPVARS['service']['os'];
+    
+    if (! is_null($os) && isset($templates[$os]) ) {
+        $templates = array(
+            $os => $templates[$os]
+        );
+    };
+*/
     if( isset($_ONAPPVARS['vm']) )
         $_ONAPPVARS['error'] =  $_LANG["onappvmexist"];
     elseif ( ! isset($_ONAPPVARS['hostname'] ) || $_ONAPPVARS['hostname'] == "" )
@@ -441,11 +450,20 @@ function showproduct() {
 function showcreateproduct() {
     global $_ONAPPVARS;
 
+    $templates = get_templates($_ONAPPVARS['service']['serverid'], $_ONAPPVARS['service']["configoption2"]);
+    $os = $_ONAPPVARS['service']['os'];
+
+    if (! is_null($os) && isset($templates[$os]) ) {
+        $templates = array(
+            $os => $templates[$os]
+        );
+    };
+
     show_template(
         "onapp/clientareacreateproduct",
         array(
             'service'   => $_ONAPPVARS['service'],
-            'templates' => get_templates($_ONAPPVARS['service']['serverid'], $_ONAPPVARS['service']["configoption2"]),
+            'templates' => $templates,
             'error'     => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
         )
     );

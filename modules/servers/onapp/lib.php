@@ -128,6 +128,7 @@ function get_service($service_id) {
         tblproducts.configoption16,
         tblproducts.configoption17,
         tblproducts.configoption18,
+        tblproducts.configoption19,
         0 as additionalram,
         0 as additionalcpus,
         0 as additionalcpushares,
@@ -183,7 +184,8 @@ function get_service($service_id) {
         $service["configoption13"], // additional cpus
         $service["configoption14"], // additional cpu shares
         $service["configoption15"], // additional disk size
-        $service["configoption16"]  // additional ips
+        $service["configoption16"], // additional ips
+        $service["configoption19"]  // operation system
     );
 
     $service["configoptions"] = array();
@@ -235,6 +237,8 @@ function get_service($service_id) {
                     $service["additionalips"] = $row["order"];
                     $service["configoptions"][$row['configid']]['order'] = $service['configoption18'];
                     $service["configoptions"][$row['configid']]['prefix'] = '';
+                } elseif ($service["configoption19"] == $row["configid"]) {
+                    $service["os"] = $row["order"];
                 };
 
                 $service["configoptions"][$row['configid']]['value'] = $row['qty'];

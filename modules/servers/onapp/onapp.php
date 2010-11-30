@@ -304,21 +304,34 @@ $js_serverOptions
     $configoptions_query = full_query(
         "SELECT
             configoptions.id AS id,
-            configoptions.optionname AS name 
+            configoptions.optionname AS name,
+            sub.id AS subid,
+            sub.sortorder AS suborder
         FROM 
             tblproductconfigoptions AS configoptions,
-            tblproductconfiglinks AS configlinks 
+            tblproductconfiglinks AS configlinks,
+            tblproductconfigoptionssub AS sub 
         WHERE
-            configlinks.pid = $serviceid
-            AND configlinks.gid = configoptions.gid"
+            configlinks.gid = configoptions.gid
+            AND sub.configid = configoptions.id
+            AND configlinks.pid = $serviceid"
     );
 
     $js_ConfigOptions = "    configOptions[0] = '" . $_LANG["onappselconfoption"] . "';\n";
     $configoptions = array();
-    while($configoption = mysql_fetch_assoc($configoptions_query)){
-        $js_ConfigOptions .= "    configOptions[".$configoption['id']."] ='".addslashes($configoption['name'])."';\n";
-        $configoptions[] = $configoption['id'];
-    }
+    $options = array();
+
+    while($option = mysql_fetch_assoc($configoptions_query)){
+       $options[$option['id']]['options'][$option['suborder']] = $option['subid'];
+       if (! isset($options[$option['id']]['name']))
+           $options[$option['id']]['name'] = addslashes($option['name']);
+    };
+
+    foreach ( $options as $key => $configoption) {
+        $js_ConfigOptions .= "    configOptions[$key] ='".addslashes($configoption['name'])."';\n";
+        $js_ConfigOptionsSub .= "    configOptionsSub[$key] = '".implode(",", array_keys($configoption['options']) )."';\n";
+        $configoptions[] = $key;
+    };
 
   // END Config options     //
   ////////////////////////////
@@ -349,6 +362,8 @@ $js_hvOptions
 $js_networkOptions
     var configOptions = new Array();
 $js_ConfigOptions
+    var configOptionsSub = new Array();
+$js_ConfigOptionsSub
     var productAddons = new Array();
 $js_ProductAddons
 
