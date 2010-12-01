@@ -328,7 +328,7 @@ $(document).ready(function(){
 
         tbody.append( cell_html('<b>'+templates_label+'</b>', create_template_filter_html()) );
         tbody.append( cell_html('', templates_html+create_templates_html()) );
-        tbody.append( cell_html(ostemplates_label, ostemplates_html) );
+        tbody.append( cell_html(ostemplates_label, ostemplates_html + templatessync_html() ) );
         tbody.append( cell_html(build_auto_label, build_auto_html) );
 
     // forth table
@@ -344,11 +344,23 @@ $(document).ready(function(){
         tbody.append( cell_html(ip_label, ip_html) );
 //        tbody.append( cell_html(backup_label, backup_html) );
 
-        templateSelect = $("input[name$='packageconfigoption[2]']");
-        aditionallSelect = $("select[name$='packageconfigoption[19]']");
-        if ( aditionallSelect.val() != '0') {
-            templateSelect.val(configOptionsSub[aditionallSelect.val()]);
-        };
+// assign os templates addons onChange action
+        ostemplatesSelect = $("select[name$='packageconfigoption[19]']");
+
+        ostemplatesSelect.change( function () {
+          if ( confirm("Do you want refresh data in Templates selection box ?") ) {
+              $('#removeAll').click();
+              reload_template_from_addon_res();
+               selected_tpls();
+              ostemplates = ostemplatesSelect.val();
+              check_sync(true)
+          } else {
+              ostemplatesSelect.val( ostemplates );
+          };
+        } );
+
+//      reload_template_from_addon_res();
+        ostemplates = ostemplatesSelect.val();
     };
 
 // assign server select onChange action
@@ -363,18 +375,6 @@ $(document).ready(function(){
     serverSelect.val(serverSelected);
 
     check_vars = error_msg == "";
-// assign os templates addons onChange action
-    ostemplatesSelect = $("select[name$='packageconfigoption[19]']");
-
-    ostemplatesSelect.change( function () {
-      if (confirm("Do you want refresh data in Templates selection box ?")) {
-        $('#removeAll').click();
-        reload_template_from_addon_res();
-        selected_tpls();
-      };
-    } );
-
-    reload_template_from_addon_res();
 });
 
 function cell_html(label, html) {
@@ -405,6 +405,13 @@ function create_templates_html(){
         '   </div>'+
         '   <div class="clear"></div>'+
         '</div>';
+
+    return tplHTML
+}
+
+function templatessync_html() {
+    tplHTML = 
+      '&nbsp;&nbsp;<input type="button" style="width: 100px;" id="sync" name="sync" class="button" value="Synchronize" title="Synchronize">';
 
     return tplHTML
 }
@@ -486,11 +493,11 @@ function in_array(needle, haystack){
 }
 
 function reload_template_from_addon_res() {
-    templateSelect = $("input[name$='packageconfigoption[2]']");
-    aditionallSelect = $("select[name$='packageconfigoption[19]']");
-    if ( aditionallSelect.val() != '0') {
-        templateSelect.val(configOptionsSub[aditionallSelect.val()]);
-    };
+    var confsub = $("select[name$='packageconfigoption[19]']").val();
+
+    $("input[name$='packageconfigoption[2]']").val(
+        confsub == 0 ? '' : configOptionsSub[confsub]
+    );
 }
 
 function get_saved_tpls(){
@@ -506,18 +513,27 @@ function selected_tpls(){
     $("#add").trigger('click');
 }
 
+function check_sync( sync_disabled ){
+    if (! sync_disabled)
+        $("input[name$='sync']").show();
+    else
+        $("input[name$='sync']").hide();
+//    $("input[name$='sync']").attr('disabled', sync_disabled ? "disabled" : "");
+}
+
 function check_autobuild(){
     var selected_count = 0;
     var autobuild = $("input[name$='packageconfigoption[10]']");
+    var confsub = $("select[name$='packageconfigoption[19]']").val();
     $("#selected_tpl option").each(function(){
         if ($(this).css('display') != 'none')
            selected_count++;
     });
 
-    if(selected_count > 1){
-        autobuild.attr('disabled', true);
-    } else {
+    if ( selected_count == 1 || confsub != 0 ) {
         autobuild.attr('disabled', false);
+    } else {
+        autobuild.attr('disabled', true);
     }
 }
 
@@ -540,5 +556,24 @@ $(function() {
         });
         selected_tpls();
         osFilter();
-    }
+    };
+
+// assign os templates events actions
+    $("input[name$='add']").click(function () {
+        check_sync(false)
+    });
+
+    $("input[name$='remove']").click(function () {
+        check_sync(false)
+    });
+
+    $("input[name$='addAll']").click(function () {
+        check_sync(false)
+    });
+
+    $("input[name$='removeAll']").click(function () {
+        check_sync(false)
+    });
+
+    check_sync(true);
 });
