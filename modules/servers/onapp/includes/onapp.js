@@ -3,42 +3,14 @@ $(document).ready(function(){
     form = $("form[name$='packagefrm']");
 
     form.submit(function() {
-        if (! check_vars ) return true;
-
-        input2  = $("select[name$='selected_tpl[]']");
-        input3  = $("input[name$='packageconfigoption[3]']");
-        input5  = $("input[name$='packageconfigoption[5]']");
-        input7  = $("input[name$='packageconfigoption[7]']");
-        input8  = $("input[name$='packageconfigoption[8]']");
-        input9  = $("input[name$='packageconfigoption[9]']");
-        input11 = $("input[name$='packageconfigoption[11]']");
-
-        if ( input2.text() == "" ) {
-            alert('Template must be set');
-        } else if ( parseInt(input3.val()).toString() != input3.val() ) {
-            alert('RAM must be integer betwen 0..99999');
-            input3.focus();
-        } else if ( parseInt(input5.val()).toString() != input5.val() ) {
-            alert('CPU Cores must be integer betwen 0..99999');
-            input5.focus();
-        } else if ( parseInt(input7.val()).toString() != input7.val() ) {
-            alert('CPU Priority must be integer betwen 0..99999');
-            input7.focus();
-        } else if ( parseInt(input9.val()).toString() != input9.val() ) {
-            alert('Swap disk size must be integer betwen 0..99999');
-            input9.focus();
-        } else if ( parseInt(input11.val()).toString() != input11.val() ) {
-            alert('Primary disk size must be integer betwen 0..99999');
-            input11.focus();
-        } else if ( input8.val() != '' && parseInt(input8.val()).toString() != input8.val() ) {
-            alert('Port Speed must be integer betwen 0..99999 or empty');
-            input8.focus();
+        if ( checkvars(check_vars) ) {
+            if ( $("input[name$='sync']").css('display') != 'none') {
+                alert("Error");
+                return false;
+            };
         } else {
-            add_selected_tpls();
-            return true;
-        };
-
-        return false;
+            return false;
+        }
     });
 
 // replace values
@@ -351,7 +323,7 @@ $(document).ready(function(){
           if ( confirm("Do you want refresh data in Templates selection box ?") ) {
               $('#removeAll').click();
               reload_template_from_addon_res();
-               selected_tpls();
+              selected_tpls();
               ostemplates = ostemplatesSelect.val();
               check_sync(true)
           } else {
@@ -359,7 +331,6 @@ $(document).ready(function(){
           };
         } );
 
-//      reload_template_from_addon_res();
         ostemplates = ostemplatesSelect.val();
     };
 
@@ -376,6 +347,47 @@ $(document).ready(function(){
 
     check_vars = error_msg == "";
 });
+
+function checkvars(check_vars) {
+
+    if (! check_vars ) return true;
+
+    input2  = $("input[name$='packageconfigoption[2]']");
+    input3  = $("input[name$='packageconfigoption[3]']");
+    input5  = $("input[name$='packageconfigoption[5]']");
+    input7  = $("input[name$='packageconfigoption[7]']");
+    input8  = $("input[name$='packageconfigoption[8]']");
+    input9  = $("input[name$='packageconfigoption[9]']");
+    input11 = $("input[name$='packageconfigoption[11]']");
+
+    add_selected_tpls();
+
+    if ( input2.val() == "" ) {
+        alert('Template must be set');
+    } else if ( parseInt(input3.val()).toString() != input3.val() ) {
+        alert('RAM must be integer betwen 0..99999');
+        input3.focus();
+    } else if ( parseInt(input5.val()).toString() != input5.val() ) {
+        alert('CPU Cores must be integer betwen 0..99999');
+        input5.focus();
+    } else if ( parseInt(input7.val()).toString() != input7.val() ) {
+        alert('CPU Priority must be integer betwen 0..99999');
+        input7.focus();
+    } else if ( parseInt(input9.val()).toString() != input9.val() ) {
+        alert('Swap disk size must be integer betwen 0..99999');
+        input9.focus();
+    } else if ( parseInt(input11.val()).toString() != input11.val() ) {
+        alert('Primary disk size must be integer betwen 0..99999');
+        input11.focus();
+    } else if ( input8.val() != '' && parseInt(input8.val()).toString() != input8.val() ) {
+        alert('Port Speed must be integer betwen 0..99999 or empty');
+        input8.focus();
+    } else {
+        return true;
+    };
+
+    return false;
+}
 
 function cell_html(label, html) {
     return '<tr><td class="fieldlabel" width="150">'+label+'</td><td class="fieldarea">'+html+'</td></tr>';
@@ -514,11 +526,14 @@ function selected_tpls(){
 }
 
 function check_sync( sync_disabled ){
-    if (! sync_disabled)
+    check_vars = true;
+
+    var confsub = $("select[name$='packageconfigoption[19]']").val();
+
+    if ( confsub != 0 && ! sync_disabled )
         $("input[name$='sync']").show();
     else
         $("input[name$='sync']").hide();
-//    $("input[name$='sync']").attr('disabled', sync_disabled ? "disabled" : "");
 }
 
 function check_autobuild(){
