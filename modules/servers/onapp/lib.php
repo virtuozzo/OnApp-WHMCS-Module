@@ -376,9 +376,17 @@ function get_vm( $service_id ) {
             $user["password"]
         );
 
-        $vm->_id = $service["vmid"];
+        $vms = $vm->getList();
+        $vm_ids = array();
 
-        $vm->load();
+        foreach( $vms as $vm_fromlist)
+            array_push($vm_ids, $vm_fromlist->_id);
+
+        if (in_array($service["vmid"], $vm_ids)) {
+            $vm->_id = $service["vmid"];
+
+            $vm->load();
+        } 
     } else {
         $vm->error = "Cant load Virtual machine";
     };
