@@ -3,14 +3,7 @@ $(document).ready(function(){
     form = $("form[name$='packagefrm']");
 
     form.submit(function() {
-        if ( checkvars(check_vars) ) {
-            if ( $("input[name$='sync']").css('display') != 'none') {
-                alert("Error");
-                return false;
-            };
-        } else {
-            return false;
-        }
+        return checkvars(check_vars);
     });
 
 // replace values
@@ -300,7 +293,7 @@ $(document).ready(function(){
 
         tbody.append( cell_html('<b>'+templates_label+'</b>', create_template_filter_html()) );
         tbody.append( cell_html('', templates_html+create_templates_html()) );
-        tbody.append( cell_html(ostemplates_label, ostemplates_html + templatessync_html() ) );
+        tbody.append( cell_html(ostemplates_label, ostemplates_html ) );
         tbody.append( cell_html(build_auto_label, build_auto_html) );
 
     // forth table
@@ -324,8 +317,8 @@ $(document).ready(function(){
               $('#removeAll').click();
               reload_template_from_addon_res();
               selected_tpls();
+              osFilter(); 
               ostemplates = ostemplatesSelect.val();
-              check_sync(true)
           } else {
               ostemplatesSelect.val( ostemplates );
           };
@@ -424,13 +417,6 @@ function create_templates_html(){
     return tplHTML
 }
 
-function templatessync_html() {
-    tplHTML = 
-      '&nbsp;&nbsp;<input type="button" style="width: 100px;" id="sync" name="sync" class="button" value="Synchronize" title="Synchronize">';
-
-    return tplHTML
-}
-
 function create_template_filter_html(){
     tplHTML =
         '<div>'+
@@ -521,22 +507,22 @@ function get_saved_tpls(){
 
 function selected_tpls(){
     var saved_tpls = get_saved_tpls();
+
+    $("#available_tpl").val(null);
     $("#available_tpl option").each(function(){
         if(in_array($(this).val(), saved_tpls))
             $(this).attr('selected', 'selected');
     });
+
     $("#add").trigger('click');
-}
 
-function check_sync( sync_disabled ){
-    check_vars = true;
+    $("#filter_tpl").val('all');
+    $("#filter_tpl").attr('disabled', $("select[name$='packageconfigoption[19]']").val() != '0');
 
-    var confsub = $("select[name$='packageconfigoption[19]']").val();
-
-    if ( confsub != 0 && ! sync_disabled )
-        $("input[name$='sync']").show();
-    else
-        $("input[name$='sync']").hide();
+    $("input[name$='add']").attr('disabled', $("select[name$='packageconfigoption[19]']").val() != '0');
+    $("input[name$='remove']").attr('disabled', $("select[name$='packageconfigoption[19]']").val() != '0');
+    $("input[name$='addAll']").attr('disabled', $("select[name$='packageconfigoption[19]']").val() != '0');
+    $("input[name$='removeAll']").attr('disabled', $("select[name$='packageconfigoption[19]']").val() != '0');
 }
 
 function check_autobuild(){
@@ -575,23 +561,4 @@ $(function() {
         selected_tpls();
         osFilter();
     };
-
-// assign os templates events actions
-    $("input[name$='add']").click(function () {
-        check_sync(false)
-    });
-
-    $("input[name$='remove']").click(function () {
-        check_sync(false)
-    });
-
-    $("input[name$='addAll']").click(function () {
-        check_sync(false)
-    });
-
-    $("input[name$='removeAll']").click(function () {
-        check_sync(false)
-    });
-
-    check_sync(true);
 });
