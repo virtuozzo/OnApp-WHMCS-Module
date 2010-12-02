@@ -540,6 +540,27 @@ function onapp_TerminateAccount( $params ) {
     return 'success';
 }
 
+function onapp_SuspendAccount($params) {
+    global $_LANG;
+
+    $getvm = get_vm($params['serviceid']);
+
+    if ( ! is_null($getvm->_id) && $getvm->_obj->_booted == "true" ) {
+        $getvm->shutdown();
+
+        if ( ! is_null($vm->error) )
+            return is_array($vm->error) ?
+                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->error) :
+                $_LANG["onappcantdeletevm"] . $vm->error;
+        elseif ( ! is_null($vm->_obj->error) )
+            return is_array($vm->_obj->error) ?
+                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
+                $_LANG["onappcantdeletevm"] . $vm->_obj->error;
+    };
+
+    return 'success';
+}
+
 function onapp_ClientArea($params) {
     global $_LANG;
 
