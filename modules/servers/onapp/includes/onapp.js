@@ -408,8 +408,11 @@ function create_templates_html(){
         '   </div>'+
         '   <div class="pick-buttons" style="float:left; width: 40px; text-align:center;padding:80px 20px">'+
         '       <input type="button" title="Choose available and add" value="&gt;" class="button addButton" name="add" id="add" style="width:30px;" />'+
+        '           <br/><br/>'+
         '       <input type="button" title="Choose selected and remove" value="&lt;" class="button removeButton" name="remove" id="remove" style="width:30px;" />'+
+        '           <br/><br/>'+
         '       <input type="button" title="Add all" value="&gt;&gt;" class="button addAllButton" name="addAll" id="addAll" style="width:30px;" />'+
+        '           <br/><br/>'+
         '       <input type="button" title="Remove all" value="&lt;&lt;" class="button removeAllButton" name="removeAll" id="removeAll" style="width:30px;" />'+
         '   </div>'+
         '   <div class="selected_tpl" style="float:left;width:35%;max-width:280px;">'+
