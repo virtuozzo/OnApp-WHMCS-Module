@@ -19,6 +19,9 @@ require_once dirname(__FILE__).'/modules/servers/onapp/lib.php';
 
 define( "CLIENTAREA", true );
 
+if (isset($_POST['language']))
+  $_SESSION['Language'] = $_POST['language'];
+
 load_language();
 
 /**
