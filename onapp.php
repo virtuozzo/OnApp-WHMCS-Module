@@ -89,8 +89,13 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
             productbackups();
             break;
         case 'upgrade':
-            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappupgradedowngrade"] .'" href="onapp.php?page=upgrade&id='.$id.'">'.$_LANG["onappupgradedowngrade"].'</a>';
-            productupgrade();
+            if( $_ONAPPVARS['service']['configoptionsupgrade'] == "on" ) { 
+                $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappupgradedowngrade"] .'" href="onapp.php?page=upgrade&id='.$id.'">'.$_LANG["onappupgradedowngrade"].'</a>';
+                productupgrade();
+            } else {
+                $_ONAPPVARS['error'] = sprintf( $_LANG["onapppagenotfound"], $_ONAPPVARS['page'] );
+                productdetails();
+            };
             break;
         default:
             $_ONAPPVARS['error'] = sprintf( $_LANG["onapppagenotfound"], $_ONAPPVARS['page'] );
@@ -761,6 +766,11 @@ function productupgrade() {
 
     $service = $_ONAPPVARS['service'];
 
+    $templates = get_templates(
+        $service['serverid'], 
+        $service["configoption2"]
+    );
+
     if ( ! is_null($_ONAPPVARS['vm']->error) ) {
         $_ONAPPVARS['error'] = is_array($_ONAPPVARS['vm']->error) ?
             implode(', ', $_ONAPPVARS['vm']->error) :
@@ -779,6 +789,7 @@ function productupgrade() {
         show_template(
             "onapp/clientareaupgrade",
             array(
+                'templates'      => $templates,
                 'virtualmachine' => $_ONAPPVARS['vm']->_obj,
                 'service'        => $service,
                 'configoptions'  => $service['configoptions'],
