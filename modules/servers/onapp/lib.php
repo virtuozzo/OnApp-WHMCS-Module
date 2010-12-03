@@ -41,11 +41,13 @@ function load_language() {
     if ( ! in_array ($language, $arrayoflanguagefiles) )
         $language =  "English";
 
-    ob_start ();
-    include dirname(__FILE__) . "/lang/$language.txt";
-    $templang = ob_get_contents ();
-    ob_end_clean ();
-    eval ($templang);
+    if ( file_exists( dirname(__FILE__) . "/lang/$language.txt" ) ) {
+        ob_start ();
+        include dirname(__FILE__) . "/lang/$language.txt";
+        $templang = ob_get_contents ();
+        ob_end_clean ();
+        eval ($templang);
+    }
 }
 
 /**
