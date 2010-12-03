@@ -329,7 +329,8 @@ function _action_vm_create() {
         );
     };
 */
-    if( isset($_ONAPPVARS['vm']) )
+
+    if( isset($_ONAPPVARS['vm']->_id) )
         $_ONAPPVARS['error'] =  $_LANG["onappvmexist"];
     elseif ( ! isset($_ONAPPVARS['hostname'] ) || $_ONAPPVARS['hostname'] == "" )
         $_ONAPPVARS['error'] =  $_LANG["onapphostnamenotfound"];
@@ -439,7 +440,7 @@ function showproduct() {
             $onapp_config["adress"]
         );
 
-        clientareaproducts();
+        showcreateproduct();
     } else
         show_template(
             "onapp/clientareaoverview",
