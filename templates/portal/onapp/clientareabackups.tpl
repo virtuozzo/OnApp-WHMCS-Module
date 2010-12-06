@@ -1,4 +1,19 @@
 <link href="modules/servers/onapp/includes/power_buttons.css" rel="stylesheet" type="text/css">
+{literal}
+<script>
+function restoreback(id) {
+      if( confirm("{/literal}{$LANG.onappconfirmrestoreback}{literal}") ) {
+        window.location="onapp.php?page=backups&id={/literal}{$id}{literal}&action=restore&backupid="+id;
+    };
+}
+
+function deleteback(id) {
+    if ( confirm("{/literal}{$LANG.onappconfirmdeleteback}{literal}") ) {
+        window.location="onapp.php?page=backups&id={/literal}{$id}{literal}&action=delete&backupid="+id;
+    };
+}
+</script>
+{/literal}
 <div class="contentbox">
     <a title="{$LANG.onappoverview}" href="onapp.php?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
     | <a title="{$LANG.onappcpuusage}" href="onapp.php?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
@@ -51,10 +66,11 @@
 {/if}
     </td>
     <td>
-{if $backup->_built != "true"}
+{if $backup->_built neq "true"}
         &nbsp;
 {else}
-       <a href="onapp.php?page=backups&id={$id}&action=restore&backupid={$backup->_id}">{$LANG.onapprestore}</a>
+       <a href="#" onclick="restoreback({$backup->_id});; return false;">{$LANG.onapprestore}</a> |
+       <a href="#" onclick="deleteback({$backup->_id});; return false;">{$LANG.onappdelete}</a>
 {/if}
     </td>
 </tr>

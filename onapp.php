@@ -644,6 +644,8 @@ function productbackups() {
             case 'restore':
                 $return = _action_backup_restore($_ONAPPVARS['id'], $_ONAPPVARS['backupid']);
                 break;
+            case 'delete':
+                $return = _action_backup_delete($_ONAPPVARS['id'], $_ONAPPVARS['backupid']);
             default:
                 $_ONAPPVARS['error'] = sprintf($_LANG["onappactionnotfound"], $action);
                 break;
@@ -653,7 +655,7 @@ function productbackups() {
         if ( isset($return['error']) )
             $_ONAPPVARS['error'] = $return['error'];
         else
-            redirect("onapp.php?page=backups&id=".$_ONAPPVARS['id']);
+         redirect("onapp.php?page=backups&id=".$_ONAPPVARS['id']);
 
     clientareabackups();
 }
@@ -758,6 +760,43 @@ function _action_backup_restore( $id, $backupid ) {
                 "Can't create Backup<br/>\n " . implode('.<br>', $backup->_obj->error) :
                 "Can't create Backup '" . $backup->_obj->error
         );
+    else
+        return true;
+}
+
+
+/**
+ * Action delete backup
+ */
+function _action_backup_delete( $id, $backupid ) {
+    if ( is_null($backupid) )
+        return array('error' => 'Backup ID not set');
+
+    $vm           = get_vm($id);
+    $service      = get_service($id);
+    $onapp_config = get_onapp_config($service['serverid']);
+
+    $backup = new ONAPP_VirtualMachine_Backup();
+
+    $backup->_id = $backupid;
+
+    $user = get_onapp_client( $id );
+
+    $backup->auth(
+        $onapp_config["adress"],
+        $user["email"],
+        $user["password"]
+    );
+
+    $backup->delete();
+
+    if ( ! is_null($backup->error) )
+        return array( 'error' => is_array($backup->error) ?
+                "Can't create Backup<br/>\n " . implode('.<br>', $backup->error) :
+                "Can't create Backup '" . $backup->error
+            );
+    else
+        return true;
 }
 
 function productupgrade() {
