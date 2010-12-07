@@ -84,7 +84,7 @@
 <h2 class="heading2" style="color: red;">{$LANG.onappnotresolvedvms}</h2>
 <table class="data" width="100%" border="0" cellpadding="10" cellspacing="0">
   <tr>
-    <th width="18">{$LANG.onappid} #</th>
+    <th>{$LANG.onappid} #</th>
     <th>{$LANG.onappservername}</th>
     <th>{$LANG.onapphostname}</th>
     <th>{$LANG.onapppower}</th>
