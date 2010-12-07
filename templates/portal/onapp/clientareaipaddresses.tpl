@@ -37,12 +37,12 @@
 {section name = mySection start = 0 loop = $not_resloved_base step = 1}
   <tr>
     <td>&nbsp;</td>
-    <td colspan="3"><b><font color='red'>Not Assigned</font></b></td>
+    <td colspan="3"><b><font color='red'>{$LANG.onappnotassigned}</font></b></td>
     <td>
 {if count($not_resolved_ips) > 0}
       &nbsp;
 {else}
-      <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=assignbase">Assign</a>
+      <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=assignbase">{$LANG.onappassign}</a>
 {/if}
     </td>
   </tr>
@@ -72,12 +72,12 @@
 {section name = mySection start = 0 loop = $not_resloved_additional step = 1}
   <tr>
     <td>&nbsp;</td>
-    <td colspan="3"><b><font color='red'>Not Assigned</font></b></td>
+    <td colspan="3"><b><font color='red'>{$LANG.onappnotassigned}</font></b></td>
     <td>
 {if count($not_resolved_ips) > 0 }
       &nbsp;
 {else}
-      <a href="onapp.php?page=ipaddresses&id={$id}&action=assignadditional">Assign</a>
+      <a href="onapp.php?page=ipaddresses&id={$id}&action=assignadditional">{$LANG.onappassign}</a>
 {/if}
     </td>
   </tr>
@@ -104,14 +104,14 @@
     <td>{$notresolved_ip->_gateway}</td>
     <td>
       {if $not_resloved_base > 0 && $not_resloved_additional > 0}
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setbase">Set as base</a> |
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setadditional">Set as additional</a>
+        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setbase">{$LANG.onappsetasbase}</a> |
+        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setadditional">{$LANG.onappsetasadditional}</a>
       {elseif $not_resloved_base > 0}
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setbase">Set as base</a>
+        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setbase">{$LANG.onappsetasbase}</a>
       {elseif $not_resloved_additional > 0}
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setadditional">Set as additional</a>
+        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setadditional">{$LANG.onappsetasadditional}</a>
       {else}
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=delete">Delete</a>
+        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=delete">{$LANG.onappdelete}</a>
       {/if}
     </td>
   </tr>

@@ -4,7 +4,7 @@
     {$error}
 </div>
 {/if}
-<p>This page lists the Virtual Machines in your OnApp system. Click a Label to see details for that Virtual Machine. Use the On/Off buttons to change their Power status. The icons on the right let you manage their Backups and see resource utilization charts. Add new Virtual Machines by clicking the button at the end of the list.</p>
+<p>{$LANG.onappproductstitle}</p>
 <h2 class="heading2">{$LANG.clientareavirtualmachines}</h2>
 <table class="data" width="100%" border="0" cellpadding="10" cellspacing="0">
   <tr>

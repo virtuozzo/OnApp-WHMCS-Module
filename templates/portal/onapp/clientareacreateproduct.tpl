@@ -119,7 +119,7 @@
   </tbody>
 </table>
 </form>
-<h2 class="heading2">Actions</h2>
+<h2 class="heading2">{$LANG.onappactions}</h2>
 <table cellspacing="10" cellpadding="10" border="0" width="100%">
   <tbody>
     <tr>
