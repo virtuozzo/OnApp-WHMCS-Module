@@ -2,6 +2,8 @@
 
 define( 'LIB_WRAPPER_DIR', dirname(__FILE__).'/wrapper' );
 
+require_once LIB_WRAPPER_DIR.'/ONAPP.php';
+
 require_once LIB_WRAPPER_DIR.'/Disk.php';
 require_once LIB_WRAPPER_DIR.'/User.php';
 require_once LIB_WRAPPER_DIR.'/Template.php';

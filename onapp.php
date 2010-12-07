@@ -10,6 +10,7 @@ require("includes/clientareafunctions.php");
 
 define( 'PAGE_WRAPPER_DIR', dirname(__FILE__).'/modules/servers/onapp/wrapper' );
 
+require_once PAGE_WRAPPER_DIR.'/ONAPP.php';
 require_once PAGE_WRAPPER_DIR.'/Disk.php';
 require_once PAGE_WRAPPER_DIR.'/VirtualMachine.php';
 require_once PAGE_WRAPPER_DIR.'/VirtualMachine/Backup.php';
