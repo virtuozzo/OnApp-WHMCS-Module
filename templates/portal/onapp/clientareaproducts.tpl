@@ -9,10 +9,10 @@
 <table class="data" width="100%" border="0" cellpadding="10" cellspacing="0">
   <tr>
     <th width="18">&nbsp;</th>
-    <th>Product/Service</th>
-    <th>IP Addresses</th>
-    <th width="70">Power</th>
-    <th>RAM</th>
+    <th>{$LANG.onappproductandservice}</th>
+    <th>{$LANG.onappipaddresses}</th>
+    <th width="70">{$LANG.onapppower}</th>
+    <th>{$LANG.onappram}</th>
     <th width="58">&nbsp;</th>
   </tr>
 {foreach key=num item=service from=$services}
@@ -63,6 +63,8 @@
     <td colspan="3" color="red">
     {$service.error}
     </td>
+{else}
+    <td colspan="3">&nbsp;</td>
 {/if}
     <td align="right">
       <a title="View" href="{$smarty.server.PHP_SELF}?page=productdetails&id={$num}">
@@ -79,13 +81,13 @@
 <br/>
 
 {if count($not_resolved_vms) > 0 }
-<h2 class="heading2" style="color: red;"> Not Resolved Virtual Machines</h2>
+<h2 class="heading2" style="color: red;">{$LANG.onappnotresolvedvms}</h2>
 <table class="data" width="100%" border="0" cellpadding="10" cellspacing="0">
   <tr>
-    <th width="18">ID#</th>
-    <th>Server Name</th>
-    <th>Host Name</th>
-    <th>Power</th>
+    <th width="18">{$LANG.onappid} #</th>
+    <th>{$LANG.onappservername}</th>
+    <th>{$LANG.onapphostname}</th>
+    <th>{$LANG.onapppower}</th>
   </tr>
 {foreach item=vms from=$not_resolved_vms} {foreach item=vm from=$vms}
   <tr>

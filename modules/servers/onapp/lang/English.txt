@@ -129,3 +129,9 @@ $_LANG["onappassign"] = "Assign";
 $_LANG["onappsetasbase"] = "Set as base";
 $_LANG["onappsetasadditional"] = "Set as additional";
 $_LANG["onappproductstitle"] = "This page lists the Virtual Machines in your OnApp system. Click a Label to see details for that Virtual Machine. Use the On/Off buttons to change their Power status. The icons on the right let you manage their Backups and see resource utilization charts. Add new Virtual Machines by clicking the button at the end of the list.";
+$_LANG["onappnotresolvedvms"] = "Not Resolved Virtual Machines";
+$_LANG["onappproductandservice"] = "Product/Service";
+$_LANG["onapppower"] = "Power";
+$_LANG["onappservername"] = "Server Name";
+$_LANG["onapphostname"] = "Host Name";
+

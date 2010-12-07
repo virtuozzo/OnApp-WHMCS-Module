@@ -15,7 +15,6 @@
     <th>{$LANG.onappisize}</th>
     <th>{$LANG.onapptype}</th>
     <th>{$LANG.onappbuilt}</th>
-<!--    <th>Backups</th> -->
     <th>{$LANG.onappautobackup}</th>
     <th>&nbsp;</th>
 </tr>
