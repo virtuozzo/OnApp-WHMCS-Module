@@ -347,6 +347,26 @@ $js_serverOptions
     else
         $js_error .= "''";
 
+    $js_localization_array = array(
+        'res',
+        'netconfig',
+        'addres',
+        'youwantrefreshtemplates',
+	'settemplate',
+        'wrongram',
+        'wrongcpucores',
+        'wrongcpuprior',
+        'wrongswap',
+        'wrongdisksize',
+        'wrongspead'
+    );
+
+    $js_localization_string = '';
+
+    foreach ($js_localization_array as $string)
+        if (isset($_LANG['onapp'.$string]))
+            $js_localization_string .= "    LANG['onapp$string'] = '".$_LANG['onapp'.$string]."';\n";
+
     $javascript = "
 
 <script type=\"text/javascript\">
@@ -366,8 +386,12 @@ $js_ConfigOptions
 $js_ConfigOptionsSub
     var productAddons = new Array();
 $js_ProductAddons
-
 $js_error;
+
+// Localization
+
+    var LANG = new Array();
+$js_localization_string
 
 </script>
 <script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/jquery.multiselects.js\"></script>

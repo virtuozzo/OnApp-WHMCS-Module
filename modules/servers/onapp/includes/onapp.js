@@ -263,7 +263,7 @@ $(document).ready(function(){
         var second_table = $('table').eq(6); 
         var tbody = second_table.find('tbody');
 
-        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Resources</b></td></tr>');
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappres']+'</b></td></tr>');
 
     // sliders
         var ram_slider = create_slider_html(ram_html, 8192, 256, 4, 3);
@@ -281,7 +281,7 @@ $(document).ready(function(){
         tbody.append( cell_html(swap_label, swap_slider) );
 
     // second table
-        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Network Configuration </b></td></tr>');
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappnetconfig']+'</b></td></tr>');
         tbody.append( cell_html(networks_label, networks_html) );
         tbody.append( cell_html(port_speed_label, port_speed_slider) );
         tbody.append( cell_html(ipbase_label, ip_address_slider) );
@@ -301,7 +301,7 @@ $(document).ready(function(){
         var forth_table = $('table').eq(8);
         var tbody = forth_table.find('tbody');
 
-        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>Additional Resources</b></td></tr>');
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG["onappaddres"]+'</b></td></tr>');
         tbody.append( cell_html(addram_label, addram_html) );
         tbody.append( cell_html(addcores_label, addcores_html) );
         tbody.append( cell_html(addpriority_label, addpriority_html) );
@@ -313,7 +313,7 @@ $(document).ready(function(){
         ostemplatesSelect = $("select[name$='packageconfigoption[19]']");
 
         ostemplatesSelect.change( function () {
-          if ( confirm("Do you want refresh data in Templates selection box ?") ) {
+          if ( confirm(LANG['onappyouwantrefreshtemplates']) ) {
               $('#removeAll').click();
               reload_template_from_addon_res();
               selected_tpls();
@@ -356,24 +356,24 @@ function checkvars(check_vars) {
     add_selected_tpls();
 
     if ( input2.val() == "" ) {
-        alert('Template must be set');
+        alert(LANG['onappsettemplate']);
     } else if ( parseInt(input3.val()).toString() != input3.val() ) {
-        alert('RAM must be integer betwen 0..99999');
+        alert(LANG['onappwrongram']);
         input3.focus();
     } else if ( parseInt(input5.val()).toString() != input5.val() ) {
-        alert('CPU Cores must be integer betwen 0..99999');
+        alert(LANG['onappwrongcpucores']);
         input5.focus();
     } else if ( parseInt(input7.val()).toString() != input7.val() ) {
-        alert('CPU Priority must be integer betwen 0..99999');
+        alert(LANG['onappwrongcpuprior']);
         input7.focus();
     } else if ( parseInt(input9.val()).toString() != input9.val() ) {
-        alert('Swap disk size must be integer betwen 0..99999');
+        alert(LANG['onappwrongswap']);
         input9.focus();
     } else if ( parseInt(input11.val()).toString() != input11.val() ) {
-        alert('Primary disk size must be integer betwen 0..99999');
+        alert(LANG['onappwrongdisksize']);
         input11.focus();
     } else if ( input8.val() != '' && parseInt(input8.val()).toString() != input8.val() ) {
-        alert('Port Speed must be integer betwen 0..99999 or empty');
+        alert(LANG['onappwrongspead']);
         input8.focus();
     } else {
         return true;

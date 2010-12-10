@@ -134,4 +134,16 @@ $_LANG["onappproductandservice"] = "Product/Service";
 $_LANG["onapppower"] = "Power";
 $_LANG["onappservername"] = "Server Name";
 $_LANG["onapphostname"] = "Host Name";
+$_LANG["onappres"] = "Resources";
+$_LANG["onappnetconfig"] = "Network Configuration";
+$_LANG["onappaddres"] = "Additional Resources";
+$_LANG["onappyouwantrefreshtemplates"] = "Do you want refresh data in Templates selection box ?";
+
+$_LANG["onappsettemplate"] = 'Template must be set';
+$_LANG["onappwrongram"] = 'RAM must be integer betwen 0..99999';
+$_LANG["onappwrongcpucores"] = 'CPU Cores must be integer betwen 0..99999';
+$_LANG["onappwrongcpuprior"] = 'CPU Priority must be integer betwen 0..99999';
+$_LANG["onappwrongswap"] = 'Swap disk size must be integer betwen 0..99999';
+$_LANG["onappwrongdisksize"] = 'Primary disk size must be integer betwen 0..99999';
+$_LANG["onappwrongspead"] = 'Port Speed must be integer betwen 0..99999 or empty';
 
