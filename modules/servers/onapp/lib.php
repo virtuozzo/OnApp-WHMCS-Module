@@ -102,7 +102,7 @@ function get_onapp_config($id){
  *
  * @return array
  */
-function get_service($service_id) {
+function get_service($service_id, $domainstatus = 'Active') {
 
     $select_service = "SELECT
         tblhosting.id as id,
@@ -145,7 +145,7 @@ function get_service($service_id) {
     WHERE
         servertype = 'onapp'
         AND tblhosting.id = '$service_id'
-        AND tblhosting.domainstatus = 'Active'";
+        AND tblhosting.domainstatus like '$domainstatus'";
 
     $service_rows = full_query($select_service);
 
