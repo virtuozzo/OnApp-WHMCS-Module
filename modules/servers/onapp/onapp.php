@@ -518,19 +518,17 @@ function onapp_CreateAccount($params) {
 
     $getvm = get_vm($params['serviceid']);
 
-    $service = get_service($params['serviceid'], '%');
-
     if( isset($getvm->_id) )
         return $_LANG["onappvmexist"];
     elseif ( $params['domain'] == "" )
         return $_LANG["onapphostnamenotfound"];
-    elseif( ($params['configoption2'] == "" || count(explode(',', $params['configoption2'])) != 1) && ! isset($service['os'])  )
+    elseif( $params['configoption2'] == "" || count(explode(',', $params['configoption2'])) != 1 )
         return $_LANG["onapptemplatenotone"];
 
     $vm = create_vm(
         $params['accountid'],
         $params['domain'],
-        isset($service['os']) ? $service['os'] : $params['configoption2']
+        $params['configoption2']
     );
 
     if ( ! is_null($vm->error) )
