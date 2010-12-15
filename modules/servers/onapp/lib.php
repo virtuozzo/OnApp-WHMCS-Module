@@ -779,7 +779,7 @@ function create_vm( $service_id, $hostname, $template_id) {
     $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];
     $primary_disk_size = $service['configoption11'] + $service['additionaldisksize'];
 
-    $vm->_template_id                    = $template_id;
+    $vm->_template_id                    = isset($service['os']) ? $service['os'] : $template_id;
     $vm->_hypervisor_id                  = $service['configoption4'];
     $vm->_primary_network_id             = $service['configoption6'];
     $vm->_required_virtual_machine_build = '0';

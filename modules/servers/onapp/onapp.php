@@ -516,20 +516,31 @@ $js_localization_string
 function onapp_CreateAccount($params) {
     global $_LANG;
 
+    $status = serviceStatus($params['serviceid']);
+    serviceStatus($params['serviceid'], 'Active');
+
+    $service = get_service($params['serviceid']);
+
     $getvm = get_vm($params['serviceid']);
+
+    serviceStatus($params['serviceid'], $status);
 
     if( isset($getvm->_id) )
         return $_LANG["onappvmexist"];
     elseif ( $params['domain'] == "" )
         return $_LANG["onapphostnamenotfound"];
-    elseif( $params['configoption2'] == "" || count(explode(',', $params['configoption2'])) != 1 )
+    elseif( ($params['configoption2'] == "" || count(explode(',', $params['configoption2'])) != 1 ) && ! isset($service['os']) )
         return $_LANG["onapptemplatenotone"];
+
+    serviceStatus($params['serviceid'], 'Active');
 
     $vm = create_vm(
         $params['accountid'],
         $params['domain'],
-        $params['configoption2']
+        isset($service['os']) ? $service['os'] ? $params['configoption2'],
     );
+
+    serviceStatus($params['serviceid'], $status);
 
     if ( ! is_null($vm->error) )
         return is_array($vm->error) ?
@@ -541,6 +552,24 @@ function onapp_CreateAccount($params) {
             $_LANG["onappcantcreatevm"] . $vm->_obj->error;
 
     return 'success';
+}
+                
+#hug to change service status when admin Create service
+function serviceStatus($id, $status = NULL) {
+    $select = "select * FROM tblhosting WHERE id = '$id'";
+    $rows = full_query($select);
+    if ( ! $rows )
+        return false;
+
+    $service = mysql_fetch_assoc( $rows );
+
+    $old_status = $service["domainstatus"];
+
+    if ( is_null($status) )
+        return $old_status;
+    
+    $update = "UPDATE tblhosting SET domainstatus = '$status' WHERE id = '$id'";
+    return full_query($update); 
 }
 
 function onapp_TerminateAccount( $params ) {

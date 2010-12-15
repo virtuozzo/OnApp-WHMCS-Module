@@ -377,6 +377,7 @@ function _action_update_res() {
         $_ONAPPVARS['vm']->_cpus              = $cpus;
         $_ONAPPVARS['vm']->_cpu_shares        = $cpu_shares;
         $_ONAPPVARS['vm']->_primary_disk_size = $primary_disk_size;
+        $_ONAPPVARS['vm']->_template_id       = isset($service['os']) ? $service['os'] ? $service['configoption2'];
 
         $_ONAPPVARS['vm']->save();
 
@@ -656,7 +657,7 @@ function productbackups() {
         if ( isset($return['error']) )
             $_ONAPPVARS['error'] = $return['error'];
         else
-         redirect("onapp.php?page=backups&id=".$_ONAPPVARS['id']);
+            redirect("onapp.php?page=backups&id=".$_ONAPPVARS['id']);
 
     clientareabackups();
 }
