@@ -14,14 +14,16 @@
     {$error}
 </div>
 {/if}
+
 <p>{$LANG.onappupgradedowngradetitle}</p>
-<h2 class="heading2">{$LANG.onappresources}</h2>
 <form action="upgrade.php" method="post">
 <input type="hidden" value="2" name="step">
 <input type="hidden" value="configoptions" name="type">
 <input type="hidden" value="{$id}" name="id">
+{assign var='optionid' value=$service.configoption19}
+{ if (count($configoptions) > 1 && $optionid neq 0) || (count($configoptions) > 0 && $optionid eq 0) }
+<h2 class="heading2">{$LANG.onappresources}</h2>
 <table cellspacing="0" cellpadding="10" border="0" align="center" width="100%">
-<table cellspacing="0" cellpadding="10" border="0" width="100%">
   <tr>
     <th>{$LANG.supportticketsclientname}</th>
     <th>{$LANG.onappincludedinpack}</th>
@@ -67,8 +69,8 @@
   </tbody>
 </table>
 <br/>
+{/if}
 
-{assign var='optionid' value=$service.configoption19}
 {if $optionid neq 0 && $configoptions.$optionid.optiontype eq 1}
 <h2 class="heading2">{$LANG.onapptemplate}</h2>
 <table cellspacing="0" cellpadding="10" border="0" width="100%">
