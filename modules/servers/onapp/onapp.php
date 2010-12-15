@@ -537,7 +537,7 @@ function onapp_CreateAccount($params) {
     $vm = create_vm(
         $params['accountid'],
         $params['domain'],
-        isset($service['os']) ? $service['os'] ? $params['configoption2'],
+        isset($service['os']) ? $service['os'] : $params['configoption2']
     );
 
     serviceStatus($params['serviceid'], $status);

@@ -274,6 +274,9 @@ function _actions_vm($action) {
             case 'build':
             case 'rebuild':
                 _action_update_res();
+                $_ONAPPVARS['vm']->_template_id = isset($_ONAPPVARS['service']['os'])
+                    ? $_ONAPPVARS['service']['os'] 
+                    : $_ONAPPVARS['service']['configoption2'];
                 $_ONAPPVARS['vm']->build();
                 break;
             case 'start':
@@ -377,7 +380,7 @@ function _action_update_res() {
         $_ONAPPVARS['vm']->_cpus              = $cpus;
         $_ONAPPVARS['vm']->_cpu_shares        = $cpu_shares;
         $_ONAPPVARS['vm']->_primary_disk_size = $primary_disk_size;
-        $_ONAPPVARS['vm']->_template_id       = isset($service['os']) ? $service['os'] ? $service['configoption2'];
+        $_ONAPPVARS['vm']->_template_id       = isset($service['os']) ? $service['os'] : $service['configoption2'];
 
         $_ONAPPVARS['vm']->save();
 
