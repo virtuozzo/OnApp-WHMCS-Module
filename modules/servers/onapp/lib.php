@@ -15,9 +15,6 @@ require_once LIB_WRAPPER_DIR.'/VirtualMachine/CpuUsage.php';
 require_once LIB_WRAPPER_DIR.'/VirtualMachine/IpAddressJoin.php';
 require_once LIB_WRAPPER_DIR.'/VirtualMachine/NetworkInterface.php';
 
-$ONAPP_DEFAULT_ROLE  = 2;
-$ONAPP_DEFAULT_GROUP = 1;
-
 /**
  * Load $_LANG from language file
  */
@@ -266,7 +263,8 @@ function get_service($service_id) {
  * TODO check this
  */
 function get_onapp_client( $service_id ) {
-    global $ONAPP_DEFAULT_GROUP, $ONAPP_DEFAULT_ROLE;
+    $ONAPP_DEFAULT_ROLE  = 2;
+    $ONAPP_DEFAULT_GROUP = 1;
 
     $service = get_service($service_id);
 
@@ -513,6 +511,8 @@ function _action_ip_setbase($service_id, $ipid) {
     if( ! full_query($sql_insert_ip) )
         return array('error' => "Can't resolve IP address");
 
+    update_service_ips($service_id);
+
     return array('success' => true);
 }
 
@@ -542,6 +542,8 @@ function _action_ip_setadditional($service_id, $ipid) {
 
     if( ! full_query($sql_insert_ip) )
         return array('error' => "Can't resolve IP address");
+
+    update_service_ips($service_id);
 
     return array('success' => true);
 }
@@ -622,9 +624,13 @@ function _action_ip_add($service_id, $isbase) {
         return array('error' => "Can't save IP address");
 
     if ( $isbase == 1 )
-        return _action_ip_setbase($service_id, $ipaddressjoin->_ip_address_id);
+        $return = _action_ip_setbase($service_id, $ipaddressjoin->_ip_address_id);
     else 
-        return _action_ip_setadditional($service_id, $ipaddressjoin->_ip_address_id);
+        $return = _action_ip_setadditional($service_id, $ipaddressjoin->_ip_address_id);
+
+    update_service_ips($service_id);
+
+    return $return;
 }
 
 
@@ -696,6 +702,8 @@ function _ips_resolve_all($service_id) {
     foreach($ips['notresolved'] as $ip) {
         _action_ip_delete($service_id, $ip->_id);
     };
+
+    update_service_ips($service_id);
 };
 
 function _ips_unassign_all($service_id) {
@@ -704,6 +712,8 @@ function _ips_unassign_all($service_id) {
 
     if( ! full_query($delete_ips) )
         return array('error' => "Can't delete IP addresses");
+
+    update_service_ips($service_id);
 
     return array('success' => true);
 }
@@ -750,8 +760,22 @@ function _action_ip_delete($service_id, $ipid) {
             "Can't delete IP Address<br/>\n " . implode('.<br>', $ip_join->_obj->error) :
             "Can't delete IP Address " . $ip_join->_obj->error);
     } else {
+        update_service_ips($service_id);
         return true;
     };
+}
+
+function update_service_ips($service_id) {
+    $vm = get_vm($service_id);
+
+    $ips = "";
+    if (is_array($vm->_obj->_ip_addresses) )
+        foreach( $vm->_obj->_ip_addresses as $ip )
+            $ips .= $ip->_address.'\n';
+
+    $sql_update = "UPDATE  tblhosting SET assignedips = '$ips' WHERE id = '$service_id'";
+
+    return full_query($sql_update);
 }
 
 function create_vm( $service_id, $hostname, $template_id) {
@@ -846,6 +870,8 @@ function create_vm( $service_id, $hostname, $template_id) {
             return $vm;
         };
     };
+
+    update_service_ips($service_id);
 
     return $vm;
 }
