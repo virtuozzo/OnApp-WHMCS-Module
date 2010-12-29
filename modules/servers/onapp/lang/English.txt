@@ -146,4 +146,4 @@ $_LANG["onappwrongcpuprior"] = 'CPU Priority must be integer betwen 0..99999';
 $_LANG["onappwrongswap"] = 'Swap disk size must be integer betwen 0..99999';
 $_LANG["onappwrongdisksize"] = 'Primary disk size must be integer betwen 0..99999';
 $_LANG["onappwrongspead"] = 'Port Speed must be integer betwen 0..99999 or empty';
-
+$_LANG["onappcantcreateuser"] = "Can't create OnApp User 'server id for plan not found";

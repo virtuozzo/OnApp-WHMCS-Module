@@ -11,7 +11,7 @@ require_once dirname(__FILE__).'/lib.php';
 load_language();
 
 function onapp_createTables() {
-    global $_LANG;
+    global $_LANG, $whmcsmysql;
 
     define ("CREATE_TABLE_CLIENTS",
 "CREATE TABLE IF NOT EXISTS `tblonappclients` (
@@ -163,13 +163,13 @@ function onapp_ConfigOptions() {
 
     $onapp_server_id = $packageconfigoption[1] != "" ? $packageconfigoption[1] : array_shift(array_keys($onapp_servers));
 
-    foreach ( array_keys($onapp_servers) as $id_server ) {
+    $js_serverOptions = "";
+    foreach ( array_keys($onapp_servers) as $id_server )
         $js_serverOptions .= "    serverOptions[$id_server] = '".addslashes($onapp_servers[$id_server])."';\n";
-    };
 
     $onapp_config = onapp_Config( $onapp_server_id );
 
-    if ( $onapp_config["error"] ) {
+    if ( isset($onapp_config["error"]) ) {
 
 // Error JS Begin
         $javascript = "
@@ -318,6 +318,7 @@ $js_serverOptions
     );
 
     $js_ConfigOptions = "    configOptions[0] = '" . $_LANG["onappselconfoption"] . "';\n";
+    $js_ConfigOptionsSub = "";
     $configoptions = array();
     $options = array();
 
@@ -385,7 +386,7 @@ $js_ConfigOptions
     var configOptionsSub = new Array();
 $js_ConfigOptionsSub
     var productAddons = new Array();
-$js_ProductAddons
+
 $js_error;
 
 // Localization

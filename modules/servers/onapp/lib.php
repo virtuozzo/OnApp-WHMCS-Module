@@ -262,9 +262,8 @@ function get_service($service_id) {
  *
  * TODO check this
  */
-function get_onapp_client( $service_id ) {
-    $ONAPP_DEFAULT_ROLE  = 2;
-    $ONAPP_DEFAULT_GROUP = 1;
+function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT_ROLE = 2 ) {
+    global $_LANG;
 
     $service = get_service($service_id);
 
@@ -292,7 +291,7 @@ function get_onapp_client( $service_id ) {
 
         if ( $service['serverid'] == "" )
             return array( 
-                "error" => "Can't create OnApp User 'server id for plan not found'"
+                "error" => $_LANG['onappcantcreateuser']
             );
 
         $user->auth(
@@ -324,7 +323,7 @@ function get_onapp_client( $service_id ) {
         );
 
         $user->save();
-
+##TODO LOCALIZE
         if ( ! is_null($user->_obj->error) )
             return array('error' => is_array($user->_obj->error) ?
                 "Can't create OnApp User<br/>\n " . implode('.<br/>', $user->_obj->error) :
@@ -381,8 +380,9 @@ function get_vm( $service_id ) {
         $vms = $vm->getList();
         $vm_ids = array();
 
-        foreach( $vms as $vm_fromlist)
-            array_push($vm_ids, $vm_fromlist->_id);
+        if ($vms)
+            foreach( $vms as $vm_fromlist)
+                array_push($vm_ids, $vm_fromlist->_id);
 
         if (in_array($service["vmid"], $vm_ids)) {
             $vm->_id = $service["vmid"];
@@ -858,6 +858,7 @@ function create_vm( $service_id, $hostname, $template_id) {
 
         if ( full_query($sql_replace) ) {
             if ( $service['configoption10'] == 'on' ) {
+                $vm->_required_startup = 1;
                 $vm->build();
             };
 

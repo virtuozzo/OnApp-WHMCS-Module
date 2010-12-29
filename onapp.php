@@ -274,9 +274,7 @@ function _actions_vm($action) {
             case 'build':
             case 'rebuild':
                 _action_update_res();
-                $_ONAPPVARS['vm']->_template_id = isset($_ONAPPVARS['service']['os'])
-                    ? $_ONAPPVARS['service']['os'] 
-                    : $_ONAPPVARS['service']['configoption2'];
+                $_ONAPPVARS['vm']->_required_startup = 1;
                 $_ONAPPVARS['vm']->build();
                 break;
             case 'start':
@@ -511,8 +509,10 @@ function productcpuusage() {
     for ($i = 0; $i < count($list); $i++) {
         $created_at = str_replace(array('T', 'Z'), ' ', $list[$i]->_created_at);
         $xaxis .= "<value xid='$i'>".$created_at."</value>";
-
-        $usage = $list[$i]->_cpu_time/($list[$i]->_elapsed_time * 10);
+        if ( $list[$i]->_elapsed_time * 10 != 0 )
+            $usage = $list[$i]->_cpu_time / ($list[$i]->_elapsed_time * 10);
+        else
+            $usage = 0;
         $yaxis .= "<value xid='$i'>".number_format($usage, 2)."</value>";
     }
 
