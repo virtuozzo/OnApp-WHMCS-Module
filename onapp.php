@@ -137,7 +137,7 @@ function get_value($name) {
  * @param array $values smarty values
  */
 function show_template($templatefile, $values) {
-    global $_LANG, $breadcrumbnav, $smartyvalues;
+    global $_LANG, $breadcrumbnav, $smartyvalues, $CONFIG;
 
     $pagetitle = $_LANG["clientareatitle"];
     $pageicon = "images/support/clientarea.gif";
@@ -146,6 +146,12 @@ function show_template($templatefile, $values) {
 
     $smartyvalues = $values;
 
+    if ($CONFIG['SystemSSLURL'])
+        $smartyvalues['systemurl'] = $CONFIG['SystemSSLURL'] . '/';
+    else if ($CONFIG['SystemURL'] != 'http://www.yourdomain.com/whmcs')
+        /* Do not change this URL!!! - Otherwise WHMCS Failed ! */ 
+        $smartyvalues['systemurl'] = $CONFIG['SystemURL'] . '/';
+    
     outputClientArea($templatefile);
 }
 
