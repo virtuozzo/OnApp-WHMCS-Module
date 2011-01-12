@@ -8,9 +8,9 @@ function getSQLResult($sql) {
 
     require_once dirname(__FILE__).'/../../../dbconnect.php';
     require_once dirname(__FILE__).'/../../../includes/functions.php';
+    require_once dirname(__FILE__).'/lib.php';
     require_once dirname(__FILE__).'/wrapper/VirtualMachine.php';
     require_once dirname(__FILE__).'/wrapper/Console.php';
-    require_once dirname(__FILE__).'/lib.php';
 
     session_start(); 
     $user_id = $_SESSION["uid"];
