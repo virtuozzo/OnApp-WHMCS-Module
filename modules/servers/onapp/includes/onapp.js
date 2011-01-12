@@ -129,6 +129,17 @@ $(document).ready(function(){
     }
     addTemplatesSelect.html(selectHTML);
 
+    addPortSpead = $("select[name$='packageconfigoption[20]']");
+    addPortSpeadSelected = addPortSpead.val();
+    addPortSpead.width(selectWidth);
+    selectHTML = '';
+    for ( var option in configOptions ) {
+        selected = (option == addPortSpeadSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
+    addPortSpead.html(selectHTML);
+
+
 // get base table
     var table = $('table').eq(5);
     var tr = table.find('tr').eq(0);
@@ -245,6 +256,13 @@ $(document).ready(function(){
     var ostemplates_label = tr.find('td').eq(0).html();
     var ostemplates_html  = tr.find('td').eq(1).html();
 
+    var addport_speed_label  = tr.find('td').eq(2).html();
+    var addport_speed_html   = tr.find('td').eq(3).html();
+
+// remove row
+    tr.remove();
+    var tr = table.find('tr').eq(0);
+
 // remove row
     tr.remove();
 
@@ -307,6 +325,7 @@ $(document).ready(function(){
         tbody.append( cell_html(addpriority_label, addpriority_html) );
         tbody.append( cell_html(adddisk_label, adddisk_html) );
         tbody.append( cell_html(ip_label, ip_html) );
+        tbody.append( cell_html(addport_speed_label, addport_speed_html) );
 //        tbody.append( cell_html(backup_label, backup_html) );
 
 // assign os templates addons onChange action

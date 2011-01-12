@@ -505,6 +505,11 @@ $js_localization_string
             "Options"     => "0,".implode(',', $configoptions),
             "Description" => "",
         ),
+        $_LANG["onappadditionallportspeed"] => array(
+            "Type"        => "dropdown",
+            "Options"     => "0,".implode(',', $configoptions),
+            "Description" => "",
+        ),
         "&nbsp;" => array(
             "Type"        => "",
             "Description" => "\n$javascript",
