@@ -135,7 +135,8 @@ function get_service($service_id) {
         0 as additionalcpus,
         0 as additionalcpushares,
         0 as additionaldisksize,
-        0 as additionalips
+        0 as additionalips,
+        0 as additionalportspead
     FROM
         tblhosting
         LEFT JOIN tblproducts ON tblproducts.id = packageid
@@ -187,7 +188,7 @@ function get_service($service_id) {
         $service["configoption14"], // additional cpu shares
         $service["configoption15"], // additional disk size
         $service["configoption16"], // additional ips
-        $service["configoption19"],  // operation system
+        $service["configoption19"], // operation system
         $service["configoption20"]  // port spead
     );
 
@@ -241,9 +242,9 @@ function get_service($service_id) {
                     $service["configoptions"][$row['configid']]['order'] = $service['configoption18'];
                     $service["configoptions"][$row['configid']]['prefix'] = '';
                 } elseif ($service["configoption20"] == $row["configid"]) {
-                    $service["additionalips"] = $row["order"];
+                    $service["additionalportspead"] = $row["order"];
                     $service["configoptions"][$row['configid']]['order'] = $service['configoption20'];
-                    $service["configoptions"][$row['configid']]['prefix'] = '';
+                    $service["configoptions"][$row['configid']]['prefix'] = 'Mbps';
                 } elseif ($service["configoption19"] == $row["configid"]) {
                     $service["os"] = $row["order"];
                 };
@@ -808,6 +809,7 @@ function create_vm( $service_id, $hostname, $template_id) {
     $cpus              = $service['configoption5']  + $service['additionalcpus'];
     $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];
     $primary_disk_size = $service['configoption11'] + $service['additionaldisksize'];
+    $rate_limit        = $service['configoption8']  + $service['additionalportspead'];
 
     $vm->_template_id                    = isset($service['os']) ? $service['os'] : $template_id;
     $vm->_hypervisor_id                  = $service['configoption4'];
@@ -824,7 +826,7 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm->_initial_root_password          = decrypt( $service['password'] );
     $vm->_required_ip_address_assignment = '1';
     $vm->_required_automatic_backup      = '0';
-    $vm->_rate_limit                     = $service['configoption8'];
+    $vm->_rate_limit                     = $rate_limit;
 
     $vm->save();
 
@@ -914,6 +916,32 @@ function delete_vm( $service_id ) {
     sendmessage('Virtual Machine Deleted', $service_id );
 
     return $vm;
+}
+
+function get_vm_interface( $service_id ) {
+
+    $vm = get_vm($service_id);
+    $service = get_service($service_id);
+
+    $network = new ONAPP_VirtualMachine_NetworkInterface();
+
+    $onapp_config = get_onapp_config($service['serverid']);
+
+    $network->auth(
+        $onapp_config["adress"],
+        $onapp_config['username'],
+        $onapp_config['password']
+    );
+
+    $network->_virtual_machine_id = $vm->_id;
+
+    $networks = $network->getList();
+
+    foreach( $networks as $net )
+        if($net->_primary == "true")
+            $result = $net;
+
+    return $result;
 }
 
 ?>

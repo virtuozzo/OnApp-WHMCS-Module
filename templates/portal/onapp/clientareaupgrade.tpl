@@ -14,7 +14,6 @@
     {$error}
 </div>
 {/if}
-
 <p>{$LANG.onappupgradedowngradetitle}</p>
 <form action="upgrade.php" method="post">
 <input type="hidden" value="2" name="step">

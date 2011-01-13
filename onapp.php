@@ -450,7 +450,10 @@ function showproduct() {
         );
 
         showcreateproduct();
-    } else
+    } else {
+       
+        $network = get_vm_interface( $_ONAPPVARS['id'] );
+
         show_template(
             "onapp/clientareaoverview",
             array(
@@ -458,8 +461,10 @@ function showproduct() {
                 'id'                   => $_ONAPPVARS['id'],
                 'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
                 'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
+                'rate_limit'           => $network->_rate_limit,
             )
         );
+    }
 }
 
 /**

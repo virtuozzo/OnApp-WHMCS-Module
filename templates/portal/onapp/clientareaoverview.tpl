@@ -107,8 +107,13 @@ function stopvm(id) {
       <td><strong>{$LANG.onappcpupriority}</strong></td>
       <td>{$virtualmachine->_cpu_shares} %</td>
       <td>&nbsp;</td>
+{if $rate_limit neq 0}
+      <td><strong>{$LANG.onappportspeed}</strong></td>
+      <td>{$rate_limit} Mbps</td>
+{else}
       <td>&nbsp;</td>
       <td>&nbsp;</td>
+{/if}
     </tr>
   </tbody>
 </table>
