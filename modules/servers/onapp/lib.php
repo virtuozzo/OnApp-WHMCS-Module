@@ -243,7 +243,7 @@ function get_service($service_id) {
                     $service["configoptions"][$row['configid']]['prefix'] = '';
                 } elseif ($service["configoption20"] == $row["configid"]) {
                     $service["additionalportspead"] = $row["order"];
-                    $service["configoptions"][$row['configid']]['order'] = $service['configoption20'];
+                    $service["configoptions"][$row['configid']]['order'] = $service['configoption8'];
                     $service["configoptions"][$row['configid']]['prefix'] = 'Mbps';
                 } elseif ($service["configoption19"] == $row["configid"]) {
                     $service["os"] = $row["order"];
@@ -940,6 +940,12 @@ function get_vm_interface( $service_id ) {
     foreach( $networks as $net )
         if($net->_primary == "true")
             $result = $net;
+
+    $result->auth(
+        $onapp_config["adress"],
+        $onapp_config['username'],
+        $onapp_config['password']
+    );
 
     return $result;
 }

@@ -374,6 +374,7 @@ function _action_update_res() {
     $cpus              = $service['configoption5']  + $service['additionalcpus'];
     $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];
     $primary_disk_size = $service['configoption11'] + $service['additionaldisksize'];
+    $rate_limit        = $service['configoption8']  + $service['additionalportspead'];
 
     // Adjust Resource Allocations
     if ( $vm->_memory != $memory ||
@@ -422,6 +423,12 @@ function _action_update_res() {
             return false;
     };
 
+    // Chanege Port Speed
+    $network = get_vm_interface( $_ONAPPVARS['id'] );
+    if ($network) {
+      $network->_rate_limit = $rate_limit;
+      $network->save();
+    }
     // resolve all IPs
     _ips_resolve_all($_ONAPPVARS['id']);
 
