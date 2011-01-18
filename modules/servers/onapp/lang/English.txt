@@ -139,6 +139,7 @@ $_LANG["onappnetconfig"] = "Network Configuration";
 $_LANG["onappaddres"] = "Additional Resources";
 $_LANG["onappyouwantrefreshtemplates"] = "Do you want refresh data in Templates selection box ?";
 
+#version 0.5
 $_LANG["onappsettemplate"] = 'Template must be set';
 $_LANG["onappwrongram"] = 'RAM must be integer betwen 0..99999';
 $_LANG["onappwrongcpucores"] = 'CPU Cores must be integer betwen 0..99999';
@@ -148,3 +149,6 @@ $_LANG["onappwrongdisksize"] = 'Primary disk size must be integer betwen 0..9999
 $_LANG["onappwrongspead"] = 'Port Speed must be integer betwen 0..99999 or empty';
 $_LANG["onappcantcreateuser"] = "Can't create OnApp User 'server id for plan not found";
 $_LANG["onappadditionallportspeed"] = "Additional Port Speed";
+$_LANG["onappstoragedisksize"] = "Storage Disk Size";
+$_LANG["onappspacelimit"] = "Space Limit";
+$_LANG["onappstoragedisksizetitle"] = "This page lists the OnApp services associated with the Storage Disk Size product. Click the Produc/Service label to see its details. The Status bar shows if the product is in the Active/ Pending/ Suspended/ Terminated state. The Space limit shows the maximum number of GB available for the service.";

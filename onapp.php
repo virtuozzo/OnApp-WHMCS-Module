@@ -102,9 +102,11 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
             $_ONAPPVARS['error'] = sprintf( $_LANG["onapppagenotfound"], $_ONAPPVARS['page'] );
             productdetails();
             break;
-    }
-else
-    clientareaproducts();
+    } elseif( isset($_ONAPPVARS['page']) && $_ONAPPVARS['page'] = "storagedisksize" ) {
+        clientareastoragedisksizes();
+    } else {
+        clientareaproducts();
+    };
 
 /**
  * Redirect to another page
@@ -860,6 +862,137 @@ function productupgrade() {
                 'error'          => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
             )
         );
+}
+
+function get_storage_service( $service_id ) {
+
+    $select_service = "SELECT
+        tblhosting.id as id,
+        userid,
+        tblproducts.configoption1 as serverid,
+        tblonappservices.vm_id as vmid,
+        tblhosting.password,
+        tblhosting.domain as domain,
+        tblhosting.orderid as orderid,
+        tblproducts.name as product,
+        tblproducts.configoptionsupgrade,
+        tblproducts.configoption1,
+        tblproducts.configoption2,
+        tblproducts.configoption3,
+        tblproducts.configoption4,
+        tblproducts.configoption5,
+        tblproducts.configoption6,
+        tblproducts.configoption7,
+        tblproducts.configoption8,
+        tblproducts.configoption9,
+        tblproducts.configoption10,
+        tblproducts.configoption11,
+        tblproducts.configoption12,
+        tblproducts.configoption13,
+        tblproducts.configoption14,
+        tblproducts.configoption15,
+        tblproducts.configoption16,
+        tblproducts.configoption17,
+        tblproducts.configoption18,
+        tblproducts.configoption19,
+        tblproducts.configoption20,
+        0 as additionalram,
+        0 as additionalcpus,
+        0 as additionalcpushares,
+        0 as additionaldisksize,
+        0 as additionalips,
+        0 as additionalportspead
+    FROM
+        tblhosting
+        LEFT JOIN tblproducts ON tblproducts.id = packageid
+        LEFT JOIN tblonappservices ON service_id = tblhosting.id
+    WHERE
+        servertype = 'onappbackupspace'
+        AND tblhosting.id = '$service_id'";
+
+    $service_rows = full_query($select_service);
+
+    if ( ! $service_rows )
+        return false;
+    $service = mysql_fetch_assoc( $service_rows );
+
+    return $service;
+}
+
+function clientareastoragedisksizes() {
+    global $_ONAPPVARS;
+
+    $_ONAPPVARS['service'] = get_storage_service($_ONAPPVARS['id']);
+var_dump($_ONAPPVARS['service']);
+    storagedisksizes();
+}
+
+function storagedisksizes() {
+    global $user_id, $_ONAPPVARS, $_LANG;
+
+    $services = array();
+    $not_resolved_vms = array();
+
+// Get OnApp VMs
+    $select_onapp_users = sprintf(
+        "SELECT 
+            *
+        FROM
+            tblonappclients
+            LEFT JOIN tblservers ON tblservers.id = server_id
+        WHERE client_id = '%s';",
+        $user_id
+    );
+
+    $onapp_users_query = full_query($select_onapp_users);
+
+    while ($onapp_user = mysql_fetch_assoc( $onapp_users_query ) ) {
+        $vm = new ONAPP_VirtualMachine();
+
+        $vm->auth(
+            $onapp_user["ipaddress"] != "" ? $onapp_user["ipaddress"] : $onapp_user["hostname"],
+            $onapp_user["email"],
+            decrypt($onapp_user["password"])
+        );
+
+        $tmp_vms = $vm->getList();
+
+        if ( is_array($tmp_vms) )
+            foreach($tmp_vms as $tmp_vm)
+                $not_resolved_vms[ $onapp_user["server_id"] ][$tmp_vm->_id] = array(
+                  'vm' => $tmp_vm,
+                  'server' => $onapp_user
+                );
+    };
+
+// Get services
+    $select_services = "SELECT
+        tblhosting.id as id,
+        tblhosting.domain as domain,
+        tblproducts.configoption1 as serverid,
+        tblonappservices.vm_id as vmid,
+        tblproducts.name as product,
+        LOWER(domainstatus) as domainstatus
+    FROM
+        tblhosting
+        LEFT JOIN tblproducts ON tblproducts.id = packageid
+        LEFT JOIN tblonappservices ON service_id = tblhosting.id
+    WHERE
+        servertype = 'onappbackupspace'
+        AND userid = '$user_id'
+    ORDER BY tblhosting.id ASC";
+
+    $services_rows = full_query($select_services);
+    while ($row =  mysql_fetch_assoc( $services_rows ) ) {
+        $rows[] = $row;
+    };
+
+    show_template(
+        "onapp/clientareastoragedisksizes",
+        array(
+            'rows' => $rows,
+        )
+    );
 }
 
 ?>
