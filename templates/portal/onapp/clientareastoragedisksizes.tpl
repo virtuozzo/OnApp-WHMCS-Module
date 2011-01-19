@@ -14,8 +14,14 @@
   <tr>
     <th width="18">&nbsp;</th>
     <th>{$LANG.onappproductandservice}</th>
-    <th width="100">{$LANG.onappspacelimit}</th>
+    <th width="200">{$LANG.onappspacelimit}</th>
     <th width="58">&nbsp;</th>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><strong>Srever Name</strong></td>
+    <td>208 GB / 465 GB (257 GB free)</td>
+    <td>&nbsp;</td>
   </tr>
   {foreach key=num item=service from=$rows}
   <tr class="clientareatable{$service.domainstatus}">
@@ -23,7 +29,7 @@
     <td>{$service.product}</td>
     <td>&nbsp;</td>
     <td align="right" width="58">
-      <a title="View" href="{$smarty.server.PHP_SELF}?page=productdetails&id={$service.id}">
+      <a title="View" href="{$smarty.server.PHP_SELF}?page=storagedisksize&action=view&id={$service.id}">
         <img style="border: none;" title="" src="images/viewdetails.gif" alt=""/>
       </a>
     </td>
@@ -45,4 +51,4 @@
     <td width="10" align="right" class="clientareatableterminated">&nbsp;</td>
     <td>{$LANG.clientareaterminated}</td>
   </tr>
-</table><br />
+</table><br/>

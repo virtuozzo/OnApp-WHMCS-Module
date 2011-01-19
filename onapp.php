@@ -102,7 +102,7 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
             $_ONAPPVARS['error'] = sprintf( $_LANG["onapppagenotfound"], $_ONAPPVARS['page'] );
             productdetails();
             break;
-    } elseif( isset($_ONAPPVARS['page']) && $_ONAPPVARS['page'] = "storagedisksize" ) {
+    } elseif( isset($_ONAPPVARS['page']) && $_ONAPPVARS['page'] == "storagedisksize" ) {
         clientareastoragedisksizes();
     } else {
         clientareaproducts();
@@ -920,10 +920,12 @@ function get_storage_service( $service_id ) {
 }
 
 function clientareastoragedisksizes() {
-    global $_ONAPPVARS;
+    global $_ONAPPVARS, $breadcrumbnav, $_LANG;
+
+    $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappstoragedisksize"]. '" href="onapp.php?page=storagedisksize">'.$_LANG["onappstoragedisksize"].'</a>';
 
     $_ONAPPVARS['service'] = get_storage_service($_ONAPPVARS['id']);
-var_dump($_ONAPPVARS['service']);
+
     storagedisksizes();
 }
 
