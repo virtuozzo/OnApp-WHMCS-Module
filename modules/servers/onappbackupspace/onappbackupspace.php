@@ -138,7 +138,6 @@ $js_ConfigOptionsSub
     var productAddons = new Array();
 </script>
 
-<script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/jquery.multiselects.js\"></script>
 <script type=\"text/javascript\" src=\"../modules/servers/onappbackupspace/includes/onappbackupspace.js\"></script>
 <script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/slider.js\"></script>
 ";
