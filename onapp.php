@@ -930,69 +930,113 @@ function clientareastoragedisksizes() {
 }
 
 function storagedisksizes() {
-    global $user_id, $_ONAPPVARS, $_LANG;
-
-    $services = array();
-    $not_resolved_vms = array();
-
-// Get OnApp VMs
-    $select_onapp_users = sprintf(
-        "SELECT 
-            *
-        FROM
-            tblonappclients
-            LEFT JOIN tblservers ON tblservers.id = server_id
-        WHERE client_id = '%s';",
-        $user_id
-    );
-
-    $onapp_users_query = full_query($select_onapp_users);
-
-    while ($onapp_user = mysql_fetch_assoc( $onapp_users_query ) ) {
-        $vm = new ONAPP_VirtualMachine();
-
-        $vm->auth(
-            $onapp_user["ipaddress"] != "" ? $onapp_user["ipaddress"] : $onapp_user["hostname"],
-            $onapp_user["email"],
-            decrypt($onapp_user["password"])
-        );
-
-        $tmp_vms = $vm->getList();
-
-        if ( is_array($tmp_vms) )
-            foreach($tmp_vms as $tmp_vm)
-                $not_resolved_vms[ $onapp_user["server_id"] ][$tmp_vm->_id] = array(
-                  'vm' => $tmp_vm,
-                  'server' => $onapp_user
-                );
-    };
+    global $user_id;
 
 // Get services
     $select_services = "SELECT
         tblhosting.id as id,
-        tblhosting.domain as domain,
-        tblproducts.configoption1 as serverid,
-        tblonappservices.vm_id as vmid,
+
+        tblonappclients.onapp_user_id,
+        tblonappclients.email,
+        tblonappclients.password,
+
         tblproducts.name as product,
-        LOWER(domainstatus) as domainstatus
+        LOWER(domainstatus) as domainstatus,
+        tblproducts.configoption1 as serverid,
+        tblproducts.configoption2 basespace,
+        tblproducts.configoption3,
+        0 as additionalspace,
+
+        tblservers.name      as servername,
+        tblservers.ipaddress as serveripaddres,
+        tblservers.hostname  as serverhostname,
+        tblservers.username  as serverusername,
+        tblservers.password  as serverpassword,
+
+        optionssub.id as subid,
+        optionssub.optionname,
+        options.configid,
+        tblproductconfigoptions.optionname as configoptionname, 
+        tblproductconfigoptions.optiontype,
+        tblproductconfigoptions.qtymaximum AS max,
+        tblproductconfigoptions.qtyminimum AS min,
+        options.qty, 
+        optionssub.sortorder, 
+        options.optionid as active
     FROM
         tblhosting
-        LEFT JOIN tblproducts ON tblproducts.id = packageid
-        LEFT JOIN tblonappservices ON service_id = tblhosting.id
+        LEFT JOIN tblproducts ON 
+            tblproducts.id = packageid
+        LEFT JOIN tblonappservices ON 
+            service_id = tblhosting.id
+        LEFT JOIN tblonappclients ON 
+            tblproducts.configoption1 = tblonappclients.server_id AND 
+            tblhosting.userid = tblonappclients.client_id
+        LEFT JOIN tblhostingconfigoptions AS options ON
+            relid = tblhosting.id
+        LEFT JOIN tblproductconfigoptionssub AS sub 
+            ON options.configid = sub.configid 
+            AND optionid = sub.id 
+        LEFT JOIN tblproductconfigoptions 
+            ON tblproductconfigoptions.id = options.configid 
+        LEFT JOIN tblproductconfigoptionssub AS optionssub 
+            ON optionssub.configid = tblproductconfigoptions.id AND 
+            options.configid = tblproducts.configoption3
+        LEFT JOIN tblservers ON tblproducts.configoption1 = tblservers.id 
     WHERE
         servertype = 'onappbackupspace'
+        AND options.optionid = optionssub.id
         AND userid = '$user_id'
-    ORDER BY tblhosting.id ASC";
+    ORDER BY servername, tblhosting.id ASC";
 
     $services_rows = full_query($select_services);
-    while ($row =  mysql_fetch_assoc( $services_rows ) ) {
-        $rows[] = $row;
+
+    while ($service =  mysql_fetch_assoc( $services_rows ) ) {
+        switch ( $service['optiontype'] ) {
+            case '1': // Dropdown
+                $service['additionalspace'] = $service['sortorder'];
+                break;
+            case '2': // Radio
+                $service['additionalspace'] = $service['sortorder'];
+                break;
+            case '3': // Yes/No
+                $service['additionalspace'] = 0;
+                break;
+            case '4': // Quantity
+                $service['additionalspace'] = $service['qty'] * $service['sortorder'];
+                break;
+        };
+
+        $rows[] = $service;
+    };
+
+    $servers = array();
+    foreach ( $rows as $key => $value ) {
+
+        if ( ! isset( $servers[ $value['serverid'] ] ) ) {
+            $servers[ $value['serverid'] ] = array(
+                'services'  => array(),
+                'name'      => $rows[ $key ]['servername'],
+                'adress'    => $rows[ $key ]["serveripaddres"] != "" ?
+                    'http://' . $rows[ $key ]["serveripaddres"] :
+                    $rows[ $key ]['serverhostname'],
+                'username'  => $rows[ $key ]['serverusername'],
+                'password'  => decrypt($rows[ $key ]['serverpassword']),
+
+                'onapp_user_id' => $rows[ $key ]['onapp_user_id'],
+            );
+
+            //
+
+        };
+
+        $servers[ $value['serverid'] ]['services'][] = $value;
     };
 
     show_template(
         "onapp/clientareastoragedisksizes",
         array(
-            'rows' => $rows,
+            'rows' => $servers,
         )
     );
 }

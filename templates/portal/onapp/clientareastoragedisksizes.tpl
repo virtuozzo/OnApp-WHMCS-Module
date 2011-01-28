@@ -18,22 +18,28 @@
     <th width="58">&nbsp;</th>
   </tr>
   <tr>
+{foreach item=server from=$rows}
     <td>&nbsp;</td>
-    <td><strong>Srever Name</strong></td>
-    <td>208 GB / 465 GB (257 GB free)</td>
+    <td><strong>{$server.name}</strong></td>
+    <td><!--208 GB / 465 GB (257 GB free)--></td>
     <td>&nbsp;</td>
   </tr>
-  {foreach key=num item=service from=$rows}
+  {foreach key=num item=service from=$server.services}
   <tr class="clientareatable{$service.domainstatus}">
     <td>&nbsp;</td>
     <td>{$service.product}</td>
-    <td>&nbsp;</td>
+    <td>{$service.basespace} MB + {$service.additionalspace} MB</td>
     <td align="right" width="58">
       <a title="View" href="{$smarty.server.PHP_SELF}?page=storagedisksize&action=view&id={$service.id}">
         <img style="border: none;" title="" src="images/viewdetails.gif" alt=""/>
       </a>
     </td>
   </tr>
+  {foreachelse}
+  <tr>
+    <td colspan="4">{$LANG.norecordsfound}</td>
+  </tr>
+  {/foreach}
   {foreachelse}
   <tr>
     <td colspan="4">{$LANG.norecordsfound}</td>

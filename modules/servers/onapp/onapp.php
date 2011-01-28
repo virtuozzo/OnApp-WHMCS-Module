@@ -581,7 +581,12 @@ function serviceStatus($id, $status = NULL) {
 function onapp_TerminateAccount( $params ) {
     global $_LANG;
 
+    $status = serviceStatus($params['serviceid']);
+    serviceStatus($params['serviceid'], 'Active');
+
     $getvm = get_vm($params['serviceid']);
+
+    serviceStatus($params['serviceid'], $status);
 
     if ( ! is_null($getvm->_id) ) {
         $vm = delete_vm($params['serviceid']);

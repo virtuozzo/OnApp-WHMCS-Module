@@ -289,9 +289,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
 
     $user = mysql_fetch_array( full_query($sql_select) );
 
-    if ( $user ) {
-        return $user;
-    } else {
+    if ( ! $user ) {
         $user = new ONAPP_User();
 
         $onapp_config = get_onapp_config($service['serverid']);
@@ -346,7 +344,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
           email = '".$clientsdetails['email']."';";
 
         if ( full_query($sql_replace) ) {
-            return array(
+            $user = array(
                 "onapp_user_id" => $user->_obj->_id,
                 "email"         => $clientsdetails["email"],
                 "password"      => $clientsdetails['password']
@@ -355,6 +353,8 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
             return array( "error" => "Can't update user data in Data Base");
         };
     };
+
+    return $user;
 }
 
 /**
