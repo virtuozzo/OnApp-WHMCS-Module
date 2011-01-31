@@ -589,6 +589,8 @@ function onapp_TerminateAccount( $params ) {
     if ( ! is_null($getvm->_id) ) {
         $vm = delete_vm($params['serviceid']);
 
+        serviceStatus($params['serviceid'], $status);
+
         if ( ! is_null($vm->error) )
             return is_array($vm->error) ?
                 $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->error) :
@@ -599,7 +601,6 @@ function onapp_TerminateAccount( $params ) {
                 $_LANG["onappcantdeletevm"] . $vm->_obj->error;
     };
 
-    serviceStatus($params['serviceid'], $status);
 
     return 'success';
 }
