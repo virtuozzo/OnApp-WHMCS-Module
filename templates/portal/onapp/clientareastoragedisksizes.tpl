@@ -21,18 +21,19 @@
 {foreach item=server from=$rows}
     <td>&nbsp;</td>
     <td><strong>{$server.name}</strong></td>
-    <td><!--208 GB / 465 GB (257 GB free)--></td>
+    <td>{$server.storage_disk_size} GB / {$server.backups_size} GB ({math equation="y - x" x=$server.backups_size y=$server.storage_disk_size} GB free)</td>
     <td>&nbsp;</td>
   </tr>
   {foreach key=num item=service from=$server.services}
   <tr class="clientareatable{$service.domainstatus}">
     <td>&nbsp;</td>
     <td>{$service.product}</td>
-    <td>{$service.basespace} MB + {$service.additionalspace} MB</td>
+    <td>{$service.basespace} GB + {$service.additionalspace} GB</td>
     <td align="right" width="58">
-      <a title="View" href="{$smarty.server.PHP_SELF}?page=storagedisksize&action=view&id={$service.id}">
-        <img style="border: none;" title="" src="images/viewdetails.gif" alt=""/>
-      </a>
+    <form action="/clientarea.php?action=productdetails" method="post">
+        <input type="hidden" value="{$service.id}" name="id">
+        <input type="image" src="images/viewdetails.gif">
+    </form>
     </td>
   </tr>
   {foreachelse}
