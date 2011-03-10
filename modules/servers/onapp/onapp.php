@@ -89,41 +89,6 @@ function onapp_createTables() {
     return;
 }
 
-function onapp_Config( $id ) {
-    global $_LANG;
-
-    $sql = "SELECT id, name, ipaddress, hostname, username, password FROM tblservers WHERE id = " . addslashes( $id );
-
-    $onapp_config = mysql_fetch_array( 
-        full_query($sql) 
-    );
-
-    // Error if server not found in DB
-
-    if ( $onapp_config ) {
-        $onapp_config["password"] = decrypt($onapp_config["password"]);
-        $onapp_config["adress"] = $onapp_config["ipaddress"] != "" ? 
-            $onapp_config["ipaddress"] : 
-            $onapp_config["hostname"];
-        $onapp_config[] = $onapp_config["adress"];
-   } else
-        return array(
-            "error" => sprintf( $_LANG["onapperrcantfoundserver"], $id)
-        );
-
-    //Error if server adress (IP and hostname) not set
-
-    if ( ! $onapp_config["adress"] )
-        return array(
-            "error" => sprintf( 
-                $_LANG["onapperrcantfoundadress"], 
-                $onapp_config["id"], 
-                $onapp_config["name"] 
-            ) );
-
-    return $onapp_config;
-}
-
 function onapp_ConfigOptions() {
     global $packageconfigoption, $_GET, $_POST, $_LANG;
 
@@ -558,24 +523,6 @@ function onapp_CreateAccount($params) {
             $_LANG["onappcantcreatevm"] . $vm->_obj->error;
 
     return 'success';
-}
-                
-#hug to change service status when admin Create service
-function serviceStatus($id, $status = NULL) {
-    $select = "select * FROM tblhosting WHERE id = '$id'";
-    $rows = full_query($select);
-    if ( ! $rows )
-        return false;
-
-    $service = mysql_fetch_assoc( $rows );
-
-    $old_status = $service["domainstatus"];
-
-    if ( is_null($status) )
-        return $old_status;
-    
-    $update = "UPDATE tblhosting SET domainstatus = '$status' WHERE id = '$id'";
-    return full_query($update); 
 }
 
 function onapp_TerminateAccount( $params ) {
