@@ -13,6 +13,7 @@ define( 'PAGE_WRAPPER_DIR', dirname(__FILE__).'/modules/servers/onapp/wrapper' )
 require_once PAGE_WRAPPER_DIR.'/ONAPP.php';
 require_once PAGE_WRAPPER_DIR.'/Disk.php';
 require_once PAGE_WRAPPER_DIR.'/VirtualMachine.php';
+require_once PAGE_WRAPPER_DIR.'/ResourceLimit.php';
 require_once PAGE_WRAPPER_DIR.'/VirtualMachine/Backup.php';
 require_once PAGE_WRAPPER_DIR.'/VirtualMachine/CpuUsage.php';
 
@@ -624,7 +625,72 @@ function clientareaipaddresses() {
 /**
  * Show Virtual machine Disks
  */
+
 function productdisks() {
+    global $_ONAPPVARS, $_LANG;
+
+    foreach ( array('mode', 'diskid') as $val )
+        $_ONAPPVARS[$val] = get_value($val);
+
+    $action = $_ONAPPVARS['action'];
+
+    if( ! is_null($action) && $action != "" )
+        switch ( $action ) {
+            case 'autobackup':
+                $return = _action_change_disk_mode($_ONAPPVARS['service']['serverid'], $_ONAPPVARS['diskid'], $_ONAPPVARS['mode']);
+                break;
+            default:
+                $_ONAPPVARS['error'] = sprintf($_LANG["onappactionnotfound"], $action);
+                break;
+        };
+
+    if ( isset($return) )
+        if ( is_array($return) && isset($return['error']) )
+            $_ONAPPVARS['error'] = $return['error'];
+        else
+            redirect("onapp.php?page=disks&id=" . $_ONAPPVARS['id']);
+
+    clientareadisks();
+}
+
+function _action_change_disk_mode($server_id, $disk_id, $mode) {
+    global $_ONAPPVARS;
+
+    $onapp_config = get_onapp_config($_ONAPPVARS['service']['serverid']);
+
+    $user = get_onapp_client( $_ONAPPVARS['id'] );
+
+    $disk = new ONAPP_Disk();
+
+    $disk->auth(
+        $onapp_config["adress"],
+        $user["email"],
+        $user["password"]
+    );
+
+    $disk->load($disk_id);
+
+    switch ( $mode ) {
+        case 'true':
+            $disk->enableAutobackup();
+            break;
+        case 'false':
+            $disk->disableAutobackup();
+            break;
+        default:
+            return array("error" => "Wrong disk autobackup mode");
+            break;
+    };
+
+    if ( $disk->error )
+        return array("error" => $disk->error );
+    elseif ( $disk->_obj->error )
+        return array("error" => $disk->_obj->error );
+    else
+        return $disk;
+}
+
+function clientareadisks() {
     global $_ONAPPVARS;
 
     $onapp_config = get_onapp_config($_ONAPPVARS['service']['serverid']);
@@ -932,7 +998,6 @@ function clientareastoragedisksizes() {
 function storagedisksizes() {
     global $user_id;
 
-// Get services
     $select_services = "SELECT
         tblhosting.id as id,
 
@@ -945,7 +1010,13 @@ function storagedisksizes() {
         tblproducts.configoption1 as serverid,
         tblproducts.configoption2 basespace,
         tblproducts.configoption3,
-        0 as additionalspace,
+
+        CASE optiontype
+            WHEN 1 THEN optionssub.sortorder
+            WHEN 2 THEN optionssub.sortorder
+            WHEN 4 THEN options.qty * optionssub.sortorder
+            ELSE 0
+        END AS additionalspace,
 
         tblservers.name      as servername,
         tblservers.ipaddress as serveripaddres,
@@ -976,7 +1047,8 @@ function storagedisksizes() {
             relid = tblhosting.id
         LEFT JOIN tblproductconfigoptionssub AS sub 
             ON options.configid = sub.configid 
-            AND optionid = sub.id 
+            AND options.configid = tblproducts.configoption3
+            AND optionid = sub.id
         LEFT JOIN tblproductconfigoptions 
             ON tblproductconfigoptions.id = options.configid 
         LEFT JOIN tblproductconfigoptionssub AS optionssub 
@@ -991,28 +1063,13 @@ function storagedisksizes() {
 
     $services_rows = full_query($select_services);
 
-    while ($service =  mysql_fetch_assoc( $services_rows ) ) {
-        switch ( $service['optiontype'] ) {
-            case '1': // Dropdown
-                $service['additionalspace'] = $service['sortorder'];
-                break;
-            case '2': // Radio
-                $service['additionalspace'] = $service['sortorder'];
-                break;
-            case '3': // Yes/No
-                $service['additionalspace'] = 0;
-                break;
-            case '4': // Quantity
-                $service['additionalspace'] = $service['qty'] * $service['sortorder'];
-                break;
-        };
-
+    while ($service =  mysql_fetch_assoc( $services_rows ) )
         $rows[] = $service;
-    };
 
     $servers = array();
-    foreach ( $rows as $key => $value ) {
 
+    if ( count($rows) )
+    foreach ( $rows as $key => $value ) {
         if ( ! isset( $servers[ $value['serverid'] ] ) ) {
             $servers[ $value['serverid'] ] = array(
                 'services'  => array(),
@@ -1025,12 +1082,49 @@ function storagedisksizes() {
 
                 'onapp_user_id' => $rows[ $key ]['onapp_user_id'],
             );
-
-            //
-
         };
 
         $servers[ $value['serverid'] ]['services'][] = $value;
+    };
+
+    foreach ($servers as $key => $server) {
+        $limit = new ONAPP_ResourceLimit();
+        $limit->auth(
+            $server['adress'],
+            $server['username'],
+            $server['password']
+        );
+        $limit->load( $server['onapp_user_id'] );
+
+        $servers[$key]['storage_disk_size'] = $limit->_obj->_storage_disk_size ? $limit->_obj->_storage_disk_size : 0;
+
+        $vms = new ONAPP_VirtualMachine();
+        $vms->auth(
+            $server['adress'],
+            $server['username'],
+            $server['password']
+        );
+
+        $backups_size = 0;
+
+        foreach ( $vms->getList($server['onapp_user_id']) as $vm ) {
+            $backups = new ONAPP_VirtualMachine_Backup();
+            $backups->_virtual_machine_id = $vm->_id;
+
+            $backups->auth(
+                $server['adress'],
+                $server['username'],
+                $server['password']
+            );
+
+            foreach( $backups->getList() as $backup )
+                $backups_size += $backup->_backup_size;
+        };
+
+        if ( $backups_size > 0 )
+            $backups_size =  sprintf("%01.2f", $backups_size / 1024 / 1024 );
+
+        $servers[ $value['serverid'] ]['backups_size'] = $backups_size;
     };
 
     show_template(
