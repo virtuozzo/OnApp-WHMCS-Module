@@ -80,3 +80,4 @@ function deleteback(id) {
   </tr>
 {/foreach}
 </table>
+<p align="center"><a href="onapp.php?page=storagedisksize">{$LANG.onappstoragedisksize}</a></p><br/>
