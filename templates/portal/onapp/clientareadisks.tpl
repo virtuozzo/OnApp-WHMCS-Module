@@ -1,4 +1,9 @@
 <link href="modules/servers/onapp/includes/power_buttons.css" rel="stylesheet" type="text/css">
+{if isset($error)}
+<div class="errorbox">
+    {$error}
+</div>
+{/if}
 <div class="contentbox">
     <a title="{$LANG.onappoverview}" href="onapp.php?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
     | <a title="{$LANG.onappcpuusage}" href="onapp.php?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
@@ -38,12 +43,16 @@
         NO
 {/if}
     </td>&nbsp;<td>
+{if $disk->_is_swap eq "false" }
 {if $disk->_has_autobackups == "true"}
-        <a class="power off-inactive" rel="nofollow">NO</a>
+        <a class="power off-inactive" rel="nofollow" href="{$smarty.server.PHP_SELF}?page=disks&id={$id}&diskid={$disk->_id}&action=autobackup&mode=false">NO</a>
         <a class="power on-active">YES</a>
 {else}
         <a class="power off-active">NO</a>
-        <a class="power on-inactive" rel="nofollow">YES</a>
+        <a class="power on-inactive" rel="nofollow" href="{$smarty.server.PHP_SELF}?page=disks&id={$id}&diskid={$disk->_id}&action=autobackup&mode=true">YES</a>
+{/if}
+{else}
+    &nbsp;
 {/if}
     </td>
     <td>

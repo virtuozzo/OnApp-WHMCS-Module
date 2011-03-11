@@ -55,11 +55,13 @@
         {/foreach}
         {elseif $configoption.optiontype eq 3}
         {elseif $configoption.optiontype eq 4}
+        {foreach from=$configoption.options item=option}
         <div class="input-with-slider">
           <input type="text" value="{$configoption.value}" size="4" name="configoption[{$id}]" readonly="">
-          <div class="slider" style="float:left; margin:5px 15px 0 5px; width:200px;" max="{$configoption.max}" min="{$configoption.min}" step="{$configoption.step}" target="configoption[{$id}]" width="200">
-          </div>
+          <div class="slider" style="float:left; margin:5px 15px 0 5px; width:200px;" max="{$option.max}" min="{$option.min}" step="{$configoption.step}" target="configoption[{$id}]" width="200">
+          </div> x {$configoption.sortorder} {$configoption.prefix}
         </div>
+        {/foreach}
         {/if}
       </td>
     </tr>
