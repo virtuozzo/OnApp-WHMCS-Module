@@ -83,9 +83,12 @@
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td>
-        {assign var='os' value=$service.os}
-        {$templates.$os->_label}
+    <td>{assign var=osid value=$configoptions.$optionid.active}
+        {foreach from=$configoptions.$optionid.options item=ostemplate}
+            {if $osid eq $ostemplate.id}
+                {$ostemplate.name}
+            {/if}
+        {/foreach}
     </td>
     <td> =&gt; </td>
     <td align="center">
