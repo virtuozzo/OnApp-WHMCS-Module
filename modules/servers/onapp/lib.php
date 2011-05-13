@@ -232,8 +232,9 @@ function get_service($service_id) {
         LEFT JOIN tblproductconfigoptionssub AS optionssub 
             ON optionssub.configid = tblproductconfigoptions.id
     WHERE
-        relid = '$service_id';";
-/*
+        relid = '$service_id'
+    ORDER BY optionssub.id ASC;";
+
     $select_config = "
     SELECT
         optionssub.id,
@@ -245,12 +246,6 @@ function get_service($service_id) {
         tblproductconfigoptions.qtyminimum AS min,
         options.qty, 
         optionssub.sortorder,
-        CASE tblproductconfigoptions.optiontype
-            WHEN 1 THEN optionssub.sortorder
-            WHEN 2 THEN optionssub.sortorder
-            WHEN 4 THEN options.qty * optionssub.sortorder
-            ELSE 0
-        END AS orderwwww, 
         IF(options.optionid, options.optionid, optionssub.id) as active
     FROM 
         tblproductconfiglinks
@@ -264,8 +259,8 @@ function get_service($service_id) {
         LEFT JOIN tblproductconfigoptionssub AS optionssub 
             ON optionssub.configid = tblproductconfigoptions.id
     WHERE
-        tblproductconfiglinks.pid = $productid";
-*/
+        tblproductconfiglinks.pid = $productid
+    ORDER BY optionssub.id ASC;";
     $config_rows = full_query($select_config);
 
     if ( ! $config_rows )
@@ -340,9 +335,6 @@ function get_service($service_id) {
                 $service["configoptions"][$row['configid']]['value'] = $row['qty'];
             };
 
-//var_dump($service);
-//die("OK");
-
             $service["configoptions"][$row['configid']]['options'][$row['sortorder']] = array(
                 'id'   => $row['id'],
                 'name' => $row['optionname'],
@@ -357,9 +349,8 @@ function get_service($service_id) {
 /**
  * Get onapp user data
  *
- * TODO check this
  */
-function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT_ROLE = 2 ) {
+function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT_ROLE = 2, $ONAPP_DEFAULT_BILLING_PLAN = 1 ) {
     global $_LANG;
 
     $service = get_service($service_id);
@@ -379,7 +370,9 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
 
     $user = mysql_fetch_array( full_query($sql_select) );
 
-    if ( ! $user ) {
+    if ( $user )
+        $user["password"] = decrypt( $user["password"] );
+    else {
         $user = new ONAPP_User();
 
         $onapp_config = get_onapp_config($service['serverid']);
@@ -409,6 +402,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
         $user->_last_name  = $clientsdetails['lastname'];
 
         $user->_group_id   = $ONAPP_DEFAULT_GROUP;
+        $user->_billing_plan_id = $ONAPP_DEFAULT_BILLING_PLAN;
 
         $user->_role_ids   = array(
             'attributesArray' => array(
@@ -430,7 +424,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
           server_id = '".$service['serverid']."' ,
           client_id = '".$service["userid"]."' ,
           onapp_user_id = '".$user->_obj->_id."' ,
-          password = '".$clientsdetails['password']."' ,
+          password = '".encrypt($clientsdetails['password'])."' ,
           email = '".$clientsdetails['email']."';";
 
         if ( full_query($sql_replace) ) {
