@@ -2,11 +2,11 @@
 // TODO add onapp $_LANG in to file
 // error_reporting(E_ALL);
 
-//require("configuration.php");
+define("CLIENTAREA",true);
 
-require("dbconnect.php");
-require("includes/functions.php");
-require("includes/clientareafunctions.php");
+require_once "dbconnect.php";
+require_once "includes/functions.php";
+require_once "includes/clientareafunctions.php";
 
 define( 'PAGE_WRAPPER_DIR', dirname(__FILE__).'/modules/servers/onapp/wrapper' );
 
@@ -170,7 +170,8 @@ function clientareaproducts() {
 // Get OnApp VMs
     $select_onapp_users = sprintf(
         "SELECT 
-            *
+            *,
+            tblonappclients.password as userpassword
         FROM
             tblonappclients
             LEFT JOIN tblservers ON tblservers.id = server_id
@@ -186,7 +187,7 @@ function clientareaproducts() {
         $vm->auth(
             $onapp_user["ipaddress"] != "" ? $onapp_user["ipaddress"] : $onapp_user["hostname"],
             $onapp_user["email"],
-            decrypt($onapp_user["password"])
+            decrypt($onapp_user["userpassword"])
         );
 
         $tmp_vms = $vm->getList();
