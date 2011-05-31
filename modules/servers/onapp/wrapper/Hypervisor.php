@@ -3,26 +3,26 @@
 
 /**
  * Managing Hypervisors
- * 
+ *
  * In computing, a hypervisor, also called virtual machine monitor (VMM), allows
  * multiple operating systems to run concurrently on a host computer - a feature
  * called hardware virtualization. The hypervisor presents the guest operating
  * systems with a virtual platform  and monitors the execution of the guest
  * operating systems. In that way, multiple operating systems, including
  * multiple instances of the same operating system, can share hardware
- * resources. 
+ * resources.
  * In OnApp the Hypervisor servers:
- *	- Provide the system resources, such as CPU, memory, and network
- *	- Control the virtual differentiation of entities, such as machines and corresponding application data being delivered to cloud-hosted applications
- *	- Take care of secure virtualization and channeling of storage, data communications and machine processing
- *	- Can be located at different geographical zones
- *	- Can have different CPU and RAM
+ *    - Provide the system resources, such as CPU, memory, and network
+ *    - Control the virtual differentiation of entities, such as machines and corresponding application data being delivered to cloud-hosted applications
+ *    - Take care of secure virtualization and channeling of storage, data communications and machine processing
+ *    - Can be located at different geographical zones
+ *    - Can have different CPU and RAM
 
  *
  * @category  API WRAPPER
  * @package   ONAPP
  * @author    Andrew Yatskovets
- * @copyright 2010 / OnApp 
+ * @copyright 2010 / OnApp
  * @link      http://www.onapp.com/
  * @see       ONAPP
  */
@@ -34,10 +34,10 @@ require_once 'ONAPP.php';
 
 /**
  * Hypervisors
- * 
+ *
  * This class represents the Hypervisors of your OnApp installation. The ONAPP class is the parent of the Hypervisors class.
  *
- * The Hypervisor class uses the following basic methods:
+ * The ONAPP_Hypervisor class uses the following basic methods:
  * {@link load}, {@link save}, {@link delete}, and {@link getList}.
  *
  * <b>Use the following XML API requests:</b>
@@ -46,7 +46,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/settings/settings/hypervisors.xml</i>
  *
- * Get a particular hypervisor details 
+ * Get a particular hypervisor details
  *
  *     - <i>GET onapp.com/settings/hypervisors/{ID}.xml</i>
  *
@@ -84,7 +84,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/settings/hypervisors.json</i>
  *
- * Get a particular hypervisor details 
+ * Get a particular hypervisor details
  *
  *     - <i>GET onapp.com/settings/hypervisors/{ID}.json</i>
  *
@@ -93,7 +93,7 @@ require_once 'ONAPP.php';
  *     - <i>POST onapp.com/settings/hypervisors.json</i>
  *
  * <code>
- * { 
+ * {
  *      hypervisor: {
  *          ip_address:{IP},
  *          label:'{LABEL}'
@@ -106,7 +106,7 @@ require_once 'ONAPP.php';
  *     - <i>PUT onapp.com/settings/hypervisors/{ID}.json</i>
  *
  * <code>
- * { 
+ * {
  *      hypervisor: {
  *          ip_address:{IP},
  *          label:'{LABEL}'
@@ -128,16 +128,16 @@ class ONAPP_Hypervisor extends ONAPP {
     var $_id;
 
     /**
-     * the date when the hypervisor was called in the [YYYY][MM][DD]T[hh][mm]Z format
+     * the Hypervisor call date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_called_in_at;
 
     /**
-     * the date in the [YYYY][MM][DD]T[hh][mm]Z format
+     * the Hypervisor creation date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_created_at;
 
@@ -177,7 +177,7 @@ class ONAPP_Hypervisor extends ONAPP {
     var $_locked;
 
     /**
-     * shows the memory overhead 
+     * shows the memory overhead
      *
      * @var integer
      */
@@ -198,25 +198,46 @@ class ONAPP_Hypervisor extends ONAPP {
     var $_spare;
 
     /**
-     * the date when the Group was updated in the [YYYY][MM][DD]T[hh][mm]Z format
+     * the Hypervisor update date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_updated_at;
 
     /**
-     * the info on the Xen 
+     * the info on the Xen
      *
      * @var yaml
      */
     var $_xen_info;
 
     /**
+     * shows whether hypervisor is enabled
+     *
+     * @var boolean
+     */
+    var $_enabled;
+
+    /**
+     * Hypervisor group id
+     *
+     * @var integer
+     */
+    var $_hypervisor_group_id;
+
+    /**
+     * Hypervisor group id
+     *
+     * @var string
+     */
+    var $_hypervisor_type;
+
+    /**
      * root tag used in the API request
      *
      * @var string
      */
-    var $_tagRoot  = 'hypervisor';
+    var $_tagRoot = 'hypervisor';
 
     /**
      * alias processing the object data
@@ -226,13 +247,13 @@ class ONAPP_Hypervisor extends ONAPP {
     var $_resource = 'settings/hypervisors';
 
     /**
-     * 
+     *
      * called class name
-     * 
+     *
      * @var string
      */
     var $_called_class = 'ONAPP_Hypervisor';
-    
+
     /**
      * API Fields description
      *
@@ -241,100 +262,121 @@ class ONAPP_Hypervisor extends ONAPP {
      */
     function _init_fields( $version = NULL ) {
 
-      if ( is_null($version) )
-        $version = $this->_version;
+        if( is_null( $version ) ) {
+            $version = $this->_version;
+        }
 
-      switch ($version) {
-        case '2.0.0':
-          $this->_fields = array(
-              'id' => array(
-                  ONAPP_FIELD_MAP           => '_id',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_READ_ONLY     => true
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'called_in_at' => array(
-                  ONAPP_FIELD_MAP           => '_called_in_at',
-                  ONAPP_FIELD_TYPE          => 'datetime',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'created_at' => array(
-                  ONAPP_FIELD_MAP           => '_created_at',
-                  ONAPP_FIELD_TYPE          => 'datetime',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'failure_count' => array(
-                  ONAPP_FIELD_MAP           => '_failure_count',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'health' => array(
-                  ONAPP_FIELD_MAP           => '_health',
-                  ONAPP_FIELD_TYPE          => 'yaml',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ), 
-              'ip_address' => array(
-                  ONAPP_FIELD_MAP           => '_ip_address',
-                  ONAPP_FIELD_READ_ONLY     => true,
-                  ONAPP_FIELD_REQUIRED      => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'label' => array(
-                  ONAPP_FIELD_MAP           => '_label',
-                  ONAPP_FIELD_READ_ONLY     => true,
-                  ONAPP_FIELD_REQUIRED      => true,
-                  ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'locked' => array(
-                  ONAPP_FIELD_MAP           => '_locked',
-                  ONAPP_FIELD_TYPE          => 'boolean',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'memory_overhead' => array(
-                  ONAPP_FIELD_MAP           => '_memory_overhead',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'online' => array(
-                  ONAPP_FIELD_MAP           => '_online',
-                  ONAPP_FIELD_TYPE          => 'boolean',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'spare' => array(
-                  ONAPP_FIELD_MAP           => '_spare',
-                  ONAPP_FIELD_TYPE          => 'boolean',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'updated_at' => array(
-                  ONAPP_FIELD_MAP           => '_updated_at',
-                  ONAPP_FIELD_TYPE          => 'datetime',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),  
-              'xen_info' => array(
-                  ONAPP_FIELD_MAP           => '_xen_info',
-                  ONAPP_FIELD_TYPE          => 'yaml',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-          );
+        switch( $version ) {
+            case '2.0':
+                $this->_fields = array(
+                    'id' => array(
+                        ONAPP_FIELD_MAP => '_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'called_in_at' => array(
+                        ONAPP_FIELD_MAP => '_called_in_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'created_at' => array(
+                        ONAPP_FIELD_MAP => '_created_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'failure_count' => array(
+                        ONAPP_FIELD_MAP => '_failure_count',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'health' => array(
+                        ONAPP_FIELD_MAP => '_health',
+                        ONAPP_FIELD_TYPE => 'yaml',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'ip_address' => array(
+                        ONAPP_FIELD_MAP => '_ip_address',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_REQUIRED => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'label' => array(
+                        ONAPP_FIELD_MAP => '_label',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_REQUIRED => true,
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'locked' => array(
+                        ONAPP_FIELD_MAP => '_locked',
+                        ONAPP_FIELD_TYPE => 'boolean',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'memory_overhead' => array(
+                        ONAPP_FIELD_MAP => '_memory_overhead',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'online' => array(
+                        ONAPP_FIELD_MAP => '_online',
+                        ONAPP_FIELD_TYPE => 'boolean',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'spare' => array(
+                        ONAPP_FIELD_MAP => '_spare',
+                        ONAPP_FIELD_TYPE => 'boolean',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'updated_at' => array(
+                        ONAPP_FIELD_MAP => '_updated_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'xen_info' => array(
+                        ONAPP_FIELD_MAP => '_xen_info',
+                        ONAPP_FIELD_TYPE => 'yaml',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                );
+                break;
 
-        break;
-        case '2.0.1':
-          $this->_init_fields = $this->_init_fields("2.0.0");
-        break;
-      };
+            case '2.1':
+                $this->_fields = $this->_init_fields('2.0');
 
-      return $this->_fields;
+                $this->_fields['enabled'] = array(
+                    ONAPP_FIELD_MAP => '_enabled',
+                    ONAPP_FIELD_TYPE => 'boolean',
+                    ONAPP_FIELD_READ_ONLY => true,
+                );
+
+                $this->_fields['hypervisor_group_id'] = array(
+                    ONAPP_FIELD_MAP => '_hypervisor_group_id',
+                    ONAPP_FIELD_TYPE => 'integer',
+                    ONAPP_FIELD_REQUIRED => true,
+                );
+
+                $this->_fields['hypervisor_type'] = array(
+                    ONAPP_FIELD_MAP => '_hypervisor_type',
+                    ONAPP_FIELD_TYPE => 'string',
+                    ONAPP_FIELD_REQUIRED => true,
+                );
+
+                break;
+        }
+        ;
+
+        return $this->_fields;
     }
-}   
+}
 
 ?>

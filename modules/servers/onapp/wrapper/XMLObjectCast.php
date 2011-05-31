@@ -14,12 +14,12 @@
 /**
  * Initialization of the Serialize class to serialize an Array to an XML
  */
-require_once dirname(__FILE__) . "/../libs/Serializer.php";
+require_once dirname( __FILE__ ) . "/../libs/Serializer.php";
 
 /**
  * Initialization of the Unserialize class to unserialize XML to an Object
  */
-require_once dirname(__FILE__) . "/../libs/Unserializer.php";
+require_once dirname( __FILE__ ) . "/../libs/Unserializer.php";
 
 /**
  * This class changes the entity of one data type into another
@@ -41,24 +41,23 @@ class XMLObjectCast {
      * @var    array
      */
     var $_serialize_options = array(
-        XML_SERIALIZER_OPTION_INDENT           => "    ",
-        XML_SERIALIZER_OPTION_LINEBREAKS       => "\n",
+        XML_SERIALIZER_OPTION_INDENT => "    ",
+        XML_SERIALIZER_OPTION_LINEBREAKS => "\n",
         XML_SERIALIZER_OPTION_XML_DECL_ENABLED => true,
-        XML_SERIALIZER_OPTION_XML_ENCODING     => "UTF-8",
-        XML_SERIALIZER_OPTION_DOCTYPE_ENABLED  => false,
+        XML_SERIALIZER_OPTION_XML_ENCODING => "UTF-8",
+        XML_SERIALIZER_OPTION_DOCTYPE_ENABLED => false,
 // this value will be used directly as content, instead of creating a new tag, may only be used in conjuction with attributesArray
 //        XML_SERIALIZER_OPTION_CONTENT_KEY      => true,
-        XML_SERIALIZER_OPTION_ATTRIBUTES_KEY   => 'attributesArray'
+        XML_SERIALIZER_OPTION_ATTRIBUTES_KEY => 'attributesArray'
     );
-    
+
     /**
      * The list of options used to unserialize the objects
      *
      * @access private
      * @var    array
      */
-    var $_unserialize_options = array();
-
+    var $_unserialize_options = array( );
 
     /**
      * This method performs the process of converting
@@ -108,13 +107,13 @@ class XMLObjectCast {
      * @return string serialized XML
      * @access public
      */
-    function serialize($root, $obj) {
-        $serializer = &new XML_Serializer($this->_serialize_options);
+    function serialize( $root, $obj ) {
+        $serializer = &new XML_Serializer( $this->_serialize_options );
         $serializer->setOption( "rootName", $root );
-        $result = $serializer->serialize($obj);
-    
+        $result = $serializer->serialize( $obj );
+
         if( $result === true ) {
-            return $serializer->getSerializedData();
+            return $serializer->getSerializedData( );
         }
     }
 
@@ -180,51 +179,66 @@ class XMLObjectCast {
      * @todo check XML size before unserialization
      * @todo add test cases
      */
-    function unserialize($classname, $xml, $tagMap=null) {
+    function unserialize( $classname, $xml, $tagMap = null ) {
         $dom = new DomDocument;
         $dom->preserveWhiteSpace = FALSE;
 
-        if (! @$dom->loadXML($xml))
-            return array();
+        if( !@$dom->loadXML( $xml ) ) {
+            return array( );
+        }
 
-        if ($dom->childNodes->length != 0 ) {
-            $node_name = $dom->childNodes->item(0)->childNodes->item(0)->nodeName;
-            if($node_name == 'error') {
+        if( $dom->childNodes->length != 0 ) {
+            $node_name = $dom->childNodes->item( 0 )->childNodes->item( 0 )->nodeName;
+            if( $node_name == 'error' ) {
                 $obj = new $classname;
-                $obj->error = array();
-                $params = $dom->getElementsByTagName($node_name);
-                foreach ($params as $param){
-                    $obj->error[] = $param->nodeValue;
+                $obj->error = array( );
+                $params = $dom->getElementsByTagName( $node_name );
+                foreach( $params as $param ) {
+                    $obj->error[ ] = $param->nodeValue;
                 }
                 return $obj;
             }
         }
 
         $this->_unserialize_options = array(
-            XML_UNSERIALIZER_OPTION_ATTRIBUTES_PARSE    => false,
+            XML_UNSERIALIZER_OPTION_ATTRIBUTES_PARSE => false,
             XML_UNSERIALIZER_OPTION_ATTRIBUTES_ARRAYKEY => false,
-            XML_UNSERIALIZER_OPTION_COMPLEXTYPE         => 'object',
+            XML_UNSERIALIZER_OPTION_COMPLEXTYPE => 'object',
         );
-        $unserializer = &new XML_Unserializer($this->_unserialize_options);
+        $unserializer = &new XML_Unserializer( $this->_unserialize_options );
         $unserializer->setOption(
             XML_UNSERIALIZER_OPTION_DEFAULT_CLASS,
             $classname
         );
-        
-        if ( ! is_null($tagMap) && is_array($tagMap) ) {
-            $tm = array();
-            foreach ($tagMap as $key => $value)
-                $tm[$key] = $value[ONAPP_FIELD_MAP];
+
+        if( !is_null( $tagMap ) && is_array( $tagMap ) ) {
+            $tm = array( );
+            foreach( $tagMap as $key => $value )
+                $tm[ $key ] = $value[ ONAPP_FIELD_MAP ];
             $unserializer->setOption( XML_UNSERIALIZER_OPTION_TAG_MAP, $tm );
-        };
-        
-        $unserializer->unserialize($xml, false);
-        
-        $unserializedData = $unserializer->getUnserializedData();
+        }
+        ;
+
+        $unserializer->unserialize( $xml, false );
+
+        $unserializedData = $unserializer->getUnserializedData( );
+
+        if ($unserializer->_root == "errors") {
+            $error = $unserializer->_dataStack;
+            if ( is_array($error) ) {
+                $_error = array();
+                foreach ($error as $err)
+                    if (trim($err) != "")
+                      $_error[] = $err;
+
+                $error = $_error;
+            }
+
+            $unserializedData->error = $error;
+        }
 
         return $unserializedData;
     }
-
     /**
      * This function unserializes XML to the list of objects
      *
@@ -306,7 +320,7 @@ class XMLObjectCast {
         if (! @$dom->loadXML($xml))
             return array();
 
-        if ($dom->childNodes->length != 0 && 
+        if ($dom->childNodes->length != 0 &&
             $dom->childNodes->item(0)->nodeName != 'nil-classes'
             ) {
 

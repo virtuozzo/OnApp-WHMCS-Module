@@ -1,17 +1,17 @@
- <?PHP
+<?PHP
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * Data Stores
  *
  * An operational data store (or "ODS") is a database  designed to integrate data from multiple
- * sources to make analysis and reporting easier. Data stores are core segments of the cloud system. 
+ * sources to make analysis and reporting easier. Data stores are core segments of the cloud system.
  * OnApp uses any block based storage, i.e. local disks in hypervisors, an Ethernet SAN like iSCSI / AoE, or hardware (fiber) SAN.
- * OnApp OnApp is configured to control SANs physical and virtual routing. 
+ * OnApp OnApp is configured to control SANs physical and virtual routing.
  * This control enables seamless SAN failover management, including SAN testing, emergency migration and data backup.
  * The minimum requirements for the virtual machine Data Stores are:
  *  - 1TB Block Storage (iSCSI, AoE, Fiber - can even be on a shared SAN)
- * 
+ *
  * @category  API WRAPPER
  * @package   ONAPP
  * @author    Andrew Yatskovets
@@ -25,18 +25,18 @@ require_once 'ONAPP.php';
 /**
  * Data Stores
  *
- * The DataStore class represents the Data Storages of the OnAPP installation. 
- * 
- * The Data Store class uses the following basic methods:
+ * The DataStore class represents the Data Storages of the OnAPP installation.
+ *
+ * The ONAPP_DataStore class uses the following basic methods:
  * {@link load}, {@link save}, {@link delete}, and {@link getList}.
- * 
+ *
  * <b>Use the following XML API requests:</b>
  *
  * Get the list of data storages
  *
  *     - <i>GET onapp.com/settings/data_stores.xml</i>
  *
- * Get a particular data storage details 
+ * Get a particular data storage details
  *
  *     - <i>GET onapp.com/settings/data_stores/{ID}.xml</i>
  *
@@ -74,7 +74,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/settings/data_stores.json</i>
  *
- * Get a particular data storage details 
+ * Get a particular data storage details
  *
  *     - <i>GET onapp.com/settings/data_stores/{ID}.json</i>
  *
@@ -83,7 +83,7 @@ require_once 'ONAPP.php';
  *     - <i>POST onapp.com/settings/data_stores.json</i>
  *
  * <code>
- * { 
+ * {
  *      data-store: {
  *          data_store_size:{SIZE},
  *          label:'{LABEL}'
@@ -96,7 +96,7 @@ require_once 'ONAPP.php';
  *     - <i>PUT onapp.com/settings/data_stores/{ID}.json</i>
  *
  * <code>
- * { 
+ * {
  *      data-store: {
  *          data_store_size:{SIZE},
  *          label:'{LABEL}'
@@ -118,9 +118,9 @@ class ONAPP_DataStore extends ONAPP {
     var $_id;
 
     /**
-     * the date in the [YYYY][MM][DD]T[hh][mm]Z format
+     * the Data Store creation date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_created_at;
 
@@ -154,15 +154,15 @@ class ONAPP_DataStore extends ONAPP {
     var $_local_hypervisor_id;
 
     /**
-     * the date when the Data Store was updated in the [YYYY][MM][DD]T[hh][mm]Z format  
+     * the Data store update date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_updated_at;
 
     /**
      * the size of zombie disks in GB
-     * 
+     *
      * @var integer
      */
     var $_zombie_disks_size;
@@ -175,11 +175,25 @@ class ONAPP_DataStore extends ONAPP {
     var $_enabled;
 
     /**
+     * Data store group id
+     *
+     * @var integer
+     */
+    var $_data_store_group_id;
+
+    /**
+     * ip address
+     *
+     * @var string
+     */
+    var $_ip;
+
+    /**
      * root tag used in the API request
      *
      * @var string
      */
-    var $_tagRoot  = 'data-store';
+    var $_tagRoot = 'data-store';
 
     /**
      * alias processing the object data
@@ -189,13 +203,13 @@ class ONAPP_DataStore extends ONAPP {
     var $_resource = 'settings/data_stores';
 
     /**
-     * 
+     *
      * called class name
-     * 
+     *
      * @var string
      */
     var $_called_class = 'ONAPP_DataStore';
-    
+
     /**
      * API Fields description
      *
@@ -203,72 +217,88 @@ class ONAPP_DataStore extends ONAPP {
      * @var    array
      */
     function _init_fields( $version = NULL ) {
+        if( !isset( $this->options[ ONAPP_OPTION_API_TYPE ] ) || ( $this->options[ ONAPP_OPTION_API_TYPE ] == 'json' ) ) {
+            $this->_tagRoot = 'data_store';
+        }
 
-      if ( is_null($version) )
-        $version = $this->_version;
+        if( is_null( $version ) ) {
+            $version = $this->_version;
+        }
 
-      switch ($version) {
-        case '2.0.0':
-          $this->_fields = array(
-            'id' => array(
-                ONAPP_FIELD_MAP           => '_id',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'created_at' => array(
-                ONAPP_FIELD_MAP           => '_created_at',
-                ONAPP_FIELD_TYPE          => 'datetime',
-                ONAPP_FIELD_READ_ONLY     => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'data_store_size' => array(
-                ONAPP_FIELD_MAP           => '_data_store_size',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_REQUIRED      => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'identifier' => array(
-                ONAPP_FIELD_MAP           => '_identifier',
-                ONAPP_FIELD_READ_ONLY     => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'label' => array(
-                ONAPP_FIELD_MAP           => '_label',
-                ONAPP_FIELD_REQUIRED      => true,
-                ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'local_hypervisor_id' => array(
-                ONAPP_FIELD_MAP           => '_local_hypervisor_id',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'updated_at' => array(
-                ONAPP_FIELD_MAP           => '_updated_at',
-                ONAPP_FIELD_TYPE          => 'datetime',
-                ONAPP_FIELD_READ_ONLY     => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'zombie_disks_size' => array(
-                ONAPP_FIELD_MAP           => '_zombie_disks_size',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true,
-            ),
-            'enabled' => array(
-                ONAPP_FIELD_MAP           => '_enabled',
-                ONAPP_FIELD_READ_ONLY     => true,
-                ONAPP_FIELD_REQUIRED      => true,
-	        ), 
-        );
+        switch( $version ) {
+            case '2.0':
+                $this->_fields = array(
+                    'id' => array(
+                        ONAPP_FIELD_MAP => '_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'created_at' => array(
+                        ONAPP_FIELD_MAP => '_created_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'data_store_size' => array(
+                        ONAPP_FIELD_MAP => '_data_store_size',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_REQUIRED => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'identifier' => array(
+                        ONAPP_FIELD_MAP => '_identifier',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'label' => array(
+                        ONAPP_FIELD_MAP => '_label',
+                        ONAPP_FIELD_REQUIRED => true,
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'local_hypervisor_id' => array(
+                        ONAPP_FIELD_MAP => '_local_hypervisor_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'updated_at' => array(
+                        ONAPP_FIELD_MAP => '_updated_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'zombie_disks_size' => array(
+                        ONAPP_FIELD_MAP => '_zombie_disks_size',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true,
+                    ),
+                    'enabled' => array(
+                        ONAPP_FIELD_MAP => '_enabled',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_REQUIRED => true,
+                    ),
+                );
+                break;
+            case '2.1':
+                $this->_fields = $this->_init_fields( '2.0' );
 
-        break;
-        case '2.0.1':
-          $this->_init_fields = $this->_init_fields("2.0.0");
-        break;
-      };
+                $this->_fields["data_store_group_id"] = array(
+                    ONAPP_FIELD_MAP => '_data_store_group_id',
+                    ONAPP_FIELD_TYPE => 'integer',
+                    ONAPP_FIELD_REQUIRED => true,
+                );
 
-      return $this->_fields;
+                $this->_fields["ip"] = array(
+                    ONAPP_FIELD_MAP => '_ip',
+                    ONAPP_FIELD_TYPE => 'string',
+                    ONAPP_FIELD_REQUIRED => true,
+                );
+
+                break;
+        };
+
+        return $this->_fields;
     }
-}   
+}
 
 ?>

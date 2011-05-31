@@ -17,11 +17,11 @@
  * Each virtual server has at least one network interface card, so network traffic can flow into
  * and out of your server. All servers are given static IP addresses. You don't need to worry
  * about that address changing. You can tie your domain names to these IP addresses.
- * 
+ *
  * @category  API WRAPPER
  * @package   ONAPP
  * @author    Andrew Yatskovets
- * @copyright 2010 / OnApp 
+ * @copyright 2010 / OnApp
  * @link      http://www.onapp.com/
  * @see       ONAPP
  */
@@ -33,11 +33,11 @@ require_once 'ONAPP.php';
 
 /**
  * Configuring Network
- * 
+ *
  * This class represents the Networks added to your system.
  *
- * The Network class uses the following basic methods:
- * {@link load}, {@link save}, {@link delete}, and {@link getList}.
+ * The ONAPP_Network class uses the following basic methods:
+ * {@link load} and {@link getList}.
  *
  * <b>Use the following XML API requests:</b>
  *
@@ -45,7 +45,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/settings/networks.xml</i>
  *
- * Get a particular network details 
+ * Get a particular network details
  *
  *     - <i>GET onapp.com/settings/networks/{ID}.xml</i>
  *
@@ -81,7 +81,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/settings/networks.json</i>
  *
- * Get a particular network details 
+ * Get a particular network details
  *
  *     - <i>GET onapp.com/settings/networks/{ID}.json</i>
  *
@@ -90,7 +90,7 @@ require_once 'ONAPP.php';
  *     - <i>POST onapp.com/settings/networks.json</i>
  *
  * <code>
- * { 
+ * {
  *      network: {
  *          # TODO add description
  *      }
@@ -102,7 +102,7 @@ require_once 'ONAPP.php';
  *     - <i>PUT onapp.com/settings/networks/{ID}.json</i>
  *
  * <code>
- * { 
+ * {
  *      network: {
  *          # TODO add description
  *      }
@@ -124,20 +124,20 @@ class ONAPP_Network extends ONAPP {
     var $_id;
 
     /**
-     * the date in the [YYYY][MM][DD]T[hh][mm]Z format
+     * the Network creation date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_created_at;
-    
+
     /**
      * the network Identifier
      *
      * @var integer
      */
-     
+
     var $_identifier;
-    
+
     /**
      * the optional Network label
      *
@@ -146,41 +146,47 @@ class ONAPP_Network extends ONAPP {
     var $_label;
 
     /**
-     * the date when the Network was updated in the [YYYY][MM][DD]T[hh][mm]Z format  
+     * the Network update date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_updated_at;
-   
-   /**
+
+    /**
      * the VLAN this network belongs to
      *
      * @var integer
      */
     var $_vlan;
-    
+
+    /**
+     *
+     *
+     */
+    var $_network_group_id;
+
     /**
      * root tag used in the API request
      *
      * @var string
      */
-    var $_tagRoot  = 'network';
-    
+    var $_tagRoot = 'network';
+
     /**
      * alias processing the object data
      *
      * @var string
      */
     var $_resource = 'settings/networks';
-    
+
     /**
-     * 
+     *
      * called class name
-     * 
+     *
      * @var string
      */
     var $_called_class = 'ONAPP_Network';
-    
+
     /**
      * API Fields description
      *
@@ -188,69 +194,77 @@ class ONAPP_Network extends ONAPP {
      * @var    array
      */
     function _init_fields( $version = NULL ) {
+        if( is_null( $version ) ) {
+            $version = $this->_version;
+        }
 
-      if ( is_null($version) )
-        $version = $this->_version;
+        switch( $version ) {
+            case '2.0':
+                $this->_fields = array(
+                    'id' => array(
+                        ONAPP_FIELD_MAP => '_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_REQUIRED => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'created_at' => array(
+                        ONAPP_FIELD_MAP => '_created_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_REQUIRED => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'identifier' => array(
+                        ONAPP_FIELD_MAP => '_identifier',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_REQUIRED => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'label' => array(
+                        ONAPP_FIELD_MAP => '_label',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_REQUIRED => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'updated_at' => array(
+                        ONAPP_FIELD_MAP => '_updated_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_REQUIRED => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'vlan' => array(
+                        ONAPP_FIELD_MAP => '_vlan',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_REQUIRED => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                );
 
-      switch ($version) {
-        case '2.0.0':
-          $this->_fields = array(
-           'id' => array(
-                ONAPP_FIELD_MAP           => '_id',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true,
-                ONAPP_FIELD_REQUIRED      => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'created_at' => array(
-                ONAPP_FIELD_MAP           => '_created_at',
-                ONAPP_FIELD_TYPE          => 'datetime',
-                ONAPP_FIELD_READ_ONLY     => true,
-                ONAPP_FIELD_REQUIRED      => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'identifier' => array(
-                ONAPP_FIELD_MAP           => '_identifier',
-                ONAPP_FIELD_READ_ONLY     => true,
-                ONAPP_FIELD_REQUIRED      => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'label' => array(
-                ONAPP_FIELD_MAP           => '_label',
-                ONAPP_FIELD_READ_ONLY     => true,
-                ONAPP_FIELD_REQUIRED      => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'updated_at' => array(
-                ONAPP_FIELD_MAP           => '_updated_at',
-                ONAPP_FIELD_TYPE          => 'datetime',
-                ONAPP_FIELD_READ_ONLY     => true,
-                ONAPP_FIELD_REQUIRED      => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-            'vlan' => array(
-                ONAPP_FIELD_MAP           => '_vlan',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true,
-                ONAPP_FIELD_REQUIRED      => true,
-            //    ONAPP_FIELD_DEFAULT_VALUE => ''
-            ),
-          );
+                break;
 
-        break;
-        case '2.0.1':
-          $this->_init_fields = $this->_init_fields("2.0.0");
-        break;
-      };
+            case '2.1':
+                $this->_fields = $this->_init_fields('2.0');
 
-      return $this->_fields;
+                $this->_fields['network_group_id'] = array(
+                    ONAPP_FIELD_MAP => '_network_group_id',
+                    ONAPP_FIELD_TYPE => 'integer',
+                    ONAPP_FIELD_REQUIRED => true,
+               );
+
+               break;
+        };
+
+        return $this->_fields;
     }
 
-    function activate($action_name) {
-        switch ($action_name) {
+    function activate( $action_name ) {
+        switch( $action_name ) {
             case ONAPP_ACTIVATE_SAVE:
             case ONAPP_ACTIVATE_DELETE:
-                die("Call to undefined method ".__CLASS__."::$action_name()");
+                die( "Call to undefined method " . __CLASS__ . "::$action_name()" );
                 break;
         }
     }

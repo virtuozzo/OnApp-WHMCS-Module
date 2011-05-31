@@ -30,7 +30,7 @@
  * @category  LOGGER
  * @package   ONAPP
  * @author    Andrew Yatskovets
- * @copyright 2010 / OnApp 
+ * @copyright 2010 / OnApp
  * @link      http://www.onapp.com/
  */
 
@@ -38,25 +38,25 @@
  * The constant that stands for the loglevel
  * When it is set, the error is added to the logs, the system stops working and outputs this error.
  */
-define('ONAPP_LOGGER_VALUE_ERROR',   'error');
+define( 'ONAPP_LOGGER_VALUE_ERROR', 'error' );
 
 /**
  * The constant that stands for the loglevel
  * When it is set, the error is added to the logs.
  */
-define('ONAPP_LOGGER_VALUE_WARNING', 'warning');
+define( 'ONAPP_LOGGER_VALUE_WARNING', 'warning' );
 
 /**
  * The constant that stands for the loglevel
  * When it is set, the information needed for the system development or processed information tracing is added
  * to the logs
  */
-define('ONAPP_LOGGER_VALUE_DEBUG',   'debug');
+define( 'ONAPP_LOGGER_VALUE_DEBUG', 'debug' );
 
 /**
  * The constant that identifies the standard message flow into the buffer log
  */
-define('ONAPP_LOGGER_VALUE_MESSAGE', 'message');
+define( 'ONAPP_LOGGER_VALUE_MESSAGE', 'message' );
 
 /**
  * The Logger class provides a simple but sophisticated logging utility
@@ -103,7 +103,7 @@ class Logger {
      * @access private
      * @var    array
      */
-    var $_log = array();
+    var $_log = array( );
 
     /**
      * Sets debug status
@@ -113,10 +113,11 @@ class Logger {
      * @return void
      * @access public
      */
-    function setDebug($debug) {
-        if (! is_null($debug)) {
+    function setDebug( $debug ) {
+        if( !is_null( $debug ) ) {
             $this->_debug = $debug;
-        };
+        }
+        ;
     }
 
     /**
@@ -128,7 +129,7 @@ class Logger {
      * @access public
      */
     function add( $msg ) {
-        $this->_log($msg, ONAPP_LOGGER_VALUE_MESSAGE);
+        $this->_log( $msg, ONAPP_LOGGER_VALUE_MESSAGE );
     }
 
     /**
@@ -143,9 +144,9 @@ class Logger {
      * @access public
      */
     function error( $msg, $file = '', $line = null ) {
-        $this->_log($msg, ONAPP_LOGGER_VALUE_ERROR);
-        echo $this->logs();
-        trigger_error("FILE => '$file', LINE => '$line'\n$msg", E_USER_ERROR);
+        $this->_log( $msg, ONAPP_LOGGER_VALUE_ERROR );
+//        echo $this->logs( );
+//        trigger_error( "FILE => '$file', LINE => '$line'\n$msg", E_USER_ERROR );
     }
 
     /**
@@ -157,7 +158,7 @@ class Logger {
      * @access public
      */
     function warning( $msg ) {
-        $this->_log($msg, ONAPP_LOGGER_VALUE_WARNING);
+        $this->_log( $msg, ONAPP_LOGGER_VALUE_WARNING );
     }
 
     /**
@@ -169,11 +170,11 @@ class Logger {
      * @access public
      */
     function debug( $msg ) {
-        if ($this->_debug ) {
-            $this->_log($msg, ONAPP_LOGGER_VALUE_DEBUG);
+        if( $this->_debug ) {
+            $this->_log( $msg, ONAPP_LOGGER_VALUE_DEBUG );
         }
     }
-    
+
     /**
      * Adds the message and additional data to the buffer depending
      * on the message type
@@ -189,31 +190,33 @@ class Logger {
 
         $date_format = $this->_date_format;
 
-        if ( strlen($msg) > 0 ) {
+        if( strlen( $msg ) > 0 ) {
 
-            switch ($type) {
+            switch( $type ) {
                 case ONAPP_LOGGER_VALUE_ERROR:
                     $log = "[ERROR] $msg";
-                break;
+                    break;
                 case ONAPP_LOGGER_VALUE_WARNING:
                     $log = "[WARN]  $msg";
-                break;
+                    break;
                 case ONAPP_LOGGER_VALUE_DEBUG:
                     $log = "[DEBUG] $msg";
-                break;
+                    break;
                 default:
                     $log = "[MSG]   $msg";
-                break;
-            };
+                    break;
+            }
+            ;
 
-            $time  = microtime(true);
-            $micro = sprintf("%06d",($time - floor($time)) * 1000000);
-            $date  = date("$date_format $micro", $time);
+            $time = microtime( true );
+            $micro = sprintf( "%06d", ( $time - floor( $time ) ) * 1000000 );
+            $date = date( "$date_format $micro", $time );
 
-            $this->_log[$date] = array(
+            $this->_log[ $date ] = array(
                 'log' => $log
             );
-        };
+        }
+        ;
 
         return true;
     }
@@ -226,13 +229,14 @@ class Logger {
      * @return string full Logger buffer
      * @access public
      */
-    function logs() {
-       $output = "";
-       foreach ($this->_log as $key => $value) {
-           $output .= "[$key] ".$value['log']."\n";
-       };
+    function logs( ) {
+        $output = "";
+        foreach( $this->_log as $key => $value ) {
+            $output .= "[$key] " . $value[ 'log' ] . "\n";
+        }
+        ;
 
-       return $output;
+        return $output;
     }
 
     /**
@@ -243,26 +247,28 @@ class Logger {
      * @return void
      * @access public
      */
-    function setTimezone( $timezone = '') {
+    function setTimezone( $timezone = '' ) {
 
-        if ( strlen($timezone) == 0 ) {
+        if( strlen( $timezone ) == 0 ) {
             $timezone = $this->_timezone;
         }
 
-        if ( ! function_exists('date_default_timezone_set') ) {
-            $this->warning("This PHP version not suport functions date_default_timezone_set or date_default_timezone_get.");
-        } else {
-            if ( strlen(ini_get('date.timezone')) == 0 ) {
-                date_default_timezone_set($timezone);
-                $this->add("setTimezone: Change default date.timezone.");
-            } else {
-                $this->add("setTimezone: Do not need to change default date.timezone.");
+        if( !function_exists( 'date_default_timezone_set' ) ) {
+            $this->warning( "This PHP version not suport functions date_default_timezone_set or date_default_timezone_get." );
+        }
+        else {
+            if( strlen( ini_get( 'date.timezone' ) ) == 0 ) {
+                date_default_timezone_set( $timezone );
+                $this->add( "setTimezone: Change default date.timezone." );
+            }
+            else {
+                $this->add( "setTimezone: Do not need to change default date.timezone." );
             }
 
-            $script_tz = date_default_timezone_get();
+            $script_tz = date_default_timezone_get( );
 
-            if ( strcmp($script_tz, ini_get('date.timezone') ) ) {
-                $this->warning("setTimezone: Script timezone differs from ini-set timezone.");
+            if( strcmp( $script_tz, ini_get( 'date.timezone' ) ) ) {
+                $this->warning( "setTimezone: Script timezone differs from ini-set timezone." );
             }
         }
     }

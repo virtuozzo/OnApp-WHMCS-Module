@@ -24,18 +24,18 @@ require_once 'ONAPP.php';
 /**
  * Transactions
  *
- * This class represents the Transactions of the OnApp installation. 
- * 
- * The Transaction class uses the following basic methods:
- * {@link load}, {@link save}, {@link delete}, and {@link getList}.
- * 
+ * This class represents the Transactions of the OnApp installation.
+ *
+ * The ONAPP_Transaction class uses the following basic methods:
+ * {@link load} and {@link getList}.
+ *
  * <b>Use the following XML API requests:</b>
  *
  * Get the list of transactions
  *
  *     - <i>GET onapp.com/transactions.xml</i>
  *
- * Get a particular transaction details 
+ * Get a particular transaction details
  *
  *     - <i>GET onapp.com/transactions/{ID}.xml</i>
  *
@@ -71,7 +71,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/transactions.json</i>
  *
- * Get a particular transaction details 
+ * Get a particular transaction details
  *
  *     - <i>GET onapp.com/transactions/{ID}.json</i>
  *
@@ -80,7 +80,7 @@ require_once 'ONAPP.php';
  *     - <i>POST onapp.com/transactions.json</i>
  *
  * <code>
- * { 
+ * {
  *      transactions: {
  *          # TODO add description
  *      }
@@ -92,7 +92,7 @@ require_once 'ONAPP.php';
  *     - <i>PUT onapp.com/transactions/{ID}.json</i>
  *
  * <code>
- * { 
+ * {
  *      transactions: {
  *          # TODO add description
  *      }
@@ -111,7 +111,7 @@ class ONAPP_Transaction extends ONAPP {
      * @var integer
      */
     var $_id;
-    
+
     /**
      * the action this transaction represents
      *
@@ -120,193 +120,253 @@ class ONAPP_Transaction extends ONAPP {
     var $_action;
 
     /**
-     * who performed this transaction 
-     * 
-     * @var integer 
-     */ 
+     * who performed this transaction
+     *
+     * @var integer
+     */
     var $_actor;
 
     /**
-     * the date in the [YYYY][MM][DD]T[hh][mm]Z format
+     * the transaction date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_created_at;
-    
+
     /**
-     * the ID of the dependent transaction 
+     * the ID of the dependent transaction
      *
      * @var integer
      */
     var $_dependent_transaction_id;
-    
+
     /**
      * the log message output
      *
      * @var integer
      */
     var $_log_output;
-    
+
     /**
-     * 
+     *
      * @todo yaml format
      * @var integer
      */
     var $_params;
-    
+
     /**
      * The ID of the parent
-     * 
+     *
      * @var integer
      */
     var $_parent_id;
-    
+
     /**
      * The parent process type
-     * 
+     *
      * @var integer
      */
     var $_parent_type;
-    
+
     /**
      * The ID of the parent process
-     * 
+     *
      * @var integer
      */
     var $_pid;
-    
+
     /**
      * The process priority
-     * 
+     *
      * @var integer
      */
     var $_priority;
-    
+
     /**
      * The process stats
-     * 
+     *
      * @var integer
      */
     var $_status;
 
     /**
-     * the date when the Transaction was updated in the [YYYY][MM][DD]T[hh][mm]Z format  
+     * the transaction update date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_updated_at;
-    
+
     /**
      * The User ID
-     * 
+     *
      * @var integer
      */
     var $_user_id;
-    
+
+    /**
+     * shows whether cancellation is allowed
+     *
+     * @var boolean
+     */
+    var $_allowed_cancel;
+
+    /**
+     * transaction identifier
+     *
+     * @var string
+     */
+    var $_identifier;
+
+    /**
+     * the start after date in the [YYYY][MM][DD]T[hh][mm]Z format
+     *
+     * @var string
+     */
+    var $_start_after;
+
     /**
      * root tag used in the API request
      *
      * @var string
      */
-    var $_tagRoot  = 'transactions';
-    
+    var $_tagRoot = 'transactions';
+
     /**
      * alias processing the object data
      *
      * @var string
      */
     var $_resource = 'transactions';
-    
+
     /**
-     * 
+     *
      * called class name
-     * 
+     *
      * @var string
      */
     var $_called_class = 'ONAPP_Transaction';
-    
+
     /**
      * API Fields description
      *
      * @access private
      * @var    array
      */
-    function _fields_2_0_0() {
-        return array(
-            'id'              => array(
-                ONAPP_FIELD_MAP           => '_id',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'action'          => array(
-                ONAPP_FIELD_MAP           => '_action',
-                ONAPP_FIELD_DEFAULT_VALUE => '',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-           'actor'           =>array( 
-                ONAPP_FIELD_MAP           => '_actor', 
-                ONAPP_FIELD_READ_ONLY     => true 
-            ), 
-            'created_at' => array(
-                ONAPP_FIELD_MAP           => '_created_at',
-                ONAPP_FIELD_TYPE          => 'datetime',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'dependent_transaction_id' => array(
-                ONAPP_FIELD_MAP           => '_dependent_transaction_id',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'log_output'                => array(
-                ONAPP_FIELD_MAP           => '_log_output',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'params'                    => array(
-                ONAPP_FIELD_MAP           => '_params',
-                ONAPP_FIELD_TYPE          => 'yaml',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'parent_id'                 => array(
-                ONAPP_FIELD_MAP           => '_parent_id',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'parent_type'               => array(
-                ONAPP_FIELD_MAP           => '_parent_type',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'pid'                       => array(
-                ONAPP_FIELD_MAP           => '_pid',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'priority'                  => array(
-                ONAPP_FIELD_MAP           => '_priority',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'status'                    => array(
-                ONAPP_FIELD_MAP           => '_status',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'updated_at'      => array(
-                ONAPP_FIELD_MAP           => '_updated_at',
-                ONAPP_FIELD_TYPE          => 'datetime',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-            'user_id'                  => array(
-                ONAPP_FIELD_MAP           => '_user_id',
-                ONAPP_FIELD_TYPE          => 'integer',
-                ONAPP_FIELD_READ_ONLY     => true
-            ),
-        );
+    function _init_fields( $version = NULL ) {
+        if( !isset( $this->options[ ONAPP_OPTION_API_TYPE ] ) || ( $this->options[ ONAPP_OPTION_API_TYPE ] == 'json' ) ) {
+            $this->_tagRoot = 'transaction';
+        }
+
+        if( is_null( $version ) ) {
+            $version = $this->_version;
+        }
+
+        switch( $version ) {
+            case '2.0':
+                $this->_fields = array(
+                    'id' => array(
+                        ONAPP_FIELD_MAP => '_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'action' => array(
+                        ONAPP_FIELD_MAP => '_action',
+                        ONAPP_FIELD_DEFAULT_VALUE => '',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'actor' => array(
+                        ONAPP_FIELD_MAP => '_actor',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'created_at' => array(
+                        ONAPP_FIELD_MAP => '_created_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'dependent_transaction_id' => array(
+                        ONAPP_FIELD_MAP => '_dependent_transaction_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'log_output' => array(
+                        ONAPP_FIELD_MAP => '_log_output',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'params' => array(
+                        ONAPP_FIELD_MAP => '_params',
+                        ONAPP_FIELD_TYPE => 'yaml',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'parent_id' => array(
+                        ONAPP_FIELD_MAP => '_parent_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'parent_type' => array(
+                        ONAPP_FIELD_MAP => '_parent_type',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'pid' => array(
+                        ONAPP_FIELD_MAP => '_pid',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'priority' => array(
+                        ONAPP_FIELD_MAP => '_priority',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'status' => array(
+                        ONAPP_FIELD_MAP => '_status',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'updated_at' => array(
+                        ONAPP_FIELD_MAP => '_updated_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'user_id' => array(
+                        ONAPP_FIELD_MAP => '_user_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                );
+
+                break;
+
+            case '2.1':
+                $this->_fields = $this->_init_fields('2.0');
+
+                $this->_fields[ 'allowed_cancel' ] = array(
+                    ONAPP_FIELD_MAP => '_allowed_cancel',
+                    ONAPP_FIELD_TYPE => 'boolean',
+                    ONAPP_FIELD_READ_ONLY => true
+                );
+
+                $this->_fields[ 'identifier' ] = array(
+                    ONAPP_FIELD_MAP => '_identifier',
+                    ONAPP_FIELD_TYPE => 'string',
+                    ONAPP_FIELD_READ_ONLY => true
+                );
+
+                $this->_fields[ 'start_after' ] = array(
+                    ONAPP_FIELD_MAP => '_start_after',
+                    ONAPP_FIELD_TYPE => 'datetime',
+                    ONAPP_FIELD_READ_ONLY => true
+                );
+
+                break;
+        }
+        ;
+
+        return $this->_fields;
     }
 
-    function activate($action_name) {
-        switch ($action_name) {
+    function activate( $action_name ) {
+        switch( $action_name ) {
             case ONAPP_ACTIVATE_SAVE:
             case ONAPP_ACTIVATE_DELETE:
-                die("Call to undefined method ".__CLASS__."::$action_name()");
+                die( "Call to undefined method " . __CLASS__ . "::$action_name()" );
                 break;
         }
     }

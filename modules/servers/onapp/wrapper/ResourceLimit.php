@@ -3,7 +3,7 @@
 
 /**
  * Resource Limit
- * 
+ *
  * With OnApp you can assign resource limits to users. This will prevent users from exceeding the resources you specify.
  *
  * @category  API WRAPPER
@@ -23,11 +23,11 @@ require_once 'ONAPP.php';
 
 /**
  * Resource Limit
- * 
+ *
  * This class represents the resource limits set to users.
  *
- * The ResourceLimit class uses the following basic methods:
- * {@link load}, {@link save}, {@link delete}, and {@link getList}.
+ * The ONAPP_ResourceLimit class uses the following basic methods:
+ * {@link load}, {@link save} and {@link getList}.
  *
  * <b>Use the following XML API requests:</b>
  *
@@ -35,7 +35,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/users/{USER_ID}/resource_limit.xml</i>
  *
- * Get a particular resource limit details 
+ * Get a particular resource limit details
  *
  *     - <i>GET onapp.com/users/{USER_ID}/resource_limit/{ID}.xml</i>
  *
@@ -76,7 +76,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/users/{USER_ID}/resource_limit.json</i>
  *
- * Get a particular resource limit details 
+ * Get a particular resource limit details
  *
  *     - <i>GET onapp.com/users/{USER_ID}/resource_limit/{ID}.json</i>
  *
@@ -85,7 +85,7 @@ require_once 'ONAPP.php';
  *     - <i>POST onapp.com/users/{USER_ID}/resource_limit.json</i>
  *
  * <code>
- * { 
+ * {
  *      resource-limit: {
  *          cpu-shares:{NUMBER},
  *          cpus:{NUMBER},
@@ -122,14 +122,14 @@ class ONAPP_ResourceLimit extends ONAPP {
      * @var integer
      */
     var $_id;
-    
+
     /**
      * the limit of the CPU Shares
      *
      * @var integer
      */
     var $_cpu_shares;
-    
+
     /**
      * the limit of the CPUs
      *
@@ -138,19 +138,19 @@ class ONAPP_ResourceLimit extends ONAPP {
     var $_cpus;
 
     /**
-     * the date in the [YYYY][MM][DD]T[hh][mm]Z format
+     * the Resoiurce Limit creation date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_created_at;
-    
+
     /**
      * the Disk Size limit
      *
      * @var integer
      */
     var $_disk_size;
-    
+
     /**
      * the memory Limit
      *
@@ -159,17 +159,25 @@ class ONAPP_ResourceLimit extends ONAPP {
     var $_memory;
 
     /**
-     * the date when the resource limit was updated in the [YYYY][MM][DD]T[hh][mm]Z format  
+     * the Resoiurce Limit update date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_updated_at;
 
     /**
+     * Storage disk size
      *
-     *
+     * @var integer
      */
     var $_storage_disk_size;
+
+    /**
+     * VM count
+     *
+     * @var interger
+     */
+    var $_virtual_machines_count;
 
     /**
      * the ID of the user these limits are set to
@@ -177,29 +185,28 @@ class ONAPP_ResourceLimit extends ONAPP {
      * @var integer
      */
     var $_user_id;
-    
+
     /**
      * root tag used in the API request
      *
      * @var string
      */
-    var $_tagRoot  = 'resource-limit';
-    
+    var $_tagRoot = 'resource-limit';
+
     /**
      * alias processing the object data
      *
      * @var string
      */
     var $_resource = 'resource_limit';
-    
+
     /**
-     * 
      * called class name
-     * 
+     *
      * @var string
      */
     var $_called_class = 'ONAPP_ResourceLimit';
-	
+
     /**
      * API Fields description
      *
@@ -207,74 +214,80 @@ class ONAPP_ResourceLimit extends ONAPP {
      * @var    array
      */
     function _init_fields( $version = NULL ) {
-    
-      if ( is_null($version) )
-        $version = $this->_version;
 
-      switch ($version) {
-        case '2.0.0':
-            $this->_fields = array(
-              'id' => array(
-                  ONAPP_FIELD_MAP           => '_id',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_READ_ONLY     => true
-              ),
-              'cpu-shares' => array(
-                  ONAPP_FIELD_MAP           => '_cpu_shares',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_REQUIRED      => true,
-                  ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'cpus' => array(
-                  ONAPP_FIELD_MAP           => '_cpus',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_REQUIRED      => true,
-                  ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'created-at' => array(
-                  ONAPP_FIELD_MAP           => '_created_at',
-                  ONAPP_FIELD_TYPE          => 'datetime',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'disk-size' => array(
-                  ONAPP_FIELD_MAP           => '_disk_size',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_REQUIRED      => true,
-                  ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'memory' => array(
-                  ONAPP_FIELD_MAP           => '_memory',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_REQUIRED      => true,
-                  ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'updated-at' => array(
-                  ONAPP_FIELD_MAP           => '_updated_at',
-                  ONAPP_FIELD_TYPE          => 'datetime',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'user_id' => array(
-                  ONAPP_FIELD_MAP           => '_user_id',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_READ_ONLY     => true,
-              //    ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-              'storage_disk_size' => array(
-                  ONAPP_FIELD_MAP           => '_storage_disk_size',
-                  ONAPP_FIELD_TYPE          => 'integer',
-                  ONAPP_FIELD_REQUIRED      => true,
-                  ONAPP_FIELD_DEFAULT_VALUE => ''
-              ),
-            );
-        break;    
-        case '2.0.1':
-          $this->_fields = $this->_init_fields("2.0.0");
-        break;
-      };
-          
-      return $this->_fields;
+        if( is_null( $version ) ) {
+            $version = $this->_version;
+        }
+
+        switch( $version ) {
+            case '2.0':
+            case '2.1':
+                $this->_fields = array(
+                    'id' => array(
+                        ONAPP_FIELD_MAP => '_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true
+                    ),
+                    'cpu_shares' => array(
+                        ONAPP_FIELD_MAP => '_cpu_shares',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_REQUIRED => true,
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'cpus' => array(
+                        ONAPP_FIELD_MAP => '_cpus',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_REQUIRED => true,
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'created_at' => array(
+                        ONAPP_FIELD_MAP => '_created_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'disk_size' => array(
+                        ONAPP_FIELD_MAP => '_disk_size',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_REQUIRED => true,
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'memory' => array(
+                        ONAPP_FIELD_MAP => '_memory',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_REQUIRED => true,
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'updated_at' => array(
+                        ONAPP_FIELD_MAP => '_updated_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'user_id' => array(
+                        ONAPP_FIELD_MAP => '_user_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'storage_disk_size' => array(
+                        ONAPP_FIELD_MAP => '_storage_disk_size',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_REQUIRED => true,
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'virtual_machines_count' => array(
+                        ONAPP_FIELD_MAP => '_virtual_machines_count',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_REQUIRED => true,
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                );
+                break;
+        }
+        ;
+
+        return $this->_fields;
     }
 
     /**
@@ -283,28 +296,32 @@ class ONAPP_ResourceLimit extends ONAPP {
      * @return string API resource
      * @access public
      */
-    function getResource($action = ONAPP_GETRESOURCE_DEFAULT) {
-        switch ($action) {
+    function getResource( $action = ONAPP_GETRESOURCE_DEFAULT ) {
+        switch( $action ) {
             case ONAPP_GETRESOURCE_DEFAULT:
-                if ( is_null($this->_user_id) && is_null($this->_obj->_user_id) ) {
+                if( is_null( $this->_user_id ) && is_null( $this->_obj->_user_id ) ) {
                     $this->_loger->error(
-                       "getResource($action): argument _user_id not set.", 
-                        __FILE__, 
+                        "getResource($action): argument _user_id not set.",
+                        __FILE__,
                         __LINE__
                     );
-                } else if ( is_null($this->_user_id) ) {
-                    $this->_user_id = $this->_obj->_user_id;
-                };
+                }
+                else {
+                    if( is_null( $this->_user_id ) ) {
+                        $this->_user_id = $this->_obj->_user_id;
+                    }
+                }
+                ;
                 $resource = 'users/' . $this->_user_id . '/' . $this->_resource;
                 break;
 
             case ONAPP_GETRESOURCE_LOAD:
             case ONAPP_GETRESOURCE_EDIT:
-                $resource = $this->getResource();
+                $resource = $this->getResource( );
                 break;
 
             default:
-                $resource = parent::getResource($action);
+                $resource = parent::getResource( $action );
                 break;
         }
 
@@ -313,14 +330,15 @@ class ONAPP_ResourceLimit extends ONAPP {
             ONAPP_GETRESOURCE_LOAD,
             ONAPP_GETRESOURCE_EDIT,
         );
-        if (in_array($action, $actions))
-            $this->_loger->debug("getResource($action): return ".$resource);
+        if( in_array( $action, $actions ) ) {
+            $this->_loger->debug( "getResource($action): return " . $resource );
+        }
 
         return $resource;
     }
 
     /**
-     * Sends an API request to get the Object after sending, 
+     * Sends an API request to get the Object after sending,
      * unserializes the response into an object
      *
      * The key field Parameter ID is used to load the Object. You can re-set
@@ -332,23 +350,25 @@ class ONAPP_ResourceLimit extends ONAPP {
      * @access public
      */
     function load( $user_id = null ) {
-        if ( is_null($user_id) && ! is_null($this->_user_id) )
+        if( is_null( $user_id ) && !is_null( $this->_user_id ) ) {
             $user_id = $this->_user_id;
+        }
 
-        if ( is_null($user_id) &&
-            isset($this->_obj) &&
-            ! is_null($this->_obj->_user_id)
-        )
+        if( is_null( $user_id ) &&
+            isset( $this->_obj ) &&
+            !is_null( $this->_obj->_user_id )
+        ) {
             $user_id = $this->_obj->_user_id;
+        }
 
-        $this->_loger->add("load: Load class ( id => '$user_id').");
+        $this->_loger->add( "load: Load class ( id => '$user_id')." );
 
-        if ( ! is_null($user_id) ) {
+        if( !is_null( $user_id ) ) {
             $this->_user_id = $user_id;
 
-            $this->setAPIResource( $this->getResource(ONAPP_GETRESOURCE_LOAD) );
+            $this->setAPIResource( $this->getResource( ONAPP_GETRESOURCE_LOAD ) );
 
-            $response = $this->sendRequest(ONAPP_REQUEST_METHOD_GET);
+            $response = $this->sendRequest( ONAPP_REQUEST_METHOD_GET );
 
             $result = $this->_castResponseToClass( $response );
 
@@ -356,10 +376,11 @@ class ONAPP_ResourceLimit extends ONAPP {
             $this->_user_id = $this->_obj->_user_id;
 
             return $result;
-        } else {
+        }
+        else {
             $this->_loger->error(
-               'load: argument _user_id not set.', 
-                __FILE__, 
+                'load: argument _user_id not set.',
+                __FILE__,
                 __LINE__
             );
         }
@@ -370,24 +391,25 @@ class ONAPP_ResourceLimit extends ONAPP {
      *
      * After sending an API request to create an object or change the data in
      * the existing object, the method checks the response and loads the
-     * exisitng object with the new data. 
+     * exisitng object with the new data.
      *
      * @return void
      * @access public
      */
-    function save() {
-    	if ( isset( $this->_user_id ) ) {
-        	$obj = $this->_edit();
-			
-        	if ( isset($obj) && ! isset($obj->error) )
-        	   $this->load();
-    	}
+    function save( ) {
+        if( isset( $this->_user_id ) ) {
+            $obj = $this->_edit( );
+
+            if( isset( $obj ) && !isset( $obj->error ) ) {
+                $this->load( );
+            }
+        }
     }
 
-    function activate($action_name) {
-        switch ($action_name) {
+    function activate( $action_name ) {
+        switch( $action_name ) {
             case ONAPP_ACTIVATE_DELETE:
-                die("Call to undefined method ".__CLASS__."::$action_name()");
+                die( "Call to undefined method " . __CLASS__ . "::$action_name()" );
                 break;
         }
     }

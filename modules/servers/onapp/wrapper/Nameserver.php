@@ -4,7 +4,7 @@
 /**
  * Resolvers
  *
- * Resolvers in OnApp implement a name-service protocol. You can set the IP addresses corresponding to the hostnames added to the system. 
+ * Resolvers in OnApp implement a name-service protocol. You can set the IP addresses corresponding to the hostnames added to the system.
  *
  * @category  API WRAPPER
  * @package   ONAPP
@@ -22,10 +22,10 @@ require_once 'ONAPP.php';
 
 /**
  * Resolvers
- * 
+ *
  * The Resolvers class represents the name-servers of the OnApp installation.
  *
- * The Resolver class uses the following basic methods:
+ * The ONAPP_Nameserver class uses the following basic methods:
  * {@link load}, {@link save}, {@link delete}, and {@link getList}.
  *
  * <b>Use the following XML API requests:</b>
@@ -34,7 +34,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/settings/nameservers.xml</i>
  *
- * Get a particular nameserver details 
+ * Get a particular nameserver details
  *
  *     - <i>GET onapp.com/settings/nameservers/{ID}.xml</i>
  *
@@ -70,7 +70,7 @@ require_once 'ONAPP.php';
  *
  *     - <i>GET onapp.com/settings/nameservers.json</i>
  *
- * Get a particular nameserver details 
+ * Get a particular nameserver details
  *
  *     - <i>GET onapp.com/settings/nameservers/{ID}.json</i>
  *
@@ -79,7 +79,7 @@ require_once 'ONAPP.php';
  *     - <i>POST onapp.com/settings/nameservers.json</i>
  *
  * <code>
- * { 
+ * {
  *      nameserver: {
  *          # TODO add description
  *      }
@@ -91,7 +91,7 @@ require_once 'ONAPP.php';
  *     - <i>PUT onapp.com/settings/nameservers/{ID}.json</i>
  *
  * <code>
- * { 
+ * {
  *      nameserver: {
  *          # TODO add description
  *      }
@@ -110,7 +110,7 @@ class ONAPP_Nameserver extends ONAPP {
      * @var integer
      */
     var $_id;
-    
+
     /**
      * the IP address resolved
      *
@@ -119,12 +119,12 @@ class ONAPP_Nameserver extends ONAPP {
     var $_address;
 
     /**
-     * the date in the [YYYY][MM][DD]T[hh][mm]Z format
+     * the Name Server creation date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_created_at;
-    
+
     /**
      * the network ID which this resolver belongs to
      *
@@ -134,9 +134,9 @@ class ONAPP_Nameserver extends ONAPP {
     var $_network_id;
 
     /**
-     * the date when the Resolvers was updated in the [YYYY][MM][DD]T[hh][mm]Z format  
+     * the Name Server update date in the [YYYY][MM][DD]T[hh][mm]Z format
      *
-     * @var datetime
+     * @var string
      */
     var $_updated_at;
 
@@ -145,7 +145,7 @@ class ONAPP_Nameserver extends ONAPP {
      *
      * @var string
      */
-    var $_tagRoot  = 'nameserver';
+    var $_tagRoot = 'nameserver';
 
     /**
      * alias processing the object data
@@ -153,59 +153,73 @@ class ONAPP_Nameserver extends ONAPP {
      * @var string
      */
     var $_resource = 'settings/nameservers';
-	
+
     /**
-     * 
+     *
      * called class name
-     * 
+     *
      * @var string
      */
     var $_called_class = 'ONAPP_Nameserver';
-    
+
     /**
      * API Fields description
      *
      * @access private
      * @var    array
      */
-    function _fields_2_0_0() {
-        return array(
-            'id' => array( 
-                ONAPP_FIELD_MAP           =>'_id', 
-                ONAPP_FIELD_TYPE          =>'integer', 
-                ONAPP_FIELD_READ_ONLY     =>'', 
-                #ONAPP_FIELD_REQUIRED      =>'', 
-                ONAPP_FIELD_DEFAULT_VALUE =>'' 
-            ), 
-            'address' => array( 
-                ONAPP_FIELD_MAP           =>'_address', 
-                ONAPP_FIELD_TYPE          =>'', 
-                ONAPP_FIELD_READ_ONLY     =>'', 
-                ONAPP_FIELD_REQUIRED      =>'', 
-                ONAPP_FIELD_DEFAULT_VALUE =>'' 
-            ), 
-            'created_at' => array( 
-                ONAPP_FIELD_MAP           =>'_created_at', 
-                ONAPP_FIELD_TYPE          =>'datetime', 
-                ONAPP_FIELD_READ_ONLY     =>'', 
-                #ONAPP_FIELD_REQUIRED      =>'', 
-                ONAPP_FIELD_DEFAULT_VALUE =>'' 
-            ), 
-            'network_id' => array( 
-                ONAPP_FIELD_MAP           =>'_network_id', 
-                ONAPP_FIELD_TYPE          =>'integer', 
-                ONAPP_FIELD_READ_ONLY     =>'', 
-                #ONAPP_FIELD_REQUIRED      =>'', 
-                ONAPP_FIELD_DEFAULT_VALUE =>'' 
-            ), 
-            'updated_at' => array( 
-                ONAPP_FIELD_MAP           =>'_updated_at', 
-                ONAPP_FIELD_TYPE          =>'datetime', 
-                ONAPP_FIELD_READ_ONLY     =>'', 
-                #ONAPP_FIELD_REQUIRED      =>'', 
-                ONAPP_FIELD_DEFAULT_VALUE =>'' 
-            ),
-        );
+    function _init_fields( $version = NULL ) {
+
+        if( is_null( $version ) ) {
+            $version = $this->_version;
+        }
+
+        switch( $version ) {
+            case '2.0':
+            case '2.1':
+                $this->_fields = array(
+                    'id' => array(
+                        ONAPP_FIELD_MAP => '_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => '',
+                        #ONAPP_FIELD_REQUIRED      =>'',
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'address' => array(
+                        ONAPP_FIELD_MAP => '_address',
+                        ONAPP_FIELD_TYPE => '',
+                        ONAPP_FIELD_READ_ONLY => '',
+                        ONAPP_FIELD_REQUIRED => '',
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'created_at' => array(
+                        ONAPP_FIELD_MAP => '_created_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => '',
+                        #ONAPP_FIELD_REQUIRED      =>'',
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'network_id' => array(
+                        ONAPP_FIELD_MAP => '_network_id',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_READ_ONLY => '',
+                        #ONAPP_FIELD_REQUIRED      =>'',
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'updated_at' => array(
+                        ONAPP_FIELD_MAP => '_updated_at',
+                        ONAPP_FIELD_TYPE => 'datetime',
+                        ONAPP_FIELD_READ_ONLY => '',
+                        #ONAPP_FIELD_REQUIRED      =>'',
+                        ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                );
+
+                break;
+        }
+        ;
+
+        return $this->_fields;
     }
 }
 
