@@ -115,7 +115,16 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
  * @param string $url redirection url
  */
 function redirect($url) {
-    header('Location: ' . $url);
+    if (!headers_sent())
+        header('Location: '.$url); exit;
+    else {
+        echo '<script type="text/javascript">';
+        echo 'window.location.href="'.$url.'";';
+        echo '</script>';
+        echo '<noscript>';
+        echo '<meta http-equiv="refresh" content="0;url='.$url.'" />';
+        echo '</noscript>'; exit;
+    };
 }
 
 /**
@@ -528,13 +537,22 @@ function productcpuusage() {
     $xaxis = '';
     $yaxis = '';
 
+    $date = array();
+    foreach( $list as $item)
+        if (isset($date[$item->_created_at]))
+            $date[$item->_created_at]++;
+        else
+            $date[$item->_created_at] = 1;
+
     for ($i = 0; $i < count($list); $i++) {
         $created_at = str_replace(array('T', 'Z'), ' ', $list[$i]->_created_at);
-        $xaxis .= "<value xid='$i'>".$created_at."</value>";
-        if ( $list[$i]->_elapsed_time * 10 != 0 )
-            $usage = $list[$i]->_cpu_time / ($list[$i]->_elapsed_time * 10);
+
+        if ( $date[$list[$i]->_created_at] * 10 != 0 )
+            $usage = $list[$i]->_cpu_time / ($date[$list[$i]->_created_at] * 10) / 100 ;
         else
             $usage = 0;
+            
+        $xaxis .= "<value xid='$i'>". $created_at."</value>";
         $yaxis .= "<value xid='$i'>".number_format($usage, 2)."</value>";
     }
 
@@ -817,7 +835,6 @@ function _action_backup_add( $id, $diskid ) {
         );
     elseif ( is_null($backup->_obj->_id) )
         return array('error' => "Can't create Backup");
-
     return true;
 }
 
@@ -850,7 +867,7 @@ function _action_backup_restore( $id, $backupid ) {
         return array(
             'error' => is_array($backup->_obj->error) ?
                 "Can't create Backup<br/>\n " . implode('.<br>', $backup->_obj->error) :
-                "Can't create Backup '" . $backup->_obj->error
+                "Can't create Backup'" . $backup->_obj->error
         );
     else
         return true;
@@ -885,7 +902,7 @@ function _action_backup_delete( $id, $backupid ) {
     if ( ! is_null($backup->error) )
         return array( 'error' => is_array($backup->error) ?
                 "Can't create Backup<br/>\n " . implode('.<br>', $backup->error) :
-                "Can't create Backup '" . $backup->error
+                "Can't create Backup'" . $backup->error
             );
     else
         return true;
