@@ -393,7 +393,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
             $service['userid']
         );
 
-        $clientsdetails= mysql_fetch_array( full_query($sql_select_client) );
+        $clientsdetails = mysql_fetch_array( full_query($sql_select_client) );
 
         $user->_email      = $clientsdetails['email'];
         $user->_password   = $clientsdetails['password'];
@@ -412,7 +412,12 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
         );
 
         $user->save();
+
 ##TODO LOCALIZE
+        if ( ! is_null($user->error) )
+            return array('error' => is_array($user->error) ?
+                "Can't create OnApp User<br/>\n " . implode('.<br/>', $user->error) :
+                "Can't create OnApp User<br/>\n " . $user->error);
         if ( ! is_null($user->_obj->error) )
             return array('error' => is_array($user->_obj->error) ?
                 "Can't create OnApp User<br/>\n " . implode('.<br/>', $user->_obj->error) :
@@ -647,7 +652,9 @@ function _action_ip_setadditional($service_id, $ipid) {
 function _action_ip_add($service_id, $isbase) {
     $service = get_service($service_id);
     $vm      = get_vm($service_id);
-    $ips = get_vm_ips($service_id);
+    $ips     = get_vm_ips($service_id);
+
+    $user    = get_onapp_client( $service_id );
 
     if (is_null($vm->_id) )
         return array('error' => "Can't save IP address");
@@ -688,8 +695,8 @@ function _action_ip_add($service_id, $isbase) {
 
         $networkinterface->auth(
             $onapp_config["adress"],
-            $onapp_config['username'],
-            $onapp_config['password']
+            $user["email"],
+            $user["password"]
         );
 
         $firstnetworkinterface = array_shift( $networkinterface->getList() );

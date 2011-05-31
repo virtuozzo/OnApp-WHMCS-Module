@@ -234,6 +234,6 @@ function afterBackupSpaceUpgrade($vars) {
     );
 }
 
-add_hook("AfterConfigOptionsUpgrade", 0, 'afterConfigOptionsUpgrade','');
-add_hook("AfterConfigOptionsUpgrade", 1, 'afterBackupSpaceUpgrade' )
+//add_hook("AfterConfigOptionsUpgrade", 0, 'afterConfigOptionsUpgrade','');
+//add_hook("AfterConfigOptionsUpgrade", 1, 'afterBackupSpaceUpgrade' )
 ?>
