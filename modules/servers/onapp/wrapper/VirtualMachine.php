@@ -701,35 +701,28 @@ class ONAPP_VirtualMachine extends ONAPP {
                 $this->_fields[ 'admin_note' ] = array(
                     ONAPP_FIELD_MAP => '_admin_note',
                     ONAPP_FIELD_TYPE => 'string',
-                    ONAPP_FIELD_REQUIRED => true,
-                    ONAPP_FIELD_DEFAULT_VALUE => ""
                 );
 
                 $this->_fields[ 'allowed_hot_migrate' ] = array(
                     ONAPP_FIELD_MAP => '_allowed_hot_migrate',
                     ONAPP_FIELD_TYPE => 'boolean',
                     ONAPP_FIELD_REQUIRED => true,
-                    ONAPP_FIELD_DEFAULT_VALUE => 1
+                    ONAPP_FIELD_DEFAULT_VALUE => '0'                    
                 );
 
                 $this->_fields[ 'note' ] = array(
                     ONAPP_FIELD_MAP => '_note',
                     ONAPP_FIELD_TYPE => 'string',
-                    ONAPP_FIELD_REQUIRED => true,
-                    ONAPP_FIELD_DEFAULT_VALUE => ""
                 );
 
                 $this->_fields[ 'strict_virtual_machine_id' ] = array(
                     ONAPP_FIELD_MAP => '_strict_virtual_machine_id',
                     ONAPP_FIELD_TYPE => 'integer',
-                    ONAPP_FIELD_REQUIRED => true,
-                    ONAPP_FIELD_DEFAULT_VALUE => 0
                 );
 
                 $this->_fields[ 'suspended' ] = array(
                     ONAPP_FIELD_MAP => '_suspended',
                     ONAPP_FIELD_TYPE => 'boolean',
-//                    ONAPP_FIELD_REQUIRED => true
                 );
 
                 $this->_fields[ 'enable_autoscale' ] = array(
@@ -756,7 +749,7 @@ class ONAPP_VirtualMachine extends ONAPP {
                 ONAPP_FIELD_MAP => '_primary_disk_size',
                 ONAPP_FIELD_TYPE => 'integer',
                 ONAPP_FIELD_REQUIRED => true,
-                ONAPP_FIELD_DEFAULT_VALUE => 1
+                ONAPP_FIELD_DEFAULT_VALUE => 5
             );
             $this->_fields[ "swap_disk_size" ] = array(
                 ONAPP_FIELD_MAP => '_swap_disk_size',
@@ -786,7 +779,7 @@ class ONAPP_VirtualMachine extends ONAPP {
                 ONAPP_FIELD_MAP => '_required_ip_address_assignment',
                 ONAPP_FIELD_TYPE => 'boolean',
                 ONAPP_FIELD_REQUIRED => true,
-                ONAPP_FIELD_DEFAULT_VALUE => ''
+                ONAPP_FIELD_DEFAULT_VALUE => '1'
             );
             $this->_fields[ "required_virtual_machine_build" ] = array(
                 ONAPP_FIELD_MAP => '_required_virtual_machine_build',
@@ -868,7 +861,7 @@ class ONAPP_VirtualMachine extends ONAPP {
 
                 $this->_loger->add( "_POSTAction: Load XMLObjectCast (serializer and unserializer functions)." );
 
-                $objCast = &new XMLObjectCast( );
+                $objCast = new XMLObjectCast( );
 
                 $data = $objCast->serialize(
                     $this->_tagRoot,
@@ -1058,7 +1051,7 @@ class ONAPP_VirtualMachine extends ONAPP {
             ONAPP_FIELD_MAP => '_required_ip_address_assignment',
             ONAPP_FIELD_TYPE => 'boolean',
             ONAPP_FIELD_REQUIRED => true,
-            ONAPP_FIELD_DEFAULT_VALUE => ''
+            ONAPP_FIELD_DEFAULT_VALUE => '1'
         );
         $this->_fields[ "required_virtual_machine_build" ] = array(
             ONAPP_FIELD_MAP => '_required_virtual_machine_build',

@@ -17,15 +17,18 @@
  * requires Base class
  */
 require_once 'ONAPP.php';
-require_once 'Logger.php';
 require_once 'User.php';
+require_once 'BillingPlan/BaseResource.php';
 
 /**
- *
- *
+ * TODO Add description
  */
 define( 'ONAPP_GETRESOURCE_GETLIST_USERS', 'users' );
 
+/**
+ * TODO Add description
+ */
+define( 'ONAPP_GETRESOURCE_CREATE_COPY', 'copy' );
 
 /**
  * Managing Billing Plans
@@ -112,42 +115,53 @@ define( 'ONAPP_GETRESOURCE_GETLIST_USERS', 'users' );
 class ONAPP_BillingPlan extends ONAPP {
     /**
      *
-     * the group ID
-     */
-    var $_id;
-
-    /**
-     * Billing Plan creation date in the [YYYY][MM][DD]T[hh][mm]Z format
-     *
-     * @var string
-     */
-    var $_created_at;
-
-    /**
-     * Billing Plan update date in the [YYYY][MM][DD]T[hh][mm]Z format
-     *
-     * @var string
-     */
-    var $_updated_at;
-
-    /**
-     * Billing Plan label
-     *
-     * @var string
+     *  Billing Plan Label
      */
     var $_label;
 
     /**
-     * the group identifier
+     *
+     * the Billing Plan creation date in the [YYYY][MM][DD]T[hh][mm]Z format
+     */
+    var $_created_at;
+
+    /**
+     *
+     * the date when the Group was updated in the [YYYY][MM][DD]T[hh][mm]Z format
+     */
+    var $_updated_at;
+
+    /**
+     * base resources array
+     *
+     * @var array
+     */
+    var $_base_resources;
+
+    /**
+     *
+     * the billing plan ID
+     */
+    var $_id;
+
+    /**
+     * the mounthly price
+     *
+     * @var integer
+     */
+    var $_monthly_price;
+
+    /**
+     * the currency code
      *
      * @var integer
      */
     var $_currency_code;
 
     /**
-     * the group identifier
+     * Indicates whether to show price
      *
-     * @var integer
+     * @var boolean
      */
     var $_show_price;
 
@@ -156,7 +170,7 @@ class ONAPP_BillingPlan extends ONAPP {
      *
      * @var string
      */
-    var $_tagRoot = 'billing-plans';
+    var $_tagRoot = 'billing_plan';
 
     /**
      * alias processing the object data
@@ -166,7 +180,6 @@ class ONAPP_BillingPlan extends ONAPP {
     var $_resource = 'billing_plans';
 
     /**
-     *
      * called class name
      *
      * @var string
@@ -183,7 +196,6 @@ class ONAPP_BillingPlan extends ONAPP {
         if( is_null( $version ) ) {
             $version = $this->_version;
         }
-        ;
 
         switch( $version ) {
             case '2.0':
@@ -206,11 +218,22 @@ class ONAPP_BillingPlan extends ONAPP {
                         ONAPP_FIELD_READ_ONLY => true
                         //    ONAPP_FIELD_DEFAULT_VALUE => ''
                     ),
+                    'base_resources' => array(
+                        ONAPP_FIELD_MAP => '_base_resources',
+                        ONAPP_FIELD_TYPE => 'array',
+                        ONAPP_FIELD_READ_ONLY => true,
+                        ONAPP_FIELD_CLASS => 'BillingPlan_BaseResource',
+                    ),
                     'id' => array(
                         ONAPP_FIELD_MAP => '_id',
                         ONAPP_FIELD_TYPE => 'integer',
                         ONAPP_FIELD_READ_ONLY => true,
                         //    ONAPP_FIELD_DEFAULT_VALUE => ''
+                    ),
+                    'monthly_price' => array(
+                        ONAPP_FIELD_MAP => '_monthly_price',
+                        ONAPP_FIELD_TYPE => 'integer',
+                        ONAPP_FIELD_REQUIRED => true,
                     ),
                     'currency_code' => array(
                         ONAPP_FIELD_MAP => '_currency_code',
@@ -229,7 +252,6 @@ class ONAPP_BillingPlan extends ONAPP {
 
                 break;
         }
-        ;
 
         return $this->_fields;
     }
@@ -238,6 +260,9 @@ class ONAPP_BillingPlan extends ONAPP {
         switch( $action ) {
             case ONAPP_GETRESOURCE_GETLIST_USERS:
                 $resource = $this->getResource( ONAPP_GETRESOURCE_LOAD ) . '/users';
+                break;
+            case ONAPP_GETRESOURCE_CREATE_COPY:
+                $resource = $this->getResource( ONAPP_GETRESOURCE_LOAD ) . '/create_copy';
                 break;
             default:
                 $resource = parent::getResource( $action );
@@ -260,7 +285,7 @@ class ONAPP_BillingPlan extends ONAPP {
             return false;
         }
 
-        $class = new ONAPP_User(); 
+        $class = new ONAPP_User();
 
         $class->_loger = $this->_loger;
 
@@ -271,6 +296,22 @@ class ONAPP_BillingPlan extends ONAPP {
         $class->_ch = $this->_ch;
 
         $class->_load_fields( );
+
+        return $class->castStringToClass(
+            $response[ "response_body" ],
+            true
+        );
+    }
+
+    function create_copy() {
+
+        $this->_loger->add( "getList: Create Billing plan copy" );
+
+        $this->setAPIResource( $this->getResource( ONAPP_GETRESOURCE_CREATE_COPY ) );
+
+        $data = "<billing_plan><label>TEST</label></billing_plan>";
+
+        $response = $this->sendRequest( ONAPP_REQUEST_METHOD_POST, $data );
 
         return $class->castStringToClass(
             $response[ "response_body" ],

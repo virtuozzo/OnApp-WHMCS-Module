@@ -74,7 +74,7 @@ class JSONObjectCast {
 
         try {
             if( empty( $data ) ) {
-                throw new Exception( 'Data for casting could not be empty' );
+               // throw new Exception( 'Data for casting could not be empty' );
             }
         }
         catch( Exception $e ) {

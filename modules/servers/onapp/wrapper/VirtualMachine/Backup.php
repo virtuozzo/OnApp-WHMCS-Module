@@ -511,7 +511,7 @@ class ONAPP_VirtualMachine_Backup extends ONAPP {
 
                 $this->_loger->add( "convert: Load XMLObjectCast (serializer and unserializer functions)." );
 
-                $objCast = &new XMLObjectCast( );
+                $objCast = new XMLObjectCast( );
 
                 $data = $objCast->serialize(
                     $this->_tagRoot,

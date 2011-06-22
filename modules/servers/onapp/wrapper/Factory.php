@@ -47,7 +47,7 @@ class ONAPP_Factory{
      *
      * @return object
      */
-    public function factory( $name ) {
+    public function factory( $name, $debug = false ) {
         $class_name = "ONAPP_$name";
 
         $file_name  = dirname(__FILE__)."/".str_replace("_","/",$name).".php";
@@ -60,7 +60,12 @@ class ONAPP_Factory{
         if ( class_exists($class_name) ) {
 	    $result = new $class_name();
 
-            $result->_loger = new Logger;
+            $result->_loger = new ONAPP_Logger;
+
+            $result->_loger->setDebug( $debug );
+            
+            $result->setOption(ONAPP_OPTION_DEBUG_MODE, $debug);
+
             $result->_loger->setTimezone( );
 
             $result->_version = $this->instance->_version;

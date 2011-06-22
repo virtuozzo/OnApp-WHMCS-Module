@@ -1,5 +1,7 @@
 <?php
-// error_reporting(E_ALL);
+error_reporting( E_ALL );
+
+ini_set( 'display_errors', 0 );
 
 /**
  * API Wrapper for OnApp
@@ -25,11 +27,6 @@ require_once dirname( __FILE__ ) . '/Logger.php';
  * Current OnApp PHP API wrapper version
  */
 define( 'ONAPP_VERSION', '1.0' );
-
-/**
- * The ONAPP class uses this variable to define the path to the cURL directory storing cookies for the users
- */
-define( 'ONAPP_OPTION_CURL_COOKIEDIR', 'cookiedir' );
 
 /**
  * The ONAPP class uses this variable to define the Proxy server used by cURL
@@ -66,6 +63,11 @@ define( 'ONAPP_OPTION_API_CHARSET', 'charset' );
  *   - application/json (will be available after the Json parcer is created)
  */
 define( 'ONAPP_OPTION_API_CONTENT', 'content' );
+
+/**
+ * TODO add description
+ */
+define( 'ONAPP_OPTION_DEBUG_MODE', 'debug_mode' );
 
 /**
  * The ONAPP class uses this field name to map this field in the API response and variable in the class
@@ -239,12 +241,12 @@ class ONAPP {
      * @var    array
      */
     var $_knownOptions = array(
-//        ONAPP_OPTION_CURL_COOKIEDIR,
         ONAPP_OPTION_CURL_PROXY,
         ONAPP_OPTION_CURL_URL,
         ONAPP_OPTION_API_TYPE,
         ONAPP_OPTION_API_CHARSET,
-        ONAPP_OPTION_API_CONTENT
+        ONAPP_OPTION_API_CONTENT,
+        ONAPP_OPTION_DEBUG_MODE
     );
 
     /**
@@ -255,9 +257,6 @@ class ONAPP {
      * @var    array
      */
     var $_defaultOptions = array(
-        // cURL Cookies directory
-//        ONAPP_OPTION_CURL_COOKIEDIR => '/tmp/.onapp',
-
         // cURL proxy
         ONAPP_OPTION_CURL_PROXY => '',
 
@@ -272,6 +271,9 @@ class ONAPP {
 
         // API request and response content
         ONAPP_OPTION_API_CONTENT => 'application/xml',
+
+        // Debug mode
+        ONAPP_OPTION_DEBUG_MODE => false,
     );
 
     /**
@@ -282,9 +284,6 @@ class ONAPP {
      *
      * <code>
      *    var $options = array(
-     *
-     *        // cURL Cookies directory
-     *        ONAPP_OPTION_CURL_COOKIEDIR => '/tmp/.onapp',
      *
      *        // cURL proxy
      *        ONAPP_OPTION_CURL_PROXY     => '',
@@ -300,6 +299,9 @@ class ONAPP {
      *
      *        // API request and response content
      *        ONAPP_OPTION_API_CONTENT   => 'application/xml',
+     *
+     *        // Debug mode
+     *        ONAPP_OPTION_DEBUG_MODE => false
      *    );
      * </code>
      *
@@ -500,8 +502,10 @@ class ONAPP {
                             );
                         }
                     }
-                }
-                $this->_loger->debug( "_getRequiredData: set attribute ( $key => '" . $result[ $key ] . "')." );
+                };
+
+                if( isset($result[ $key ]) )
+                    $this->_loger->debug( "_getRequiredData: set attribute ( $key => '" . $result[ $key ] . "')." );
             }
         ;
 
@@ -614,12 +618,15 @@ class ONAPP {
      * @access public
      */
     function auth( $url, $user, $pass, $proxy = '' ) {
-        $this->_loger = new Logger;
+        $this->options = $this->_defaultOptions;
+
+        $this->_loger = new ONAPP_Logger;
+
+        $this->_loger->setDebug(  $this->options[ ONAPP_OPTION_DEBUG_MODE ] );
+
         $this->_loger->setTimezone( );
 
-        $this->_loger->debug( "auth: Authorization(url => '$url', user => '$user', pass => '********').". $pass );
-
-        $this->options = $this->_defaultOptions;
+        $this->_loger->debug( "auth: Authorization(url => '$url', user => '$user', pass => '********')." );
 
         $this->setOption( ONAPP_OPTION_CURL_URL, $url );
         $this->setOption( ONAPP_OPTION_CURL_PROXY, $proxy );
@@ -682,14 +689,6 @@ class ONAPP {
      * @todo check response from basic URL
      */
     function _init_curl( $user, $pass, $cookiedir = '' ) {
-//        if( strlen( $cookiedir ) > 0 ) {
-//            $this->setOption( ONAPP_OPTION_CURL_COOKIEDIR, $cookiedir );
-//        }
-//        else
-//        {
-//            $cookiedir = $this->options[ ONAPP_OPTION_CURL_COOKIEDIR ];
-//        }
-
         $this->_loger->debug( "_init_curl: Init Curl (cookiedir => '$cookiedir')." );
 
         $this->_ch = curl_init( );
@@ -710,13 +709,6 @@ class ONAPP {
             $this->_ch, CURLOPT_USERPWD,
                 $user . ':' . $pass
         );
-
-//        $cookiefile = $this->options[ ONAPP_OPTION_CURL_COOKIEDIR ] .
-//                      $user .
-//                      '.cookie';
-//
-//        curl_setopt( $this->_ch, CURLOPT_COOKIEFILE, $cookiefile );
-//        curl_setopt( $this->_ch, CURLOPT_COOKIEJAR, $cookiefile );
     }
 
     /**
@@ -994,15 +986,20 @@ class ONAPP {
 
                         $this->_loger->debug( "unserialize: Unserialize in to Class $classname XML:\n$content" );
                         $obj = $objCast->unserialize( $classname, $content, $tagMap );
+
                         $dom = new DomDocument;
                         $dom->preserveWhiteSpace = FALSE;
 
                         if( @$dom->loadXML( $content ) &&
                              $dom->childNodes->length != 0 &&
                              $dom->childNodes->item( 0 )->nodeName != 'nil-classes'
-                        ) {
+                        ) { 
+// TODO fix // PHP Warning:  Invalid argument supplied for foreach() in /home/joker/Desktop/radar-customization/php/ONAPP/ONAPP.php on line 1005
                             foreach( $tagMap as $key => $tag ) {
-                                if( isset( $tag[ ONAPP_FIELD_TYPE ] ) && $tag[ ONAPP_FIELD_TYPE ] == "array" ) {
+
+//                                if( isset( $tag[ ONAPP_FIELD_TYPE ] ) && $tag[ ONAPP_FIELD_TYPE ] == "array" ) {
+                                if( isset( $tag[ ONAPP_FIELD_CLASS ] ) ) {
+
                                     $node_name = $dom->childNodes;
 
                                     foreach( $dom->childNodes as $param ) {
@@ -1012,11 +1009,15 @@ class ONAPP {
 
                                             $xmlObj = new $childclassname;
                                             $xmlObj->options = $this->_defaultOptions;
-                                            $xmlObj->_loger = new Logger;
+                                            $xmlObj->_loger = new ONAPP_Logger;
+                                            $xmlObj->_version = $this->_version;
                                             $xmlObj->_init_fields( $this->_version );
                                             $xmlObjcontent = simplexml_import_dom( $node )->asXML( );
 
-                                            $obj->$attr = $xmlObj->castStringToClass( $xmlObjcontent, true );
+                                            if ( isset($tag[ ONAPP_FIELD_TYPE ]) && $tag[ ONAPP_FIELD_TYPE ] == 'array')
+                                                $obj->$attr = $xmlObj->castStringToClass( $xmlObjcontent, true);
+                                            else
+                                                $obj->$attr = $xmlObj->castStringToClass( $xmlObjcontent );
                                         }
                                     }
                                 }

@@ -187,7 +187,7 @@ class XMLObjectCast {
             return array( );
         }
 
-        if( $dom->childNodes->length != 0 ) {
+        if( $dom->childNodes->length != 0 && $dom->childNodes->item( 0 )->childNodes->length != 0 ) {
             $node_name = $dom->childNodes->item( 0 )->childNodes->item( 0 )->nodeName;
             if( $node_name == 'error' ) {
                 $obj = new $classname;

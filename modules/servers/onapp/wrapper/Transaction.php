@@ -357,7 +357,6 @@ class ONAPP_Transaction extends ONAPP {
 
                 break;
         }
-        ;
 
         return $this->_fields;
     }
@@ -370,6 +369,34 @@ class ONAPP_Transaction extends ONAPP {
                 break;
         }
     }
+
+    /**
+     * Sends an API request to get the Objects. After requesting,
+     * unserializes the received response into the array of Objects
+     *
+     * @return the array of Object instances
+     * @access public
+     */
+     function getList( $page = 1 ) {
+        $this->activate( ONAPP_ACTIVATE_GETLIST );
+
+        $this->_loger->add( "getList: Get Transaction list." );
+
+        $this->setAPIResource( $this->getResource( ONAPP_GETRESOURCE_LIST ) );
+
+        $response = $this->sendRequest( ONAPP_REQUEST_METHOD_GET, '{"page":"'.$page.'"}' );
+
+        if( !empty( $response[ 'errors' ] ) ) {
+            $this->error = $response[ 'errors' ];
+            return false;
+        }
+
+        return $this->castStringToClass(
+            $response[ "response_body" ],
+            true
+        );
+    }
+
 }
 
 ?>

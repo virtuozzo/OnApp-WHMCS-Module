@@ -664,8 +664,7 @@ class ONAPP_User extends ONAPP {
         $this->_role_ids = $this->fillRolesIDs( );
 
         if( is_null( $this->_id ) ) {
-
-           $obj = $this->_create( );
+            $obj = $this->_create( );
 
             unset( $this->_fields[ 'password' ] );
         }
