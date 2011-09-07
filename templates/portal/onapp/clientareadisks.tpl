@@ -28,23 +28,23 @@
     <td>{$disk->_id}</td>
     <td align="right">{$disk->_disk_size} GB</td>
     <td>
-{if $disk->_primary == "true"}
+{if $disk->_primary == true}
         Standard (primary)
-{elseif $disk->_is_swap == "true"}
+{elseif $disk->_is_swap == true}
         Swap
 {else}
         Standard
 {/if}
     </td>
     <td>
-{if $disk->_built == "true"}
+{if $disk->_built == true}
         YES
 {else}
         NO
 {/if}
     </td>&nbsp;<td>
-{if $disk->_is_swap eq "false" }
-{if $disk->_has_autobackups == "true"}
+{if $disk->_is_swap eq false }
+{if $disk->_has_autobackups == true}
         <a class="power off-inactive" rel="nofollow" href="{$smarty.server.PHP_SELF}?page=disks&id={$id}&diskid={$disk->_id}&action=autobackup&mode=false">NO</a>
         <a class="power on-active">YES</a>
 {else}
@@ -56,7 +56,7 @@
 {/if}
     </td>
     <td>
-{if $disk->_is_swap != "true"}
+{if $disk->_is_swap != true}
       <a title="Backups" href="{$smarty.server.PHP_SELF}?page=backups&id={$id}&diskid={$disk->_id}&action=add">
         <img style="border: none;" title="" src="modules/servers/onapp/includes/backup.png" alt=""/>
       </a>

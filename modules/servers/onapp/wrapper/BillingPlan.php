@@ -5,20 +5,13 @@
  * Billing Plans are created to set prices for the resources so that users know how
  * much they will be charged per unit.
  *
- * @category  API WRAPPER
- * @package   ONAPP
- * @author    Lev Bartashevsky
- * @copyright 2010 / OnApp
- * @link     http://www.onapp.com/
- * @see       ONAPP
+ * @category	API WRAPPER
+ * @package		OnApp
+ * @author		Lev Bartashevsky
+ * @copyright	(c) 2011 OnApp
+ * @link		http://www.onapp.com/
+ * @see			OnApp
  */
-
-/**
- * requires Base class
- */
-require_once 'ONAPP.php';
-require_once 'User.php';
-require_once 'BillingPlan/BaseResource.php';
 
 /**
  * TODO Add description
@@ -42,280 +35,270 @@ define( 'ONAPP_GETRESOURCE_CREATE_COPY', 'copy' );
  *
  * Get the list of groups
  *
- *     - <i>GET onapp.com/settings/billing_plans.xml</i>
+ *	 - <i>GET onapp.com/settings/billing_plans.xml</i>
  *
  * Get a particular group details
  *
- *     - <i>GET onapp.com/settings/billing_plans/{ID}.xml</i>
+ *	 - <i>GET onapp.com/settings/billing_plans/{ID}.xml</i>
  *
  * Add new group
  *
- *     - <i>POST onapp.com/settings/billing_plans.xml</i>
+ *	 - <i>POST onapp.com/settings/billing_plans.xml</i>
  *
  * <code>
  * <?xml version="1.0" encoding="UTF-8"?>
  * <billing-plan>
- *    <label>{LABEL}</label>
+ *	<label>{LABEL}</label>
  * </billing-plan>
  * </code>
  *
  * Edit existing group
  *
- *     - <i>PUT onapp.com/settings/billing_plans/{ID}.xml</i>
+ *	 - <i>PUT onapp.com/settings/billing_plans/{ID}.xml</i>
  *
  * <code>
  * <?xml version="1.0" encoding="UTF-8"?>
  * <billing-plan>
- *    <label>{LABEL}</label>
+ *	<label>{LABEL}</label>
  * </billing-plan>
  * </code>
  *
  * Delete group
  *
- *     - <i>DELETE onapp.com/settings/billing_plans/{ID}.xml</i>
+ *	 - <i>DELETE onapp.com/settings/billing_plans/{ID}.xml</i>
  *
  * <b>Use the following JSON API requests:</b>
  *
  * Get the list of groups
  *
- *     - <i>GET onapp.com/settings/billing_plans.json</i>
+ *	 - <i>GET onapp.com/settings/billing_plans.json</i>
  *
  * Get a particular group details
  *
- *     - <i>GET onapp.com/settings/billing_plans/{ID}.json</i>
+ *	 - <i>GET onapp.com/settings/billing_plans/{ID}.json</i>
  *
  * Add new group
  *
- *     - <i>POST onapp.com/settings/billing_plans.json</i>
+ *	 - <i>POST onapp.com/settings/billing_plans.json</i>
  *
  * <code>
  * {
- *      billing-plan: {
- *          label:'{LABEL}',
- *      }
+ *	  billing-plan: {
+ *		  label:'{LABEL}',
+ *	  }
  * }
  * </code>
  *
  * Edit existing group
  *
- *     - <i>PUT onapp.com/settings/billing_plans/{ID}.json</i>
+ *	 - <i>PUT onapp.com/settings/billing_plans/{ID}.json</i>
  *
  * <code>
  * {
- *      billing-plan: {
- *          label:'{LABEL}',
- *      }
+ *	  billing-plan: {
+ *		  label:'{LABEL}',
+ *	  }
  * }
  * </code>
  *
  * Delete group
  *
- *     - <i>DELETE onapp.com/settings/billing_plans/{ID}.json</i>
+ *	 - <i>DELETE onapp.com/settings/billing_plans/{ID}.json</i>
  */
-class ONAPP_BillingPlan extends ONAPP {
-    /**
-     *
-     *  Billing Plan Label
-     */
-    var $_label;
+class OnApp_BillingPlan extends OnApp {
+	/**
+	 * root tag used in the API request
+	 *
+	 * @var string
+	 */
+	var $_tagRoot = 'billing_plan';
 
-    /**
-     *
-     * the Billing Plan creation date in the [YYYY][MM][DD]T[hh][mm]Z format
-     */
-    var $_created_at;
+	/**
+	 * alias processing the object data
+	 *
+	 * @var string
+	 */
+	var $_resource = 'billing_plans';
 
-    /**
-     *
-     * the date when the Group was updated in the [YYYY][MM][DD]T[hh][mm]Z format
-     */
-    var $_updated_at;
+	public function __construct() {
+		parent::__construct();
+		$this->className = __CLASS__;
+	}
 
-    /**
-     * base resources array
-     *
-     * @var array
-     */
-    var $_base_resources;
+	/**
+	 * API Fields description
+	 *
+	 * @param string|float $version OnApp API version
+	 * @param string $className current class' name
+	 * @return array
+	 */
+	public function initFields( $version = null, $className = '' ) {
+		switch( $version ) {
+			case '2.0':
+			case '2.1':
+				$this->fields = array(
+					'label' => array(
+						ONAPP_FIELD_MAP => '_label',
+						ONAPP_FIELD_REQUIRED => true,
+						ONAPP_FIELD_DEFAULT_VALUE => ''
+					),
+					'created_at' => array(
+						ONAPP_FIELD_MAP => '_created_at',
+						ONAPP_FIELD_TYPE => 'datetime',
+						ONAPP_FIELD_READ_ONLY => true
+					),
+					'updated_at' => array(
+						ONAPP_FIELD_MAP => '_updated_at',
+						ONAPP_FIELD_TYPE => 'datetime',
+						ONAPP_FIELD_READ_ONLY => true
+					),
+					'base_resources' => array(
+						ONAPP_FIELD_MAP => '_base_resources',
+						ONAPP_FIELD_TYPE => 'array',
+						ONAPP_FIELD_READ_ONLY => true,
+						ONAPP_FIELD_CLASS => 'BillingPlan_BaseResource',
+					),
+					'id' => array(
+						ONAPP_FIELD_MAP => '_id',
+						ONAPP_FIELD_TYPE => 'integer',
+						ONAPP_FIELD_READ_ONLY => true,
+					),
+					'monthly_price' => array(
+						ONAPP_FIELD_MAP => '_monthly_price',
+						ONAPP_FIELD_TYPE => 'integer',
+						ONAPP_FIELD_REQUIRED => true,
+					),
+					'currency_code' => array(
+						ONAPP_FIELD_MAP => '_currency_code',
+						ONAPP_FIELD_TYPE => 'string',
+						ONAPP_FIELD_REQUIRED => true,
+						ONAPP_FIELD_READ_ONLY => true,
+					),
+					'show_price' => array(
+						ONAPP_FIELD_MAP => '_show_price',
+						ONAPP_FIELD_TYPE => 'boolean',
+						ONAPP_FIELD_REQUIRED => true,
+						ONAPP_FIELD_DEFAULT_VALUE => true,
+						ONAPP_FIELD_READ_ONLY => true
+					)
+				);
+				break;
 
-    /**
-     *
-     * the billing plan ID
-     */
-    var $_id;
+			case 2.2:
+				$this->fields = $this->initFields( 2.1 );
+				break;
+		}
 
-    /**
-     * the mounthly price
-     *
-     * @var integer
-     */
-    var $_monthly_price;
+		parent::initFields( $version, __CLASS__ );
+		return $this->fields;
+	}
 
-    /**
-     * the currency code
-     *
-     * @var integer
-     */
-    var $_currency_code;
+	function getResource( $action = ONAPP_GETRESOURCE_DEFAULT ) {
+		switch( $action ) {
+			case ONAPP_GETRESOURCE_GETLIST_USERS:
+				/**
+				 * ROUTE :
+				 * @name billing_plan_users
+				 * @method GET
+				 * @alias  /billing_plans/:billing_plan_id/users(.:format)
+				 * @format {:controller=>"users", :action=>"index"}
+				 */
+				$resource = $this->getResource( ONAPP_GETRESOURCE_LOAD ) . '/users';
+				break;
 
-    /**
-     * Indicates whether to show price
-     *
-     * @var boolean
-     */
-    var $_show_price;
+			case ONAPP_GETRESOURCE_CREATE_COPY:
+				/**
+				 * ROUTE :
+				 * @name create_copy_billing_plan
+				 * @method POST
+				 * @alias  /billing_plans/:id/create_copy(.:format)
+				 * @format {:controller=>"internationalization", :action=>"show"}
+				 */
+				$resource = $this->getResource( ONAPP_GETRESOURCE_LOAD ) . '/create_copy';
+				break;
 
-    /**
-     * root tag used in the API request
-     *
-     * @var string
-     */
-    var $_tagRoot = 'billing_plan';
+			default:
+				/**
+				 * ROUTE :
+				 * @name billing_plans
+				 * @method GET
+				 * @alias  /billing_plans(.:format)
+				 * @format {:controller=>"billing_plans", :action=>"index"}
+				 */
+				/**
+				 * ROUTE :
+				 * @name billing_plan
+				 * @method GET
+				 * @alias  /billing_plans/:id(.:format)
+				 * @format {:controller=>"billing_plans", :action=>"show"}
+				 */
+				/**
+				 * ROUTE :
+				 * @name billing_plans
+				 * @method POST
+				 * @alias  /billing_plans(.:format)
+				 * @format {:controller=>"billing_plans", :action=>"create"}
+				 */
+				/**
+				 * ROUTE :
+				 * @name
+				 * @method PUT
+				 * @alias  /billing_plans/:id(.:format)
+				 * @format {:controller=>"billing_plans", :action=>"update"}
+				 */
+				/**
+				 * ROUTE :
+				 * @name
+				 * @method DELETE
+				 * @alias  billing_plans/:id(.:format)
+				 * @format {:controller=>"billing_plans", :action=>"destroy"}
+				 */
+				$resource = parent::getResource( $action );
+		}
 
-    /**
-     * alias processing the object data
-     *
-     * @var string
-     */
-    var $_resource = 'billing_plans';
+		return $resource;
+	}
 
-    /**
-     * called class name
-     *
-     * @var string
-     */
-    var $_called_class = 'ONAPP_BillingPlan';
+	function users() {
+		$this->logger->add( "getList: Get Users list." );
 
-    /**
-     * API Fields description
-     *
-     * @access private
-     * @var    array
-     */
-    function _init_fields( $version = NULL ) {
-        if( is_null( $version ) ) {
-            $version = $this->_version;
-        }
+		$this->setAPIResource( $this->getResource( ONAPP_GETRESOURCE_GETLIST_USERS ) );
 
-        switch( $version ) {
-            case '2.0':
-            case '2.1':
-                $this->_fields = array(
-                    'label' => array(
-                        ONAPP_FIELD_MAP => '_label',
-                        ONAPP_FIELD_REQUIRED => true,
-                        ONAPP_FIELD_DEFAULT_VALUE => ''
-                    ),
-                    'created_at' => array(
-                        ONAPP_FIELD_MAP => '_created_at',
-                        ONAPP_FIELD_TYPE => 'datetime',
-                        ONAPP_FIELD_READ_ONLY => true
-                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
-                    ),
-                    'updated_at' => array(
-                        ONAPP_FIELD_MAP => '_updated_at',
-                        ONAPP_FIELD_TYPE => 'datetime',
-                        ONAPP_FIELD_READ_ONLY => true
-                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
-                    ),
-                    'base_resources' => array(
-                        ONAPP_FIELD_MAP => '_base_resources',
-                        ONAPP_FIELD_TYPE => 'array',
-                        ONAPP_FIELD_READ_ONLY => true,
-                        ONAPP_FIELD_CLASS => 'BillingPlan_BaseResource',
-                    ),
-                    'id' => array(
-                        ONAPP_FIELD_MAP => '_id',
-                        ONAPP_FIELD_TYPE => 'integer',
-                        ONAPP_FIELD_READ_ONLY => true,
-                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
-                    ),
-                    'monthly_price' => array(
-                        ONAPP_FIELD_MAP => '_monthly_price',
-                        ONAPP_FIELD_TYPE => 'integer',
-                        ONAPP_FIELD_REQUIRED => true,
-                    ),
-                    'currency_code' => array(
-                        ONAPP_FIELD_MAP => '_currency_code',
-                        ONAPP_FIELD_TYPE => 'string',
-                        ONAPP_FIELD_REQUIRED => true,
-                        ONAPP_FIELD_READ_ONLY => true,
-                    ),
-                    'show_price' => array(
-                        ONAPP_FIELD_MAP => '_show_price',
-                        ONAPP_FIELD_TYPE => 'boolean',
-                        ONAPP_FIELD_REQUIRED => true,
-                        ONAPP_FIELD_DEFAULT_VALUE => true,
-                        ONAPP_FIELD_READ_ONLY => true
-                    )
-                );
+		$response = $this->sendRequest( ONAPP_REQUEST_METHOD_GET );
 
-                break;
-        }
+		if( !empty( $response[ 'errors' ] ) ) {
+			$this->errors = $response[ 'errors' ];
+			return false;
+		}
 
-        return $this->_fields;
-    }
+		$class = new ONAPP_User();
 
-    function getResource( $action = ONAPP_GETRESOURCE_DEFAULT ) {
-        switch( $action ) {
-            case ONAPP_GETRESOURCE_GETLIST_USERS:
-                $resource = $this->getResource( ONAPP_GETRESOURCE_LOAD ) . '/users';
-                break;
-            case ONAPP_GETRESOURCE_CREATE_COPY:
-                $resource = $this->getResource( ONAPP_GETRESOURCE_LOAD ) . '/create_copy';
-                break;
-            default:
-                $resource = parent::getResource( $action );
-                break;
-        }
+		$class->logger = $this->logger;
 
-        return $resource;
-    }
+		$class->options = $this->options;
 
-    function users( ) {
+		$class->logger->setTimezone();
 
-        $this->_loger->add( "getList: Get Users list." );
+		$class->_ch = $this->_ch;
 
-        $this->setAPIResource( $this->getResource( ONAPP_GETRESOURCE_GETLIST_USERS ) );
+		$class->initFields( $this->getAPIVersion() );
 
-        $response = $this->sendRequest( ONAPP_REQUEST_METHOD_GET );
+		$result = $class->castStringToClass( $response );
 
-        if( !empty( $response[ 'errors' ] ) ) {
-            $this->error = $response[ 'errors' ];
-            return false;
-        }
+		return $result;
+	}
 
-        $class = new ONAPP_User();
+	function create_copy() {
+		$this->logger->add( "getList: Create Billing plan copy" );
 
-        $class->_loger = $this->_loger;
+		$this->setAPIResource( $this->getResource( ONAPP_GETRESOURCE_CREATE_COPY ) );
 
-        $class->options = $this->options;
+		$data = "<billing_plan><label>TEST</label></billing_plan>";
 
-        $class->_loger->setTimezone( );
+		$response = $this->sendRequest( ONAPP_REQUEST_METHOD_POST, $data );
 
-        $class->_ch = $this->_ch;
+		$result = $this->castStringToClass( $response );
 
-        $class->_load_fields( );
-
-        return $class->castStringToClass(
-            $response[ "response_body" ],
-            true
-        );
-    }
-
-    function create_copy() {
-
-        $this->_loger->add( "getList: Create Billing plan copy" );
-
-        $this->setAPIResource( $this->getResource( ONAPP_GETRESOURCE_CREATE_COPY ) );
-
-        $data = "<billing_plan><label>TEST</label></billing_plan>";
-
-        $response = $this->sendRequest( ONAPP_REQUEST_METHOD_POST, $data );
-
-        return $class->castStringToClass(
-            $response[ "response_body" ],
-            true
-        );
-    }
+		return $result;
+	}
 }

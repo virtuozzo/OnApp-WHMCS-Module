@@ -43,14 +43,14 @@ function deleteback(id) {
     <td>{$backup->_created_at|regex_replace:"/[TZ]/":' '}</td>
     <td>#{$backup->_disk_id}</td>
     <td>
-{if $backup->_built == "true" }
+{if $backup->_built == true }
         Built
 {else}
         Pending
 {/if}
     </td>
     <td>
-{if $backup->_built != "true"}
+{if $backup->_built != true}
         not built yet
 {elseif $backup->_backup_size gt 1024}
         { $backup->_backup_size/1024|round } MB
@@ -59,14 +59,14 @@ function deleteback(id) {
 {/if}
     </td>
     <td>
-{if $backup->_built != "true"}
+{if $backup->_built != true}
         &nbsp;
 {else}
         { $backup->_backup_type }
 {/if}
     </td>
     <td>
-{if $backup->_built neq "true"}
+{if $backup->_built neq true}
         &nbsp;
 {else}
        <a href="#" onclick="restoreback({$backup->_id});; return false;">{$LANG.onapprestore}</a> |

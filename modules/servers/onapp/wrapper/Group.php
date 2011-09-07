@@ -1,4 +1,4 @@
-<?PHP
+<?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
@@ -9,18 +9,13 @@
  * CPU, CPU Share, and Disk size. Each user is assigned a billing group during
  * the creation process.
  *
- * @category  API WRAPPER
- * @package   ONAPP
- * @author    Andrew Yatskovets
- * @copyright 2010 / OnApp
- * @link     http://www.onapp.com/
- * @see       ONAPP
+ * @category	API WRAPPER
+ * @package		OnApp
+ * @author		Andrew Yatskovets
+ * @copyright	(c) 2011 OnApp
+ * @link		http://www.onapp.com/
+ * @see			OnApp
  */
-
-/**
- * requires Base class
- */
-require_once dirname( __FILE__ ) . '/ONAPP.php';
 
 /**
  * Managing Groups
@@ -35,365 +30,253 @@ require_once dirname( __FILE__ ) . '/ONAPP.php';
  *
  * Get the list of groups
  *
- *     - <i>GET onapp.com/settings/groups.xml</i>
+ *	 - <i>GET onapp.com/settings/groups.xml</i>
  *
  * Get a particular group details
  *
- *     - <i>GET onapp.com/settings/groups/{ID}.xml</i>
+ *	 - <i>GET onapp.com/settings/groups/{ID}.xml</i>
  *
  * Add new group
  *
- *     - <i>POST onapp.com/settings/groups.xml</i>
+ *	 - <i>POST onapp.com/settings/groups.xml</i>
  *
  * <code>
  * <?xml version="1.0" encoding="UTF-8"?>
  * <group>
- *    <label>{LABEL}</label>
- *    <price_cpu>{PRICE}</price_cpu>
- *    <price_cpu_share>{PRICE}</price_cpu_share>
- *    <price_disk_size>{PRICE}</price_disk_size>
- *    <price_memory>{PRICE}</price_memory>
- *    <price_ip_address>{PRICE}</price_ip_address>
- *    <price_cpu_power_off>{PRICE}</price_cpu_power_off>
- *    <price_cpu_share_power_off>{PRICE}</price_cpu_share_power_off>
- *    <price_disk_size>_power_off{PRICE}</price_disk_size_power_off>
- *    <price_memory_power_off>{PRICE}</price_memory_power_off>
- *    <price_ip_address_power_off>{PRICE}</price_ip_address_power_off>
- *    <price_storage_disk_size>{PRICE}</price_storage_disk_size>
+ *	<label>{LABEL}</label>
+ *	<price_cpu>{PRICE}</price_cpu>
+ *	<price_cpu_share>{PRICE}</price_cpu_share>
+ *	<price_disk_size>{PRICE}</price_disk_size>
+ *	<price_memory>{PRICE}</price_memory>
+ *	<price_ip_address>{PRICE}</price_ip_address>
+ *	<price_cpu_power_off>{PRICE}</price_cpu_power_off>
+ *	<price_cpu_share_power_off>{PRICE}</price_cpu_share_power_off>
+ *	<price_disk_size>_power_off{PRICE}</price_disk_size_power_off>
+ *	<price_memory_power_off>{PRICE}</price_memory_power_off>
+ *	<price_ip_address_power_off>{PRICE}</price_ip_address_power_off>
+ *	<price_storage_disk_size>{PRICE}</price_storage_disk_size>
  * </group>
  * </code>
  *
  * Edit existing group
  *
- *     - <i>PUT onapp.com/settings/groups/{ID}.xml</i>
+ *	 - <i>PUT onapp.com/settings/groups/{ID}.xml</i>
  *
  * <code>
  * <?xml version="1.0" encoding="UTF-8"?>
  * <group>
- *    <label>{LABEL}</label>
- *    <price_cpu>{PRICE}</price_cpu>
- *    <price_cpu_share>{PRICE}</price_cpu_share>
- *    <price_disk_size>{PRICE}</price_disk_size>
- *    <price_memory>{PRICE}</price_memory>
- *    <price_ip_address>{PRICE}</price_ip_address>
- *    <price_cpu_power_off>{PRICE}</price_cpu_power_off>
- *    <price_cpu_share_power_off>{PRICE}</price_cpu_share_power_off>
- *    <price_disk_size>_power_off{PRICE}</price_disk_size_power_off>
- *    <price_memory_power_off>{PRICE}</price_memory_power_off>
- *    <price_ip_address_power_off>{PRICE}</price_ip_address_power_off>
- *    <price_storage_disk_size>{PRICE}</price_storage_disk_size>
+ *	<label>{LABEL}</label>
+ *	<price_cpu>{PRICE}</price_cpu>
+ *	<price_cpu_share>{PRICE}</price_cpu_share>
+ *	<price_disk_size>{PRICE}</price_disk_size>
+ *	<price_memory>{PRICE}</price_memory>
+ *	<price_ip_address>{PRICE}</price_ip_address>
+ *	<price_cpu_power_off>{PRICE}</price_cpu_power_off>
+ *	<price_cpu_share_power_off>{PRICE}</price_cpu_share_power_off>
+ *	<price_disk_size>_power_off{PRICE}</price_disk_size_power_off>
+ *	<price_memory_power_off>{PRICE}</price_memory_power_off>
+ *	<price_ip_address_power_off>{PRICE}</price_ip_address_power_off>
+ *	<price_storage_disk_size>{PRICE}</price_storage_disk_size>
  * </group>
  * </code>
  *
  * Delete group
  *
- *     - <i>DELETE onapp.com/settings/groups/{ID}.xml</i>
+ *	 - <i>DELETE onapp.com/settings/groups/{ID}.xml</i>
  *
  * <b>Use the following JSON API requests:</b>
  *
  * Get the list of groups
  *
- *     - <i>GET onapp.com/settings/groups.json</i>
+ *	 - <i>GET onapp.com/settings/groups.json</i>
  *
  * Get a particular group details
  *
- *     - <i>GET onapp.com/settings/groups/{ID}.json</i>
+ *	 - <i>GET onapp.com/settings/groups/{ID}.json</i>
  *
  * Add new group
  *
- *     - <i>POST onapp.com/settings/groups.json</i>
+ *	 - <i>POST onapp.com/settings/groups.json</i>
  *
  * <code>
  * {
- *      group: {
- *          label:'{LABEL}',
- *          price_cpu:{PRICE},
- *          price_cpu_share:{PRICE},
- *          price_disk_size:{PRICE},
- *          price_memory:{PRICE},
- *          price_ip_address:{PRICE},
- *          price_cpu_power_off:{PRICE},
- *          price_cpu_share_power_off:{PRICE},
- *          price_disk_size_power_off:{PRICE},
- *          price_memory_power_off:{PRICE},
- *          price_ip_address_power_off:{PRICE},
- *          price_storage_disk_size:{PRICE}
- *      }
+ *	  group: {
+ *		  label:'{LABEL}',
+ *		  price_cpu:{PRICE},
+ *		  price_cpu_share:{PRICE},
+ *		  price_disk_size:{PRICE},
+ *		  price_memory:{PRICE},
+ *		  price_ip_address:{PRICE},
+ *		  price_cpu_power_off:{PRICE},
+ *		  price_cpu_share_power_off:{PRICE},
+ *		  price_disk_size_power_off:{PRICE},
+ *		  price_memory_power_off:{PRICE},
+ *		  price_ip_address_power_off:{PRICE},
+ *		  price_storage_disk_size:{PRICE}
+ *	  }
  * }
  * </code>
  *
  * Edit existing group
  *
- *     - <i>PUT onapp.com/settings/groups/{ID}.json</i>
+ *	 - <i>PUT onapp.com/settings/groups/{ID}.json</i>
  *
  * <code>
  * {
- *      group: {
- *          label:'{LABEL}',
- *          price_cpu:{PRICE},
- *          price_cpu_share:{PRICE},
- *          price_disk_size:{PRICE},
- *          price_memory:{PRICE},
- *          price_ip_address:{PRICE},
- *          price_cpu_power_off:{PRICE},
- *          price_cpu_share_power_off:{PRICE},
- *          price_disk_size_power_off:{PRICE},
- *          price_memory_power_off:{PRICE},
- *          price_ip_address_power_off:{PRICE},
- *          price_storage_disk_size:{PRICE}
- *      }
+ *	  group: {
+ *		  label:'{LABEL}',
+ *		  price_cpu:{PRICE},
+ *		  price_cpu_share:{PRICE},
+ *		  price_disk_size:{PRICE},
+ *		  price_memory:{PRICE},
+ *		  price_ip_address:{PRICE},
+ *		  price_cpu_power_off:{PRICE},
+ *		  price_cpu_share_power_off:{PRICE},
+ *		  price_disk_size_power_off:{PRICE},
+ *		  price_memory_power_off:{PRICE},
+ *		  price_ip_address_power_off:{PRICE},
+ *		  price_storage_disk_size:{PRICE}
+ *	  }
  * }
  * </code>
  *
  * Delete group
  *
- *     - <i>DELETE onapp.com/settings/groups/{ID}.json</i>
+ *	 - <i>DELETE onapp.com/settings/groups/{ID}.json</i>
  */
-class ONAPP_Group extends ONAPP {
+class OnApp_Group extends OnApp {
+	/**
+	 * root tag used in the API request
+	 *
+	 * @var string
+	 */
+	var $_tagRoot = 'group';
 
-    /**
-     * the group ID 
-     * 
-     * @var integer
-     */
-    var $_id;
+	/**
+	 * alias processing the object data
+	 *
+	 * @var string
+	 */
+	var $_resource = 'groups';
 
-    /**
-     * the Group creation date in the [YYYY][MM][DD]T[hh][mm]Z format
-     *
-     * @var string
-     */
-    var $_created_at;
+	public function __construct() {
+		parent::__construct();
+		$this->className = __CLASS__;
+	}
 
-    /**
-     * the group identifier
-     *
-     * @var integer
-     */
-    var $_identifier;
+	/**
+	 * API Fields description
+	 *
+	 * @param string|float $version OnApp API version
+	 * @param string $className current class' name
+	 * @return array
+	 */
+	public function initFields( $version = null, $className = '' ) {
+		switch( $version ) {
+			case '2.0':
+				$this->fields = array(
+					'id' => array(
+						ONAPP_FIELD_MAP => '_id',
+						ONAPP_FIELD_TYPE => 'integer',
+						ONAPP_FIELD_READ_ONLY => true,
+					),
+					'created_at' => array(
+						ONAPP_FIELD_MAP => '_created_at',
+						ONAPP_FIELD_TYPE => 'datetime',
+						ONAPP_FIELD_READ_ONLY => true
+					),
+					'identifier' => array(
+						ONAPP_FIELD_MAP => '_identifier',
+						ONAPP_FIELD_TYPE => 'integer',
+						ONAPP_FIELD_READ_ONLY => true,
+					),
+					'label' => array(
+						ONAPP_FIELD_MAP => '_label',
+						ONAPP_FIELD_REQUIRED => true,
+						ONAPP_FIELD_DEFAULT_VALUE => ''
+					),
+					'price_cpu' => array(
+						ONAPP_FIELD_MAP => '_price_cpu',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => true,
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+					'price_cpu_share' => array(
+						ONAPP_FIELD_MAP => '_price_cpu_share',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => true,
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+					'price_disk_size' => array(
+						ONAPP_FIELD_MAP => '_price_disk_size',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => true,
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+					'price_memory' => array(
+						ONAPP_FIELD_MAP => '_price_memory',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => 'true',
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+					'updated_at' => array(
+						ONAPP_FIELD_MAP => '_updated_at',
+						ONAPP_FIELD_TYPE => 'datetime',
+						ONAPP_FIELD_READ_ONLY => true
+					),
+					'price_ip_address' => array(
+						ONAPP_FIELD_MAP => '_price_ip_address',
+						ONAPP_FIELD_REQUIRED => 'true',
+					),
+					'price_storage_disk_size' => array(
+						ONAPP_FIELD_MAP => '_price_storage_disk_size',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => 'true',
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+					'price_cpu_power_off' => array(
+						ONAPP_FIELD_MAP => '_price_cpu_power_off',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => 'true',
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+					'price_memory_power_off' => array(
+						ONAPP_FIELD_MAP => '_price_memory_power_off',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => 'true',
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+					'price_disk_size_power_off' => array(
+						ONAPP_FIELD_MAP => '_price_disk_size_power_off',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => 'true',
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+					'price_cpu_share_power_off' => array(
+						ONAPP_FIELD_MAP => '_price_cpu_share_power_off',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => 'true',
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+					'price_ip_address_power_off' => array(
+						ONAPP_FIELD_MAP => '_price_ip_address_power_off',
+						ONAPP_FIELD_TYPE => 'decimal',
+						ONAPP_FIELD_REQUIRED => 'true',
+						ONAPP_FIELD_DEFAULT_VALUE => '0.0',
+					),
+				);
+				break;
 
-    /**
-     * the group Label
-     *
-     * @var string
-     */
-    var $_label;
+			case '2.1':
+				$this->fields = array();
+				break;
 
-    /**
-     * the price for the CPU usage per hour per CPU core
-     *
-     * @var float
-     */
-    var $_price_cpu;
+			case 2.2:
+				$this->fields = $this->initFields( 2.1 );
+				break;
+		}
 
-    /**
-     * the price for the CPU Priority per hour per CPU Priority
-     *
-     * @var float
-     */
-    var $_price_cpu_share;
-
-    /**
-     *
-     * the price for the Disk size per hour per GB
-     */
-    var $_price_disk_size;
-
-    /**
-     *
-     * the price for the Memory per hour per MB
-     */
-    var $_price_memory;
-
-    /**
-     *
-     * the Group update date in the [YYYY][MM][DD]T[hh][mm]Z format
-     */
-    var $_updated_at;
-
-    /**
-     *
-     * the price for the IP address per hour per IP Address
-     */
-    var $_price_ip_address;
-
-    /**
-     *
-     * the price for the Storage Disk Size per hour per GB
-     */
-    var $_price_storage_disk_size;
-
-    /**
-     *
-     * the price for the CPU usage per hour per CPU core
-     * for powered OFF Virtual Machine
-     */
-    var $_price_cpu_power_off;
-
-    /**
-     *
-     * the price for the Memory per hour per MB
-     * for powered OFF Virtual Machine
-     */
-    var $_price_memory_power_off;
-
-    /**
-     *
-     * the price for the Disk size per hour per GB
-     * for powered OFF Virtual Machine
-     */
-    var $_price_disk_size_power_off;
-
-    /**
-     *
-     * the price for the CPU Priority per hour per CPU Priority
-     * for powered OFF Virtual Machine
-     */
-    var $_price_cpu_share_power_off;
-
-    /**
-     *
-     * the price for the IP address per hour per IP Address
-     * for powered OFF Virtual Machine
-     */
-    var $_price_ip_address_power_off;
-
-    /**
-     * root tag used in the API request
-     *
-     * @var string
-     */
-    var $_tagRoot = 'group';
-
-    /**
-     * alias processing the object data
-     *
-     * @var string
-     */
-    var $_resource = 'groups';
-
-    /**
-     *
-     * called class name
-     *
-     * @var string
-     */
-    var $_called_class = 'ONAPP_Group';
-
-    /**
-     * API Fields description
-     *
-     * @access private
-     * @var    array
-     */
-    function _init_fields( $version = NULL ) {
-        if( is_null( $version ) ) {
-            $version = $this->_version;
-        }
-
-        switch( $version ) {
-            case '2.0':
-                $this->_fields = array(
-                    'id' => array(
-                        ONAPP_FIELD_MAP => '_id',
-                        ONAPP_FIELD_TYPE => 'integer',
-                        ONAPP_FIELD_READ_ONLY => true,
-                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
-                    ),
-                    'created_at' => array(
-                        ONAPP_FIELD_MAP => '_created_at',
-                        ONAPP_FIELD_TYPE => 'datetime',
-                        ONAPP_FIELD_READ_ONLY => true
-                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
-                    ),
-                    'identifier' => array(
-                        ONAPP_FIELD_MAP => '_identifier',
-                        ONAPP_FIELD_TYPE => 'integer',
-                        ONAPP_FIELD_READ_ONLY => true,
-                    ),
-                    'label' => array(
-                        ONAPP_FIELD_MAP => '_label',
-                        ONAPP_FIELD_REQUIRED => true,
-                        ONAPP_FIELD_DEFAULT_VALUE => ''
-                    ),
-                    'price_cpu' => array(
-                        ONAPP_FIELD_MAP => '_price_cpu',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => true,
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                    'price_cpu_share' => array(
-                        ONAPP_FIELD_MAP => '_price_cpu_share',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => true,
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                    'price_disk_size' => array(
-                        ONAPP_FIELD_MAP => '_price_disk_size',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => true,
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                    'price_memory' => array(
-                        ONAPP_FIELD_MAP => '_price_memory',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => 'true',
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                    'updated_at' => array(
-                        ONAPP_FIELD_MAP => '_updated_at',
-                        ONAPP_FIELD_TYPE => 'datetime',
-                        ONAPP_FIELD_READ_ONLY => true
-                        //    ONAPP_FIELD_DEFAULT_VALUE => ''
-                    ),
-                    'price_ip_address' => array(
-                        ONAPP_FIELD_MAP => '_price_ip_address',
-                        ONAPP_FIELD_REQUIRED => 'true',
-                    ),
-                    'price_storage_disk_size' => array(
-                        ONAPP_FIELD_MAP => '_price_storage_disk_size',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => 'true',
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                    'price_cpu_power_off' => array(
-                        ONAPP_FIELD_MAP => '_price_cpu_power_off',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => 'true',
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                    'price_memory_power_off' => array(
-                        ONAPP_FIELD_MAP => '_price_memory_power_off',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => 'true',
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                    'price_disk_size_power_off' => array(
-                        ONAPP_FIELD_MAP => '_price_disk_size_power_off',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => 'true',
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                    'price_cpu_share_power_off' => array(
-                        ONAPP_FIELD_MAP => '_price_cpu_share_power_off',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => 'true',
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                    'price_ip_address_power_off' => array(
-                        ONAPP_FIELD_MAP => '_price_ip_address_power_off',
-                        ONAPP_FIELD_TYPE => 'decimal',
-                        ONAPP_FIELD_REQUIRED => 'true',
-                        ONAPP_FIELD_DEFAULT_VALUE => '0.0',
-                    ),
-                );
-                break;
-            case '2.1':
-                $this->_fields = array();
-//                die("class ONAPP_Group not supported in OnApp 2.1.x\n");
-                break;
-        }
-
-        return $this->_fields;
-    }
+		parent::initFields( $version, __CLASS__ );
+		return $this->fields;
+	}
 }

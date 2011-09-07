@@ -10,12 +10,7 @@ require_once "includes/clientareafunctions.php";
 
 define( 'PAGE_WRAPPER_DIR', dirname(__FILE__).'/modules/servers/onapp/wrapper' );
 
-require_once PAGE_WRAPPER_DIR.'/ONAPP.php';
-require_once PAGE_WRAPPER_DIR.'/Disk.php';
-require_once PAGE_WRAPPER_DIR.'/VirtualMachine.php';
-require_once PAGE_WRAPPER_DIR.'/ResourceLimit.php';
-require_once PAGE_WRAPPER_DIR.'/VirtualMachine/Backup.php';
-require_once PAGE_WRAPPER_DIR.'/VirtualMachine/CpuUsage.php';
+require_once PAGE_WRAPPER_DIR.'/OnAppInit.php';
 
 require_once dirname(__FILE__).'/modules/servers/onapp/lib.php';
 
@@ -91,7 +86,7 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
             productbackups();
             break;
         case 'upgrade':
-            if( $_ONAPPVARS['service']['configoptionsupgrade'] == "on" ) { 
+            if( $_ONAPPVARS['service']['configoptionsupgrade'] == "on" ) {
                 $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappupgradedowngrade"] .'" href="onapp.php?page=upgrade&id='.$id.'">'.$_LANG["onappupgradedowngrade"].'</a>';
                 productupgrade();
             } else {
@@ -115,8 +110,10 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
  * @param string $url redirection url
  */
 function redirect($url) {
-    if (!headers_sent())
-        header('Location: '.$url); exit;
+    if (!headers_sent()) {
+		header('Location: '.$url);
+		exit;
+	}
     else {
         echo '<script type="text/javascript">';
         echo 'window.location.href="'.$url.'";';
@@ -161,9 +158,9 @@ function show_template($templatefile, $values) {
     if ($CONFIG['SystemSSLURL'])
         $smartyvalues['systemurl'] = $CONFIG['SystemSSLURL'] . '/';
     else if ($CONFIG['SystemURL'] != 'http://www.yourdomain.com/whmcs')
-        /* Do not change this URL!!! - Otherwise WHMCS Failed ! */ 
+        /* Do not change this URL!!! - Otherwise WHMCS Failed ! */
         $smartyvalues['systemurl'] = $CONFIG['SystemURL'] . '/';
-    
+
     outputClientArea($templatefile);
 }
 
@@ -178,7 +175,7 @@ function clientareaproducts() {
 
 // Get OnApp VMs
     $select_onapp_users = sprintf(
-        "SELECT 
+        "SELECT
             *,
             tblonappclients.password as userpassword
         FROM
@@ -343,7 +340,7 @@ function _action_vm_create() {
 /* TODO check template
     $templates = get_templates($_ONAPPVARS['service']['serverid'], $_ONAPPVARS['service']["configoption2"]);
     $os = $_ONAPPVARS['service']['os'];
-    
+
     if (! is_null($os) && isset($templates[$os]) ) {
         $templates = array(
             $os => $templates[$os]
@@ -471,7 +468,7 @@ function showproduct() {
 
         showcreateproduct();
     } else {
-       
+
         $network = get_vm_interface( $_ONAPPVARS['id'] );
 
         show_template(
@@ -551,7 +548,7 @@ function productcpuusage() {
             $usage = $list[$i]->_cpu_time / ($date[$list[$i]->_created_at] * 10) / 100 ;
         else
             $usage = 0;
-            
+
         $xaxis .= "<value xid='$i'>". $created_at."</value>";
         $yaxis .= "<value xid='$i'>".number_format($usage, 2)."</value>";
     }
@@ -807,7 +804,7 @@ function clientareabackups() {
 function _action_backup_add( $id, $diskid ) {
     if ( is_null($diskid) )
         return array('error' => 'Disk ID not set');
-    
+
     $vm           = get_vm($id);
     $service      = get_service($id);
     $onapp_config = get_onapp_config($service['serverid']);
@@ -916,7 +913,7 @@ function productupgrade() {
     $service = $_ONAPPVARS['service'];
 
     $templates = get_templates(
-        $service['serverid'], 
+        $service['serverid'],
         $service["configoption2"]
     );
 
@@ -1045,34 +1042,34 @@ function storagedisksizes() {
         optionssub.id as subid,
         optionssub.optionname,
         options.configid,
-        tblproductconfigoptions.optionname as configoptionname, 
+        tblproductconfigoptions.optionname as configoptionname,
         tblproductconfigoptions.optiontype,
         tblproductconfigoptions.qtymaximum AS max,
         tblproductconfigoptions.qtyminimum AS min,
-        options.qty, 
-        optionssub.sortorder, 
+        options.qty,
+        optionssub.sortorder,
         options.optionid as active
     FROM
         tblhosting
-        LEFT JOIN tblproducts ON 
+        LEFT JOIN tblproducts ON
             tblproducts.id = packageid
-        LEFT JOIN tblonappservices ON 
+        LEFT JOIN tblonappservices ON
             service_id = tblhosting.id
-        LEFT JOIN tblonappclients ON 
-            tblproducts.configoption1 = tblonappclients.server_id AND 
+        LEFT JOIN tblonappclients ON
+            tblproducts.configoption1 = tblonappclients.server_id AND
             tblhosting.userid = tblonappclients.client_id
         LEFT JOIN tblhostingconfigoptions AS options ON
             relid = tblhosting.id
-        LEFT JOIN tblproductconfigoptionssub AS sub 
-            ON options.configid = sub.configid 
+        LEFT JOIN tblproductconfigoptionssub AS sub
+            ON options.configid = sub.configid
             AND options.configid = tblproducts.configoption3
             AND optionid = sub.id
-        LEFT JOIN tblproductconfigoptions 
-            ON tblproductconfigoptions.id = options.configid 
-        LEFT JOIN tblproductconfigoptionssub AS optionssub 
-            ON optionssub.configid = tblproductconfigoptions.id AND 
+        LEFT JOIN tblproductconfigoptions
+            ON tblproductconfigoptions.id = options.configid
+        LEFT JOIN tblproductconfigoptionssub AS optionssub
+            ON optionssub.configid = tblproductconfigoptions.id AND
             options.configid = tblproducts.configoption3
-        LEFT JOIN tblservers ON tblproducts.configoption1 = tblservers.id 
+        LEFT JOIN tblservers ON tblproducts.configoption1 = tblservers.id
     WHERE
         servertype = 'onappbackupspace'
         AND options.optionid = optionssub.id

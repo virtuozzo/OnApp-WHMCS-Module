@@ -1,10 +1,10 @@
 <?php
+//error_reporting(E_ALL);
+//ini_set('display_errors', 'On');
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 define( 'MODULE_WRAPPER_DIR', dirname(__FILE__).'/wrapper' );
 
-require_once MODULE_WRAPPER_DIR.'/Network.php';
-require_once MODULE_WRAPPER_DIR.'/Template.php';
-require_once MODULE_WRAPPER_DIR.'/Hypervisor.php';
+require_once MODULE_WRAPPER_DIR.'/OnAppInit.php';
 
 require_once dirname(__FILE__).'/lib.php';
 
@@ -46,17 +46,17 @@ function onapp_createTables() {
 ) ENGINE=InnoDB;");
 
     if ( ! full_query( CREATE_TABLE_CLIENTS, $whmcsmysql ) ) {
-        return array( 
+        return array(
             "error" => sprintf($_LANG["onapperrtablecreate"], 'onappclients')
         );
     } else if ( ! full_query( CREATE_TABLE_SERVICES, $whmcsmysql ) ) {
-        return array( 
+        return array(
             "error" => sprintf($_LANG["onapperrtablecreate"], 'onappservices')
         );
     } else if ( ! full_query( CREATE_TABLE_IPS, $whmcsmysql ) ) {
         return array(
             "error" => sprintf(
-                $_LANG["onapperrtablecreate"], 
+                $_LANG["onapperrtablecreate"],
                 'tblonappips'));
     };
 
@@ -70,7 +70,7 @@ function onapp_createTables() {
       "INSERT INTO tblemailtemplates ( type, name, subject, message, plaintext)
           VALUES ('product', 'Virtual Machine Created', 'Virtual machine has been created', 'Dear {\$client_name},<br/><br/>This is a notice that an virtual machine has been created.', 0 );");
 
-    if ( ! mysql_fetch_assoc( full_query(SELECT_VM_CREATE_TEMPLATE) ) ) 
+    if ( ! mysql_fetch_assoc( full_query(SELECT_VM_CREATE_TEMPLATE) ) )
         if( ! full_query( INSERT_VM_CREATE_TEMPLATE ) )
             return array( "error" => sprintf($_LANG["onapperrtemplatecreate"], 'virtual machine create') );
 
@@ -163,7 +163,7 @@ $js_serverOptions
                 "Type" => "dropdown",
                 "Options" => implode( ',', array_keys($onapp_servers) ),
                 "Description" => "",
-            ),            
+            ),
             "<font color='red'><b>".$onapp_config['error']."</b></font>" . $javascript => array()
         );
     };
@@ -189,13 +189,13 @@ $js_serverOptions
 
     if (!empty($templates)) {
         foreach ($templates as $_template) {
-            $template_ids[$_template->_id] = array( 
+            $template_ids[$_template->_id] = array(
                 'label' => $_template->_label
             );
-    
+
             $os = $_template->_operating_system;
-            $os .= empty($_template->_operating_system_distro) ? 
-                '' : 
+            $os .= empty($_template->_operating_system_distro) ?
+                '' :
                 '_' . $_template->_operating_system_distro;
             if (!in_array($os, $created_os)){
                 array_push($created_os, $os);
@@ -222,14 +222,14 @@ $js_serverOptions
     $hv_ids = array();
 
     $js_hvOptions = "    hvOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
-    
+
     if (!empty($hvs)) {
         foreach ($hvs as $_hv) {
             if ( $_hv->_online == "true" ) {
                 $hv_ids[$_hv->_id] = array(
                     'label' => $_hv->_label
                 );
-    
+
                 $js_hvOptions .= "    hvOptions[$_hv->_id] = '".addslashes($_hv->_label)."';\n";
             };
         };
@@ -257,7 +257,7 @@ $js_serverOptions
             $network_ids[$_network->_id] = array(
                 'label' => $_network->_label
             );
-    
+
             $js_networkOptions .= "    networkOptions[$_network->_id] = '".addslashes($_network->_label)."';\n";
         };
     };
@@ -272,10 +272,10 @@ $js_serverOptions
             configoptions.optionname AS name,
             sub.id AS subid,
             sub.sortorder AS suborder
-        FROM 
+        FROM
             tblproductconfigoptions AS configoptions,
             tblproductconfiglinks AS configlinks,
-            tblproductconfigoptionssub AS sub 
+            tblproductconfigoptionssub AS sub
         WHERE
             configlinks.gid = configoptions.gid
             AND sub.configid = configoptions.id
@@ -374,8 +374,8 @@ $js_localization_string
         $_LANG["onapptemlates"] => array(
             "Type" => "text",
             "Size"        => "5",
-            "Description" => count($template_ids) != 0 ? 
-                "" : 
+            "Description" => count($template_ids) != 0 ?
+                "" :
                 $_LANG["onappnotfoundred"],
         ),
         $_LANG["onappram"] => array(
@@ -385,11 +385,11 @@ $js_localization_string
         ),
         $_LANG["onapphv"] => array(
             "Type" => count($hv_ids) != 0 ? "dropdown" : null,
-            "Options" => count($hv_ids) != 0 ? 
-                "0,".implode( ',', array_keys($hv_ids) ) : 
+            "Options" => count($hv_ids) != 0 ?
+                "0,".implode( ',', array_keys($hv_ids) ) :
                 null,
-            "Description" => count($hv_ids) != 0 ? 
-                "" : 
+            "Description" => count($hv_ids) != 0 ?
+                "" :
                 $_LANG["onappnotfoundred"],
         ),
         $_LANG["onappcpucores"] => array(
@@ -399,11 +399,11 @@ $js_localization_string
         ),
         $_LANG["onappprimarynet"] => array(
             "Type" => count($network_ids) != 0 ? "dropdown" : null,
-            "Options" => count($network_ids) != 0 ? 
-                implode( ',', array_keys($network_ids) ) : 
+            "Options" => count($network_ids) != 0 ?
+                implode( ',', array_keys($network_ids) ) :
                 null,
-            "Description" => count($network_ids) != 0 ? 
-                "" : 
+            "Description" => count($network_ids) != 0 ?
+                "" :
                 $_LANG["onappnotfoundred"],
         ),
         $_LANG["onappcpuprior"] => array(
@@ -438,7 +438,7 @@ $js_localization_string
         $_LANG["onappadditionallcores"] => array(
             "Type"        => "dropdown",
             "Options"     => "0,".implode(',', $configoptions),
-            "Description" => "",  
+            "Description" => "",
         ),
         $_LANG["onappadditionallcpupriority"] => array(
             "Type"        => "dropdown",
@@ -601,7 +601,7 @@ function onapp_ClientArea($params) {
 
     if ( ! is_null($service["vmid"]) )
         return '<a href="onapp.php?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmsettings"] . '</a>';
-    else 
+    else
         return '<a href="onapp.php?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmcreate"] . '</a>';
 }
 

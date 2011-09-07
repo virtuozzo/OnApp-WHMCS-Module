@@ -57,12 +57,12 @@ function stopvm(id) {
       <td>&nbsp;</td>
       <td><div class="status"><strong>{$LANG.onappstatus}</strong></div></td>
       <td>
-    {if $virtualmachine->_locked eq "true" || $virtualmachine->_built eq "false" }
+    {if $virtualmachine->_locked eq true || $virtualmachine->_built eq false }
         <a class="power pending">Pending</a>
-    {elseif $virtualmachine->_booted eq "true"}
+    {elseif $virtualmachine->_booted eq true}
         <a rel="nofollow" class="power off-inactive" href="#" onclick="stopvm();; return false;">OFF</a>
         <a class="power on-active">ON</a>
-    {elseif $virtualmachine->_booted eq "false"}
+    {elseif $virtualmachine->_booted eq false}
         <a class="power off-active">OFF</a>
         <a rel="nofollow" class="power on-inactive" href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=start">ON</a>
     {else}
@@ -81,7 +81,7 @@ function stopvm(id) {
       <td>&nbsp;</td>
       <td><div class="template"><strong>{$LANG.onapptemplate}</strong></div></td>
       <td>
-{if $virtualmachine->_built eq "true" }
+{if $virtualmachine->_built eq true }
         {$virtualmachine->_template_label}
 {else}
         Not built yet...
@@ -120,7 +120,7 @@ function stopvm(id) {
 
 <h2 class="heading2">{$LANG.onappactions}</h2>
 
-    {if $virtualmachine->_locked eq "true"}
+    {if $virtualmachine->_locked eq true}
 <table cellspacing="10" cellpadding="10" border="0" width="100%">
   <tbody>
     <tr>
@@ -129,7 +129,7 @@ function stopvm(id) {
         <script type="text/JavaScript">
         <!--
           window.onload = function(){
-            setTimeout("location.reload(true);", 10000); 
+            setTimeout("location.reload(true);", 10000);
           };
         //   -->
         </script>
@@ -142,7 +142,7 @@ function stopvm(id) {
     </tr>
   </tbody>
 </table>
-    {elseif $virtualmachine->_built eq "false" }
+    {elseif $virtualmachine->_built eq false }
 <table cellspacing="10" cellpadding="10" border="0" width="100%">
   <tbody>
     <tr>
@@ -156,7 +156,7 @@ function stopvm(id) {
     </tr>
   </tbody>
 </table>
-    {elseif $virtualmachine->_booted eq "true"}
+    {elseif $virtualmachine->_booted eq true}
 <table cellspacing="10" cellpadding="10" border="0" width="100%">
   <tbody>
     <tr>
@@ -183,7 +183,7 @@ function stopvm(id) {
     </tr>
   </tbody>
 </table>
-    {elseif $virtualmachine->_booted eq "false"}
+    {elseif $virtualmachine->_booted eq false}
 <table cellspacing="10" cellpadding="10" border="0" width="100%">
   <tbody>
     <tr>

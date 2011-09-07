@@ -2,19 +2,7 @@
 
 define( 'LIB_WRAPPER_DIR', dirname(__FILE__).'/wrapper' );
 
-require_once LIB_WRAPPER_DIR.'/ONAPP.php';
-
-require_once LIB_WRAPPER_DIR.'/Disk.php';
-require_once LIB_WRAPPER_DIR.'/User.php';
-require_once LIB_WRAPPER_DIR.'/Template.php';
-require_once LIB_WRAPPER_DIR.'/IpAddress.php';
-require_once LIB_WRAPPER_DIR.'/ResourceLimit.php';
-
-require_once LIB_WRAPPER_DIR.'/VirtualMachine.php';
-require_once LIB_WRAPPER_DIR.'/VirtualMachine/Backup.php';
-require_once LIB_WRAPPER_DIR.'/VirtualMachine/CpuUsage.php';
-require_once LIB_WRAPPER_DIR.'/VirtualMachine/IpAddressJoin.php';
-require_once LIB_WRAPPER_DIR.'/VirtualMachine/NetworkInterface.php';
+require_once LIB_WRAPPER_DIR.'/OnAppInit.php';
 
 function onapp_Config( $id ) {
     global $_LANG;
@@ -89,16 +77,17 @@ function load_language() {
 
     closedir ($dh);
 
-    $language = $_SESSION['Language'];
+	$language = $_SESSION['Language'];
 
-    if ( ! in_array ($language, $arrayoflanguagefiles) )
-        $language =  "English";
+    if( ! in_array ($language, $arrayoflanguagefiles) ) {
+		$language =  "English";
+	}
 
-    if ( file_exists( dirname(__FILE__) . "/lang/$language.txt" ) ) {
+	if( file_exists( dirname(__FILE__) . "/lang/$language.txt" ) ) {
         ob_start ();
         include dirname(__FILE__) . "/lang/$language.txt";
         $templang = ob_get_contents ();
-        ob_end_clean ();
+		ob_end_clean ();
         eval ($templang);
     }
 }
@@ -113,14 +102,14 @@ function get_onapp_config($id){
         return false;
 
     $sql = sprintf(
-        "SELECT 
-            id, 
-            name, 
-            ipaddress, 
-            hostname, 
-            username, 
-            password 
-        FROM tblservers 
+        "SELECT
+            id,
+            name,
+            ipaddress,
+            hostname,
+            username,
+            password
+        FROM tblservers
         WHERE id = '%s'",
         addslashes( $id )
     );
@@ -132,8 +121,8 @@ function get_onapp_config($id){
     // Error if server not found in DB
     if ( $onapp_config ) {
         $onapp_config["password"] = decrypt($onapp_config["password"]);
-        $onapp_config["adress"] = $onapp_config["ipaddress"] != "" ? 
-            "http://" . $onapp_config["ipaddress"] : 
+        $onapp_config["adress"] = $onapp_config["ipaddress"] != "" ?
+            "http://" . $onapp_config["ipaddress"] :
             $onapp_config["hostname"];
         $onapp_config[] = $onapp_config["adress"];
     } else
@@ -211,25 +200,25 @@ function get_service($service_id) {
     $productid =  $service["productid"];
 
     $select_config ="
-    SELECT 
+    SELECT
         optionssub.id,
         optionssub.optionname,
         sub.configid,
-        tblproductconfigoptions.optionname as configoptionname, 
+        tblproductconfigoptions.optionname as configoptionname,
         tblproductconfigoptions.optiontype,
         tblproductconfigoptions.qtymaximum AS max,
         tblproductconfigoptions.qtyminimum AS min,
-        options.qty, 
-        optionssub.sortorder, 
+        options.qty,
+        optionssub.sortorder,
         options.optionid as active
-    FROM 
-        tblhostingconfigoptions AS options 
-        LEFT JOIN tblproductconfigoptionssub AS sub 
-            ON options.configid = sub.configid 
-            AND optionid = sub.id 
-        LEFT JOIN tblproductconfigoptions 
-            ON tblproductconfigoptions.id = options.configid 
-        LEFT JOIN tblproductconfigoptionssub AS optionssub 
+    FROM
+        tblhostingconfigoptions AS options
+        LEFT JOIN tblproductconfigoptionssub AS sub
+            ON options.configid = sub.configid
+            AND optionid = sub.id
+        LEFT JOIN tblproductconfigoptions
+            ON tblproductconfigoptions.id = options.configid
+        LEFT JOIN tblproductconfigoptionssub AS optionssub
             ON optionssub.configid = tblproductconfigoptions.id
     WHERE
         relid = '$service_id'
@@ -240,23 +229,23 @@ function get_service($service_id) {
         optionssub.id,
         optionssub.optionname,
         tblproductconfigoptions.id as configid,
-        tblproductconfigoptions.optionname as configoptionname, 
+        tblproductconfigoptions.optionname as configoptionname,
         tblproductconfigoptions.optiontype,
         tblproductconfigoptions.qtymaximum AS max,
         tblproductconfigoptions.qtyminimum AS min,
-        options.qty, 
+        options.qty,
         optionssub.sortorder,
         IF(options.optionid, options.optionid, optionssub.id) as active
-    FROM 
+    FROM
         tblproductconfiglinks
         LEFT JOIN tblproductconfigoptions
             ON tblproductconfigoptions.gid = tblproductconfiglinks.gid
         LEFT JOIN tblhostingconfigoptions AS options
-            ON options.configid = tblproductconfigoptions.id AND relid = $service_id 
-        LEFT JOIN tblproductconfigoptionssub AS sub 
-            ON options.configid = sub.configid 
-            AND optionid = sub.id 
-        LEFT JOIN tblproductconfigoptionssub AS optionssub 
+            ON options.configid = tblproductconfigoptions.id AND relid = $service_id
+        LEFT JOIN tblproductconfigoptionssub AS sub
+            ON options.configid = sub.configid
+            AND optionid = sub.id
+        LEFT JOIN tblproductconfigoptionssub AS optionssub
             ON optionssub.configid = tblproductconfigoptions.id
     WHERE
         tblproductconfiglinks.pid = $productid
@@ -341,7 +330,7 @@ function get_service($service_id) {
                 'max'  => $row['max'],
                 'min'  => $row['min']
             );
-            
+
         };
     return $service;
 }
@@ -356,14 +345,14 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
     $service = get_service($service_id);
 
     $sql_select = sprintf(
-        "SELECT 
-            onapp_user_id, 
-            email, 
-            password 
-        FROM 
-            tblonappclients 
-        WHERE 
-            client_id = '%s' AND 
+        "SELECT
+            onapp_user_id,
+            email,
+            password
+        FROM
+            tblonappclients
+        WHERE
+            client_id = '%s' AND
             server_id = '%s';",
         $service['userid'],
         $service['serverid']);
@@ -378,7 +367,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
         $onapp_config = get_onapp_config($service['serverid']);
 
         if ( $service['serverid'] == "" )
-            return array( 
+            return array(
                 "error" => $_LANG['onappcantcreateuser']
             );
 
@@ -486,7 +475,7 @@ function get_vm( $service_id ) {
             $vm->_id = $service["vmid"];
 
             $vm->load();
-        } 
+        }
     } else {
         $vm->error = "Cant load Virtual machine";
     };
@@ -496,7 +485,7 @@ function get_vm( $service_id ) {
 
 /**
  * Get service OS templates list
- * 
+ *
  * @param integer $serverid service id
  * @param string $templatesid list of templates CSV in format
  *
@@ -563,7 +552,7 @@ function get_vm_ips($service_id) {
             if ( ! isset($ips[$row['ipid']]) ) {
                 full_query( "DELETE FROM tblonappips WHERE
                   serviceid  = '$service_id'
-                  AND ipid = '" . $row['ipid'] . "'" 
+                  AND ipid = '" . $row['ipid'] . "'"
                 );
                // continue;
             } elseif ( $row['isbase'] == 1 ) {
@@ -571,7 +560,7 @@ function get_vm_ips($service_id) {
                 unset($ips[$row['ipid']]);
             } else {
                 $additional_ips[$row['ipid']] = $ips[$row['ipid']];
-                unset($ips[$row['ipid']]);      
+                unset($ips[$row['ipid']]);
             }
         };
 
@@ -727,7 +716,7 @@ function _action_ip_add($service_id, $isbase) {
 
     if ( $isbase == 1 )
         $return = _action_ip_setbase($service_id, $ipaddressjoin->_ip_address_id);
-    else 
+    else
         $return = _action_ip_setadditional($service_id, $ipaddressjoin->_ip_address_id);
 
     update_service_ips($service_id);
@@ -1058,14 +1047,14 @@ function update_user_limits( $server_id, $client_id ) {
             tblservers.password  as serverpassword
         FROM
             tblhosting
-            LEFT JOIN tblproducts 
+            LEFT JOIN tblproducts
                 ON tblproducts.id = packageid
             LEFT JOIN tblhostingconfigoptions AS options ON
                 relid = tblhosting.id
-            LEFT JOIN tblproductconfigoptionssub AS sub 
-                ON options.configid = sub.configid 
-                AND optionid = sub.id 
-            LEFT JOIN tblproductconfigoptions 
+            LEFT JOIN tblproductconfigoptionssub AS sub
+                ON options.configid = sub.configid
+                AND optionid = sub.id
+            LEFT JOIN tblproductconfigoptions
                 ON tblproductconfigoptions.id = options.configid
             LEFT JOIN tblonappclients
                 ON tblhosting.userid = client_id
@@ -1136,23 +1125,23 @@ function update_user_storagedisksize( $params, $action = 'Active' ) {
     serviceStatus($serviceid, $action);
 
     $sql_select = "
-        SELECT 
+        SELECT
             configoption1 as server_id,
-            userid 
-        FROM 
-            tblhosting 
-            LEFT JOIN tblproducts 
-                ON tblproducts.id = packageid 
-        WHERE 
+            userid
+        FROM
+            tblhosting
+            LEFT JOIN tblproducts
+                ON tblproducts.id = packageid
+        WHERE
             tblproducts.servertype = 'onappbackupspace' AND
             tblhosting.id = $serviceid";
 
     $rows = full_query($sql_select);
-    
+
     if ($rows)
         while ( $row = mysql_fetch_assoc($rows) )
             update_user_limits( $row['server_id'], $row['userid'] );
-    
+
     serviceStatus($serviceid, $status);
 }
 

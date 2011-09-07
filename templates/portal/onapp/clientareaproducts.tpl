@@ -24,9 +24,9 @@
     <td>
     {if not isset($service.obj)}
       &nbsp;
-    {elseif $service.obj->_booted eq "true" }
+    {elseif $service.obj->_booted eq true }
       <img title="" src="modules/servers/onapp/includes/on.png" alt="">
-    {elseif $service.obj->_booted eq "false"}
+    {elseif $service.obj->_booted eq false}
       <img title="" src="modules/servers/onapp/includes/off.png" alt="">
     {else}
       &nbsp;
@@ -36,7 +36,7 @@
     {if isset($service.obj)}
       <a href="http://{$service.obj->_label}" target="_blank">{$service.obj->_label}</a>
     {else}
-      <a href="http://{$service.domain}" target="_blank">{$service.domain}</a> 
+      <a href="http://{$service.domain}" target="_blank">{$service.domain}</a>
     {/if}
     </td>
 {if isset($service.obj)}
@@ -48,12 +48,12 @@
     {/foreach}
     </td>
     <td>
-    {if $service.obj->_locked eq "true" || $service.obj->_built eq "false"}
+    {if $service.obj->_locked eq true || $service.obj->_built eq false}
         <a class="power pending">Pending</a>
-    {elseif $service.obj->_booted eq "true"}
+    {elseif $service.obj->_booted eq true}
         <a rel="nofollow" class="power off-inactive" href="{$smarty.server.PHP_SELF}?page=productdetails&id={$num}&action=stop">OFF</a>
         <a class="power on-active">ON</a>
-    {elseif $service.obj->_booted eq "false"}
+    {elseif $service.obj->_booted eq false}
         <a class="power off-active">OFF</a>
         <a rel="nofollow" class="power on-inactive" href="{$smarty.server.PHP_SELF}?page=productdetails&id={$num}&action=start">ON</a>
     {else}
@@ -99,12 +99,12 @@
     <td>{$vm.server.name}</td>
     <td>{$vm.vm->_hostname}</td>
     <td align="center">
-      {if $vm.vm->_locked eq "true" || $vm.vm->_built eq "false"}
+      {if $vm.vm->_locked eq true || $vm.vm->_built eq false}
         <a class="power pending">Pending</a>
-      {elseif $vm.vm->_booted eq "true"}
+      {elseif $vm.vm->_booted eq true}
         <a rel="nofollow" class="power off-inactive">OFF</a>
         <a class="power on-active">ON</a>
-      {elseif $vm.vm->_booted eq "false"}
+      {elseif $vm.vm->_booted eq false}
         <a class="power off-active">OFF</a>
         <a rel="nofollow" class="power on-inactive">ON</a>
       {else}

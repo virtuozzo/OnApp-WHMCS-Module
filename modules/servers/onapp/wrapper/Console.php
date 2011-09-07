@@ -1,4 +1,4 @@
-<?PHP
+<?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
@@ -6,18 +6,13 @@
  *
  * Using this class You can get access to virtual machine console
  *
- * @category  API WRAPPER
- * @package   ONAPP
- * @author    Andrew Yatskovets
- * @copyright 2010 / OnApp
- * @link      http://www.onapp.com/
- * @see       ONAPP
+ * @category	API WRAPPER
+ * @package		OnApp
+ * @author		Andrew Yatskovets
+ * @copyright	(c) 2011 OnApp
+ * @link		http://www.onapp.com/
+ * @see			OnApp
  */
-
-/**
- * requires Base class
- */
-require_once 'ONAPP.php';
 
 /**
  * Virtual Machine Console
@@ -26,222 +21,183 @@ require_once 'ONAPP.php';
  * {@link load}.
  *
  */
-class ONAPP_Console extends ONAPP {
+class OnApp_Console extends OnApp {
+	/**
+	 * root tag used in the API request
+	 *
+	 * @var string
+	 */
+	var $_tagRoot = 'remote_access_session';
 
-    /**
-     * Virtual machine ID
-     *
-     * @var integer
-     */
-    var $_id;
+	/**
+	 * alias processing the object data
+	 *
+	 * @var string
+	 */
+	var $_resource = 'console';
 
-    /**
-     * Remote session called in date in the [YYYY][MM][DD]T[hh][mm]Z format
-     *
-     * @var string
-     */
+	public function __construct() {
+		parent::__construct();
+		$this->className = __CLASS__;
+	}
 
-    var $_called_in_at;
+	/**
+	 * API Fields description
+	 *
+	 * @param string|float $version OnApp API version
+	 * @param string $className current class' name
+	 * @return array
+	 */
+	public function initFields( $version = null, $className = '' ) {
+		switch( $version ) {
+			case '2.0':
+			case '2.1':
+				$this->fields = array(
+					'id' => array(
+						ONAPP_FIELD_MAP => '_id',
+						ONAPP_FIELD_TYPE => 'integer',
+						ONAPP_FIELD_READ_ONLY => true
+					),
+					'called_in_at' => array(
+						ONAPP_FIELD_MAP => '_called_in_at',
+						ONAPP_FIELD_TYPE => 'datetime',
+						ONAPP_FIELD_READ_ONLY => true
+					),
+					'created_at' => array(
+						ONAPP_FIELD_MAP => '_created_at',
+						ONAPP_FIELD_TYPE => 'datetime',
+						ONAPP_FIELD_READ_ONLY => true
+					),
+					'port' => array(
+						ONAPP_FIELD_MAP => '_port',
+						ONAPP_FIELD_TYPE => 'integer',
+						ONAPP_FIELD_READ_ONLY => true
+					),
+					'updated_at' => array(
+						ONAPP_FIELD_MAP => '_updated_at',
+						ONAPP_FIELD_TYPE => 'datetime',
+						ONAPP_FIELD_READ_ONLY => true
+					),
+					'virtual_machine_id' => array(
+						ONAPP_FIELD_MAP => '_virtual_machine_id',
+						ONAPP_FIELD_TYPE => 'integer',
+						ONAPP_FIELD_READ_ONLY => true,
+					),
+					'remote_key' => array(
+						ONAPP_FIELD_MAP => '_remote_key',
+						ONAPP_FIELD_TYPE => 'string',
+						ONAPP_FIELD_READ_ONLY => true,
+					),
+				);
+				break;
 
-    /**
-     * Remote session creation date in the [YYYY][MM][DD]T[hh][mm]Z format
-     *
-     * @var string
-     */
-    var $_created_at;
+			case 2.2:
+				$this->fields = $this->initFields( 2.1 );
+				break;
+		}
 
-    /**
-     * Port number
-     *
-     * @var integer
-     */
-    var $_port;
+		parent::initFields( $version, __CLASS__ );
+		return $this->fields;
+	}
 
-    /**
-     * Remote session update date in the [YYYY][MM][DD]T[hh][mm]Z format
-     *
-     * @var string
-     */
-    var $_updated_at;
+	/**
+	 * Returns the URL Alias for Load of objects of the API Class that inherits the Class ONAPP
+	 *
+	 * Can be redefined if the API for load objects does not use the default
+	 * alias (the alias consisting of few fields) the same way as {@link
+	 * getResource}.
+	 *
+	 * @param string $action action name
+	 *
+	 * @return string API resource
+	 * @access public
+	 *
+	 * @see getResource
+	 */
+	function getResource( $action = ONAPP_GETRESOURCE_DEFAULT ) {
+		switch( $action ) {
+			case ONAPP_GETRESOURCE_LOAD:
+				/**
+				 * ROUTE :
+				 * @name
+				 * @method GET
+				 * @alias  /console_remote/:remote_key(.:format)
+				 * @format {:controller=>"virtual_machines", :action=>"console_remote"}
+				 */
+				$resource = "virtual_machines/" . $this->_virtual_machine_id . "/" . $this->_resource;
+				$this->logger->debug( 'getResource( ' . $action . ' ): return ' . $resource );
+				break;
 
-    /**
-     * Virtual Machine Id
-     *
-     * @var integer
-     */
-    var $_virtual_machine_id;
+			default:
+				$resource = parent::getResource( $action );
+				break;
+		}
 
-    /**
-     * Remote key
-     *
-     * @var string
-     */
-    var $_remote_key;
+		return $resource;
+	}
 
-    /**
-     * root tag used in the API request
-     *
-     * @var string
-     */
-    var $_tagRoot = 'remote_access_session';
+	/**
+	 * Sends an API request to get the Object after sending,
+	 * unserializes the response into an object
+	 *
+	 * The key field Parameter ID is used to load the Object. You can re-set
+	 * this parameter in the class inheriting Class ONAPP.
+	 *
+	 * @param integer $virtual_machine_id Object id
+	 *
+	 * @return mixed serialized Object instance from API
+	 * @access public
+	 */
+	function load( $virtual_machine_id = null ) {
+		if( is_null( $virtual_machine_id ) && !is_null( $this->_virtual_machine_id ) ) {
+			$virtual_machine_id = $this->_virtual_machine_id;
+		}
 
-    /**
-     * alias processing the object data
-     *
-     * @var string
-     */
-    var $_resource = 'console';
+		if( is_null( $virtual_machine_id ) &&
+			isset( $this->_obj ) &&
+			!is_null( $this->_obj->_virtual_machine_id )
+		) {
+			$virtual_machine_id = $this->_obj->_virtual_machine_id;
+		}
 
-    /**
-     *
-     * called class name
-     *
-     * @var string
-     */
-    var $_called_class = 'ONAPP_Console';
+		$this->logger->add( "load: Load class ( id => '$virtual_machine_id')." );
 
-    /**
-     * API Fields description
-     *
-     * @access private
-     * @var    array
-     */
-    var $_fields = array(
-        'id' => array(
-            ONAPP_FIELD_MAP => '_id',
-            ONAPP_FIELD_TYPE => 'integer',
-            ONAPP_FIELD_READ_ONLY => true
-        ),
-        'called_in_at' => array(
-            ONAPP_FIELD_MAP => '_called_in_at',
-            ONAPP_FIELD_TYPE => 'datetime',
-            ONAPP_FIELD_READ_ONLY => true
-        ),
-        'created_at' => array(
-            ONAPP_FIELD_MAP => '_created_at',
-            ONAPP_FIELD_TYPE => 'datetime',
-            ONAPP_FIELD_READ_ONLY => true
-        ),
-        'port' => array(
-            ONAPP_FIELD_MAP => '_port',
-            ONAPP_FIELD_TYPE => 'integer',
-            ONAPP_FIELD_READ_ONLY => true
-        ),
-        'updated_at' => array(
-            ONAPP_FIELD_MAP => '_updated_at',
-            ONAPP_FIELD_TYPE => 'datetime',
-            ONAPP_FIELD_READ_ONLY => true
-        ),
-        'virtual_machine_id' => array(
-            ONAPP_FIELD_MAP => '_virtual_machine_id',
-            ONAPP_FIELD_TYPE => 'integer',
-            ONAPP_FIELD_READ_ONLY => true,
-        ),
-        'remote_key' => array(
-            ONAPP_FIELD_MAP => '_remote_key',
-            ONAPP_FIELD_TYPE => 'string',
-            ONAPP_FIELD_READ_ONLY => true,
-        ),
+		if( !is_null( $virtual_machine_id ) ) {
+			$this->_virtual_machine_id = $virtual_machine_id;
 
-    );
+			$this->setAPIResource( $this->getResource( ONAPP_GETRESOURCE_LOAD ) );
 
-    /**
-     * Returns the URL Alias for Load of objects of the API Class that inherits the Class ONAPP
-     *
-     * Can be redefined if the API for load objects does not use the default
-     * alias (the alias consisting of few fields) the same way as {@link
-     * getResource}.
-     *
-     * @param string $action action name
-     *
-     * @return string API resource
-     * @access public
-     *
-     * @see getResource
-     */
+			$response = $this->sendRequest( ONAPP_REQUEST_METHOD_GET );
 
-    function getResource( $action = ONAPP_GETRESOURCE_DEFAULT ) {
-        switch( $action ) {
-            case ONAPP_GETRESOURCE_LOAD:
-                $resource = "virtual_machines/" . $this->_virtual_machine_id . "/" . $this->_resource;
-                $this->_loger->debug( "getResource($action): return " . $resource );
-                break;
+			$result = $this->_castResponseToClass( $response );
 
-            default:
-                $resource = parent::getResource( $action );
-                break;
-        }
+			$this->_obj = $result;
 
-        return $resource;
-    }
+			return $result;
+		}
+		else {
+			$this->logger->error(
+				'load: argument _virtual_machine_id not set.',
+				__FILE__,
+				__LINE__
+			);
+		}
+	}
 
-    /**
-     * Sends an API request to get the Object after sending,
-     * unserializes the response into an object
-     *
-     * The key field Parameter ID is used to load the Object. You can re-set
-     * this parameter in the class inheriting Class ONAPP.
-     *
-     * @param integer $id Object id
-     *
-     * @return mixed serialized Object instance from API
-     * @access public
-     */
-
-    function load( $virtual_machine_id = null ) {
-        if( is_null( $virtual_machine_id ) && !is_null( $this->_virtual_machine_id ) ) {
-            $virtual_machine_id = $this->_virtual_machine_id;
-        }
-
-        if( is_null( $virtual_machine_id ) &&
-            isset( $this->_obj ) &&
-            !is_null( $this->_obj->_virtual_machine_id )
-        ) {
-            $virtual_machine_id = $this->_obj->_virtual_machine_id;
-        }
-
-        $this->_loger->add( "load: Load class ( id => '$virtual_machine_id')." );
-
-        if( !is_null( $virtual_machine_id ) ) {
-
-            $this->_virtual_machine_id = $virtual_machine_id;
-
-            $this->setAPIResource( $this->getResource( ONAPP_GETRESOURCE_LOAD ) );
-
-            $response = $this->sendRequest( ONAPP_REQUEST_METHOD_GET );
-
-            $result = $this->_castResponseToClass( $response );
-
-            $this->_obj = $result;
-            #            $this->_virtual_machine_id = $this->_obj->_virtual_machine_id;
-
-            return $result;
-        }
-        else {
-            $this->_loger->error(
-                'load: argument _virtual_machine_id not set.',
-                __FILE__,
-                __LINE__
-            );
-        }
-    }
-
-    /**
-     * Activates action performed with object
-     *
-     * @param string $action_name the name of action
-     *
-     * @access public
-     */
-    function activate( $action_name ) {
-        switch( $action_name ) {
-            case ONAPP_ACTIVATE_GETLIST:
-            case ONAPP_ACTIVATE_SAVE:
-            case ONAPP_ACTIVATE_DELETE:
-                die( "Call to undefined method " . __CLASS__ . "::$action_name()" );
-                break;
-        }
-    }
+	/**
+	 * Activates action performed with object
+	 *
+	 * @param string $action_name the name of action
+	 *
+	 * @access public
+	 */
+	function activate( $action_name ) {
+		switch( $action_name ) {
+			case ONAPP_ACTIVATE_GETLIST:
+			case ONAPP_ACTIVATE_SAVE:
+			case ONAPP_ACTIVATE_DELETE:
+				exit( 'Call to undefined method ' . __CLASS__ . '::' . $action_name . '()' );
+				break;
+		}
+	}
 }
-
-?>
