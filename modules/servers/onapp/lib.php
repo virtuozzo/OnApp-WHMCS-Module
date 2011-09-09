@@ -392,13 +392,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
 
         $user->_group_id   = $ONAPP_DEFAULT_GROUP;
         $user->_billing_plan_id = $ONAPP_DEFAULT_BILLING_PLAN;
-
-        $user->_role_ids   = array(
-            'attributesArray' => array(
-                'type' => 'array'
-            ),
-            'role-id' => $ONAPP_DEFAULT_ROLE
-        );
+		$user->_role_ids   = array( $ONAPP_DEFAULT_ROLE );
 
         $user->save();
 
