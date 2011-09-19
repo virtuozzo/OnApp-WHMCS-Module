@@ -29,7 +29,7 @@ $(document).ready(function(){
     hvSelected = hvSelect.val();
 
     selectHTML = '';
-    for ( var option in hvOptions ) {
+    for ( option in hvOptions ) {
         selected = (option == hvSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+hvOptions[option]+'</option>';
     }
@@ -41,7 +41,7 @@ $(document).ready(function(){
     networkSelected = networkSelect.val();
 
     selectHTML = '';
-    for ( var option in networkOptions ) {
+    for ( option in networkOptions ) {
         selected = (option == networkSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+networkOptions[option]+'</option>';
     }
@@ -53,7 +53,7 @@ $(document).ready(function(){
     addRAMSelected = addRAMSelect.val();
     addRAMSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions ) {
+    for ( option in configOptions ) {
         selected = (option == addRAMSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
@@ -63,7 +63,7 @@ $(document).ready(function(){
     addCoresSelected = addCoresSelect.val();
     addCoresSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions ) {
+    for ( option in configOptions ) {
         selected = (option == addCoresSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
@@ -73,7 +73,7 @@ $(document).ready(function(){
     addPrioritySelected = addPrioritySelect.val();
     addPrioritySelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions ) {
+    for ( option in configOptions ) {
         selected = (option == addPrioritySelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
@@ -83,7 +83,7 @@ $(document).ready(function(){
     addDiskSelected = addDiskSelect.val();
     addDiskSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions ) {
+    for ( option in configOptions ) {
         selected = (option == addDiskSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
@@ -93,7 +93,7 @@ $(document).ready(function(){
     addIPSelected = addIPSelect.val();
     addIPSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions ) {
+    for ( option in configOptions ) {
         selected = (option == addIPSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
@@ -103,7 +103,7 @@ $(document).ready(function(){
     addBackupSelected = addBackupSelect.val();
     addBackupSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions ) {
+    for ( option in configOptions ) {
         selected = (option == addBackupSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
@@ -113,7 +113,7 @@ $(document).ready(function(){
     addIPBaseSelected = addIPBaseSelect.val();
     addIPBaseSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in productAddons ) {
+    for ( option in productAddons ) {
         selected = (option == addIPBaseSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+productAddons[option]+'</option>';
     }
@@ -123,7 +123,7 @@ $(document).ready(function(){
     addTemplatesSelected = addTemplatesSelect.val();
     addTemplatesSelect.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions ) {
+    for ( option in configOptions ) {
         selected = (option == addTemplatesSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
@@ -133,7 +133,7 @@ $(document).ready(function(){
     addPortSpeadSelected = addPortSpead.val();
     addPortSpead.width(selectWidth);
     selectHTML = '';
-    for ( var option in configOptions ) {
+    for ( option in configOptions ) {
         selected = (option == addPortSpeadSelected) ? ' selected="selected"' : '';
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
@@ -154,7 +154,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // get templates
     var ram_label = tr.find('td').eq(0).html();
@@ -166,7 +166,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // get cores
     var cores_label = tr.find('td').eq(0).html();
@@ -178,7 +178,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // get cpu priority
     var priority_label = tr.find('td').eq(0).html();
@@ -190,7 +190,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // get swap
     var swap_label = tr.find('td').eq(0).html();
@@ -202,7 +202,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // get disk
     var disk_label = tr.find('td').eq(0).html();
@@ -214,7 +214,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // get additional CPU Cores
     var addcores_label = tr.find('td').eq(0).html();
@@ -226,7 +226,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // get additional Primary Disk
     var adddisk_label = tr.find('td').eq(0).html();
@@ -238,7 +238,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // get backup
     var backup_label = tr.find('td').eq(0).html();
@@ -250,7 +250,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // get OS Template
     var ostemplates_label = tr.find('td').eq(0).html();
@@ -261,7 +261,7 @@ $(document).ready(function(){
 
 // remove row
     tr.remove();
-    var tr = table.find('tr').eq(0);
+    tr = table.find('tr').eq(0);
 
 // remove row
     tr.remove();
@@ -278,8 +278,8 @@ $(document).ready(function(){
 
     // first table
         table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
-        var second_table = $('table').eq(6); 
-        var tbody = second_table.find('tbody');
+        var second_table = $('table').eq(6);
+        tbody = second_table.find('tbody');
 
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappres']+'</b></td></tr>');
 
@@ -307,7 +307,7 @@ $(document).ready(function(){
     // third table
         second_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
         var third_table = $('table').eq(7);
-        var tbody = third_table.find('tbody');
+        tbody = third_table.find('tbody');
 
         tbody.append( cell_html('<b>'+templates_label+'</b>', create_template_filter_html()) );
         tbody.append( cell_html('', templates_html+create_templates_html()) );
@@ -317,7 +317,7 @@ $(document).ready(function(){
     // forth table
         third_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
         var forth_table = $('table').eq(8);
-        var tbody = forth_table.find('tbody');
+        tbody = forth_table.find('tbody');
 
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG["onappaddres"]+'</b></td></tr>');
         tbody.append( cell_html(addram_label, addram_html) );
@@ -336,15 +336,15 @@ $(document).ready(function(){
               $('#removeAll').click();
               reload_template_from_addon_res();
               selected_tpls();
-              osFilter(); 
+              osFilter();
               ostemplates = ostemplatesSelect.val();
           } else {
               ostemplatesSelect.val( ostemplates );
-          };
+          }
         } );
 
         ostemplates = ostemplatesSelect.val();
-    };
+    }
 
 // assign server select onChange action
     serverSelect = $("select[name$='packageconfigoption[1]']");
@@ -358,9 +358,23 @@ $(document).ready(function(){
     serverSelect.val(serverSelected);
 
     check_vars = error_msg == "";
+
+    // assign constants for the templates filter
+    ALL_SELECTED_TEMPLATES = new Array()
+    $("#selected_tpl option").each( function () {
+        ALL_SELECTED_TEMPLATES.push( $(this).attr('value') );
+    })
+    
+    ALL_AVAILABLE_TEMPLATES = new Array()
+    $("#available_tpl option").each( function () {
+        ALL_AVAILABLE_TEMPLATES.push( $(this).attr('value') );
+    })
+
+    ALL_AVAILABLE_HTML = $("#available_tpl").html()
+    
 });
 
-function checkvars(check_vars) {
+function checkvars(check_vars) { //console.log('checkvars function')
 
     if (! check_vars ) return true;
 
@@ -396,23 +410,23 @@ function checkvars(check_vars) {
         input8.focus();
     } else {
         return true;
-    };
+    }
 
     return false;
 }
 
-function cell_html(label, html) {
+function cell_html(label, html) { 
     return '<tr><td class="fieldlabel" width="150">'+label+'</td><td class="fieldarea">'+html+'</td></tr>';
-};
+}
 
-function create_slider_html(input_html, max, min, step, target_id){
+function create_slider_html(input_html, max, min, step, target_id){ 
     return '<div class="input-with-slider">'+
                  input_html+
             '    <div class="slider" style="float:left; margin:5px 15px 0 5px; width:200px;" max="'+max+'" min="'+min+'" step="'+step+'" target="packageconfigoption['+target_id+']" width="200"></div>'+
             '</div>';
 }
 
-function create_templates_html(){
+function create_templates_html(){ 
     tplHTML =
         '<div>'+
         '   <div class="available_tpl" style="float:left;width:35%;max-width:280px;">'+
@@ -436,7 +450,7 @@ function create_templates_html(){
     return tplHTML
 }
 
-function create_template_filter_html(){
+function create_template_filter_html(){ 
     tplHTML =
         '<div>'+
         '   <div class="filter_tpl">'+
@@ -447,7 +461,7 @@ function create_template_filter_html(){
     return tplHTML
 }
 
-function create_available_tpl_otions(){
+function create_available_tpl_otions(){ 
     selectHTML = '';
     for (var os in templateOptions){
        var os_arr = templateOptions[os];
@@ -467,42 +481,33 @@ function create_filter_tpl_otions() {
     return selectHTML;
 }
 
-function osFilter() {
+function osFilter() { 
     var os = $("#filter_tpl").val();
 
-    if(os == 'all'){
-        $("#available_tpl option").each(function(){
-            $(this).css('display', '');
-        });
-        $("#selected_tpl option").each(function(){
-            $(this).css('display', '');
-        });
-    } else {
-        $("#available_tpl option[class!="+os+"]").each(function(){
-            $(this).css('display', 'none');
-        });
-        $("#selected_tpl option[class!="+os+"]").each(function(){
-            $(this).css('display', 'none');
-        });
-        $("#available_tpl option[class="+os+"]").each(function(){
-            $(this).css('display', '');
-        });
-        $("#selected_tpl option[class="+os+"]").each(function(){
-            $(this).css('display', '');
-        });
-    }
+    $("#available_tpl").html(ALL_AVAILABLE_HTML)
+    $("#selected_tpl").html(null)
 
+    $("#available_tpl option").each(function(){
+         if(in_array($(this).attr('value'), ALL_SELECTED_TEMPLATES ))
+            $(this).attr('selected', 'selected');
+    })
+    
+    $("#add").click()
+
+    if( os == 'all') {return true}
+
+    $("#available_tpl option[class!="+os+"]").each(function(){
+       $(this).remove()
+    });
+    $("#selected_tpl option[class!="+os+"]").each(function(){
+        $(this).remove()
+    });
+ 
     return true;
 }
 
-function add_selected_tpls(){
-    var selected_tpl_ids = new Array();
-    $("#selected_tpl option").each(function(){
-        if ($(this).css('display') != 'none')
-            selected_tpl_ids.push( $(this).attr('value') );
-    });
-
-    $("input[name$='packageconfigoption[2]']").val(selected_tpl_ids.join());
+function add_selected_tpls(){ 
+    $("input[name$='packageconfigoption[2]']").val(ALL_SELECTED_TEMPLATES.join());
 }
 
 function in_array(needle, haystack){
@@ -524,10 +529,15 @@ function get_saved_tpls(){
     return $("input[name$='packageconfigoption[2]']").val().split(',');
 }
 
-function selected_tpls(){
-    var saved_tpls = get_saved_tpls();
+function selected_tpls_after_page_load () {
 
-    $("#available_tpl").val(null);
+}
+
+function selected_tpls(){ 
+    var saved_tpls = get_saved_tpls();
+    
+    $("#removeAll").click();
+    
     $("#available_tpl option").each(function(){
         if(in_array($(this).val(), saved_tpls))
             $(this).attr('selected', 'selected');
@@ -544,7 +554,7 @@ function selected_tpls(){
     $("input[name$='removeAll']").attr('disabled', $("select[name$='packageconfigoption[19]']").val() != '0');
 }
 
-function check_autobuild(){
+function check_autobuild(){ 
     var selected_count = 0;
     var autobuild = $("input[name$='packageconfigoption[10]']");
     var confsub = $("select[name$='packageconfigoption[19]']").val();
@@ -560,24 +570,45 @@ function check_autobuild(){
     }
 }
 
-function after_add() {
+function after_add() { 
+    $("#selected_tpl option").each( function () {
+       if ( ! in_array( $(this).attr('value'), ALL_SELECTED_TEMPLATES ) ) {
+           ALL_SELECTED_TEMPLATES.push($(this).attr('value') )
+
+           var idx = ALL_AVAILABLE_TEMPLATES.indexOf( $(this).attr('value') )
+           if ( idx != -1 ) {
+               ALL_AVAILABLE_TEMPLATES.splice( idx, 1 )
+           }
+       }
+    })
+    
     check_autobuild();
 }
 
-function after_remove(){
+function after_remove(){ 
+    $("#available_tpl option").each( function () {
+       if ( ! in_array( $(this).attr('value'), ALL_AVAILABLE_TEMPLATES ) ) {
+           ALL_AVAILABLE_TEMPLATES.push($(this).attr('value') )
+
+           var idx = ALL_SELECTED_TEMPLATES.indexOf( $(this).attr('value') )
+           if ( idx != -1 ) {
+               ALL_SELECTED_TEMPLATES.splice( idx, 1 )
+           }
+       }
+    })
+
     osFilter();
     check_autobuild();
 }
 
-$(function() {
+$(function() { 
     if ($("#available_tpl").length && $("#selected_tpl").length) {
         $("#available_tpl").multiSelect("#selected_tpl", {trigger: "#add", triggerAll: "#addAll", sortOptions: false, autoSubmit: false, afterMove: after_add});
         $("#selected_tpl").multiSelect("#available_tpl", {trigger: "#remove", triggerAll: "#removeAll", sortOptions: false, autoSubmit: false, afterMove: after_remove});
 
-        $("#filter_tpl").change( function(){
+        $("#filter_tpl").change( function(){ 
             osFilter();
-        });
-        selected_tpls();
-        osFilter();
-    };
+        })
+        selected_tpls()
+    }
 });
