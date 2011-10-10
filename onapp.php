@@ -676,7 +676,7 @@ function _action_change_disk_mode($server_id, $disk_id, $mode) {
 
     $user = get_onapp_client( $_ONAPPVARS['id'] );
 
-    $disk = new ONAPP_Disk();
+    $disk = new OnApp_Disk();
 
     $disk->auth(
         $onapp_config["adress"],
@@ -699,9 +699,9 @@ function _action_change_disk_mode($server_id, $disk_id, $mode) {
     };
 
     if ( $disk->error )
-        return array("error" => $disk->error );
+        return array("error" => $disk->getErrorsAsString() );
     elseif ( $disk->_obj->error )
-        return array("error" => $disk->_obj->error );
+        return array("error" => $disk->_obj->getErrorsAsString() );
     else
         return $disk;
 }
