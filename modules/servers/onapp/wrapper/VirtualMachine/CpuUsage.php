@@ -134,6 +134,14 @@ class OnApp_VirtualMachine_CpuUsage extends OnApp {
 				);
 				$this->unsetFields( $fields );
 				break;
+
+			case 2.3:
+				$this->fields = $this->initFields( 2.2 );
+				$fields = array(
+					'id',
+				);
+				$this->unsetFields( $fields );
+				break;
 		}
 
 		parent::initFields( $version, __CLASS__ );

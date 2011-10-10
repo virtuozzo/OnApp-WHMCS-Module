@@ -245,6 +245,40 @@ class OnApp_Hypervisor extends OnApp {
 			case 2.2:
 				$this->fields = $this->initFields( 2.1 );
 				break;
+
+
+			case 2.3:
+				$this->fields = $this->initFields( 2.2 );
+				$fields = array(
+					'raw_stats',
+				);
+				$this->unsetFields( $fields );
+				$this->fields[ 'cpu_cores' ] = array(
+					ONAPP_FIELD_MAP => 'cpu_cores',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'free_memory' ] = array(
+					ONAPP_FIELD_MAP => 'free_memory',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'total_cpus' ] = array(
+					ONAPP_FIELD_MAP => 'total_cpus',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'total_memory' ] = array(
+					ONAPP_FIELD_MAP => 'total_memory',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'used_cpu_resources' ] = array(
+					ONAPP_FIELD_MAP => 'used_cpu_resources',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				break;
 		}
 
 		parent::initFields( $version, __CLASS__ );

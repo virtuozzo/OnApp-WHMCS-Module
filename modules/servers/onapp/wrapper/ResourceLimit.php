@@ -201,6 +201,7 @@ class OnApp_ResourceLimit extends OnApp {
 				break;
 
 			case 2.2:
+			case 2.3:
 				$this->fields = $this->initFields( 2.1 );
 
 				$this->fields[ 'ip_address_count' ] = array(
@@ -215,6 +216,11 @@ class OnApp_ResourceLimit extends OnApp {
 				);
 				$this->fields[ 'backups_templates_count' ] = array(
 					ONAPP_FIELD_MAP => 'backups_templates_count',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'rate' ] = array(
+					ONAPP_FIELD_MAP => 'rate',
 					ONAPP_FIELD_TYPE => 'integer',
 					ONAPP_FIELD_READ_ONLY => true,
 				);

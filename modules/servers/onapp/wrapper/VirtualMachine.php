@@ -445,6 +445,60 @@ class OnApp_VirtualMachine extends OnApp {
 					ONAPP_FIELD_READ_ONLY => true,
 				);
 				break;
+
+			case 2.3:
+				$this->fields = $this->initFields( 2.2 );
+				$this->fields[ 'aflexi_id' ] = array(
+					ONAPP_FIELD_MAP => 'aflexi_id',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'aflexi_city_id' ] = array(
+					ONAPP_FIELD_MAP => 'aflexi_city_id',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'aflexi_price' ] = array(
+					ONAPP_FIELD_MAP => 'aflexi_price',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'custom_nginx_config_on' ] = array(
+					ONAPP_FIELD_MAP => 'custom_nginx_config_on',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'custom_nginx_config' ] = array(
+					ONAPP_FIELD_MAP => 'custom_nginx_config',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'add_to_marketplace' ] = array(
+					ONAPP_FIELD_MAP => 'add_to_marketplace',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'vip' ] = array(
+					ONAPP_FIELD_MAP => 'vip',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'volume_limit' ] = array(
+					ONAPP_FIELD_MAP => 'volume_limit',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'speed_limit' ] = array(
+					ONAPP_FIELD_MAP => 'speed_limit',
+					ONAPP_FIELD_TYPE => 'integer',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				$this->fields[ 'state' ] = array(
+					ONAPP_FIELD_MAP => 'state',
+					ONAPP_FIELD_TYPE => 'string',
+					ONAPP_FIELD_READ_ONLY => true,
+				);
+				break;
 		}
 
 		if( is_null( $this->_id ) ) {
@@ -485,7 +539,7 @@ class OnApp_VirtualMachine extends OnApp {
 				ONAPP_FIELD_MAP => '_required_virtual_machine_build',
 				ONAPP_FIELD_TYPE => 'boolean',
 				ONAPP_FIELD_REQUIRED => true,
-				ONAPP_FIELD_DEFAULT_VALUE => ''
+				ONAPP_FIELD_DEFAULT_VALUE => false
 			);
 		}
 
@@ -815,7 +869,29 @@ class OnApp_VirtualMachine extends OnApp {
 	 * @access public
 	 */
 	function build() {
-		$this->sendPost( ONAPP_GETRESOURCE_BUILD, '' );
+		if( $this->getAPIVersion() < 2.3 ) {
+			if( isset( $this->_template_id ) && ( $this->_template_id != $this->_obj->_template_id ) ) {
+				$data = array(
+					'root' => 'virtual_machine',
+					'data' => array(
+						'template_id' => $this->_template_id
+					)
+				);
+			}
+			else {
+				$data = '';
+			}
+		}
+		else {
+			$data = array(
+				'root' => 'virtual_machine',
+				'data' => array(
+					'template_id' => $this->_template_id ? $this->_template_id : $this->_obj->_template_id
+				)
+			);
+		}
+
+		$this->sendPost( ONAPP_GETRESOURCE_BUILD, $data );
 	}
 
 	/**
