@@ -7,7 +7,7 @@
 {/if}
 <p>{$LANG.onappcreatevmtitle}</p>
 <h2 class="heading2">{$LANG.onappvmdetails}</h2>
-<form name="create_vm" method="get" action="onapp.php">
+<form name="create_vm" id="create_vm" method="get" action="onapp.php">
     <input type="hidden" name="page" value="productdetails">
     <input type="hidden" name="id" value="{$service.id}">
     <input type="hidden" name="action" value="create">
@@ -124,7 +124,7 @@
   <tbody>
     <tr>
       <td align="center">
-        <a href="#" onClick="create_vm.submit();; return false;">{$LANG.onappcreatevm}</a>
+        <a href="#" onClick="document.getElementById('create_vm').submit(); return false;">{$LANG.onappcreatevm}</a>
       </td>
     </tr>
   </tbody>

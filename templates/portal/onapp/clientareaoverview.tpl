@@ -172,7 +172,7 @@ function stopvm(id) {
     </tr>
     <tr>
       <td>
-        <a href="#" onclick="showconsole('{$virtualmachine->_id}');; return false;">{$LANG.onappvmconsole}</a>
+        <a href="#" onclick="showconsole('{$virtualmachine->_id}'); return false;">{$LANG.onappvmconsole}</a>
       </td>
       <td>
         <a href="{$smarty.server.PHP_SELF}?page=disks&id={$id}">{$LANG.onappvmmanagedisks}</a>
