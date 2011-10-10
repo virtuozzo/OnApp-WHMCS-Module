@@ -48,7 +48,7 @@ function getSQLResult($sql) {
 
 // Load VM
 
-    $vm = new ONAPP_VirtualMachine();
+    $vm = new OnApp_VirtualMachine();
 
     $vm->auth(
         $onapp_config["adress"],
@@ -70,7 +70,7 @@ function getSQLResult($sql) {
         $user["password"]
     );
 
-    $console->load($vm->_id);
+    $console->load($vm_id);
 
     $url=$onapp_config["adress"]."/console_remote/".$console->_obj->_remote_key;
 
