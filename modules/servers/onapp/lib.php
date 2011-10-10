@@ -362,7 +362,8 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
     if ( $user )
         $user["password"] = decrypt( $user["password"] );
     else {
-        $user = new ONAPP_User();
+        $user = new OnApp_User();
+$user->logger->setDebug(1);
 
         $onapp_config = get_onapp_config($service['serverid']);
 
@@ -392,19 +393,17 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
 
         $user->_group_id   = $ONAPP_DEFAULT_GROUP;
         $user->_billing_plan_id = $ONAPP_DEFAULT_BILLING_PLAN;
-		$user->_role_ids   = array( $ONAPP_DEFAULT_ROLE );
+
+        $user->_role_ids   = array( $ONAPP_DEFAULT_ROLE );
 
         $user->save();
 
 ##TODO LOCALIZE
-        if ( ! is_null($user->error) )
-            return array('error' => is_array($user->error) ?
-                "Can't create OnApp User<br/>\n " . implode('.<br/>', $user->error) :
-                "Can't create OnApp User<br/>\n " . $user->error);
-        if ( ! is_null($user->_obj->error) )
-            return array('error' => is_array($user->_obj->error) ?
-                "Can't create OnApp User<br/>\n " . implode('.<br/>', $user->_obj->error) :
-                "Can't create OnApp User<br/>\n " . $user->_obj->error);
+        if ( ! is_null($user->getErrorsAsArray()) ) {
+            return array('error' => $user->getErrorsAsString('<br>'));
+		}
+        if ( ! is_null($user->_obj->getErrorsAsArray()) )
+            return array('error' => $user->_obj->getErrorsAsString('<br>'));
         elseif ( is_null($user->_obj->_id) )
             return array( "error" => "Can't create OnApp User");
 
@@ -416,18 +415,16 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
           email = '".$clientsdetails['email']."';";
 
         if ( full_query($sql_replace) ) {
+			update_user_limits( $service['serverid'], $service["userid"] );
             $user = array(
                 "onapp_user_id" => $user->_obj->_id,
                 "email"         => $clientsdetails["email"],
                 "password"      => $clientsdetails['password']
             );
-
-            update_user_limits( $service['serverid'], $service["userid"] );
         } else {
             return array( "error" => "Can't update user data in Data Base");
         };
     };
-
     return $user;
 }
 
@@ -442,7 +439,7 @@ function get_vm( $service_id ) {
     $vm = new ONAPP_VirtualMachine();
 
     if ( isset($user['error']) ) {
-        $vm->error = $user['error'];
+        $vm->setErrors( $user['error'] );
         return $vm;
     };
 
@@ -868,10 +865,10 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm = new ONAPP_VirtualMachine();
 
     $service = get_service($service_id);
-
     $user = get_onapp_client( $service_id );
+
     if ( isset($user['error']) ) {
-        $vm->error = $user['error'];
+        $vm->setErrors( $user['error'] );
         return $vm;
     };
 
@@ -968,14 +965,14 @@ function delete_vm( $service_id ) {
     $vm = get_vm( $service_id );
 
     if( ! isset($vm->_id)) {
-        $vm->error = "Can't Load Virtual Machine";
+        $vm->setErrors( "Can't Load Virtual Machine" );
         return $vm;
     };
 
     $vm->delete();
 
     if( $vm->error ) {
-       $vm->error = "Can't Delete Virtual Machine";
+       $vm->setErrors( "Can't Delete Virtual Machine" );
        return $vm;
     };
 
@@ -985,7 +982,7 @@ function delete_vm( $service_id ) {
     );
 
     if ( ! full_query($sql_delete_service) ) {
-        $vm->error = "Can't delete data from tblonappservices";
+        $vm->setErrors( "Can't delete data from tblonappservices" );
         return $vm;
     };
 
