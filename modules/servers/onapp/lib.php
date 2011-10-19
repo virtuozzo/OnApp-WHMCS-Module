@@ -862,7 +862,8 @@ function update_service_ips($service_id) {
 
 function create_vm( $service_id, $hostname, $template_id) {
 
-    $vm = new ONAPP_VirtualMachine();
+    $vm  = new ONAPP_VirtualMachine();
+    $tpl = new ONAPP_Template();
 
     $service = get_service($service_id);
     $user = get_onapp_client( $service_id );
@@ -873,8 +874,14 @@ function create_vm( $service_id, $hostname, $template_id) {
     };
 
     $onapp_config = get_onapp_config( $service['serverid'] );
-
+                                                                                    //print('<pre>'); print_r($user); die();
     $vm->auth(
+        $onapp_config["adress"],
+        $user["email"],
+        $user["password"]
+    );
+
+    $tpl->auth(
         $onapp_config["adress"],
         $user["email"],
         $user["password"]
@@ -902,6 +909,11 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm->_required_ip_address_assignment = '1';
     $vm->_required_automatic_backup      = '0';
     $vm->_rate_limit                     = $rate_limit;
+
+    $tpl->load( $vm->_template_id );
+    if ( $tpl->_obj->_operating_system == 'windows' ) {
+        $vm->_swap_disk_size = NULL;
+    }
 
     $vm->save();
 
