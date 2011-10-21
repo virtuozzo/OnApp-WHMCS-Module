@@ -1,6 +1,4 @@
 <?php
-//error_reporting(E_ALL);
-//ini_set('display_errors', 'On');
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 define( 'MODULE_WRAPPER_DIR', dirname(__FILE__).'/wrapper' );
 
@@ -510,6 +508,8 @@ function onapp_CreateAccount($params) {
         $params['domain'],
         isset($service['os']) ? $service['os'] : $params['configoption2']
     );
+
+    _ips_resolve_all( $params['accountid'] );
 
     serviceStatus($params['serviceid'], $status);
 
