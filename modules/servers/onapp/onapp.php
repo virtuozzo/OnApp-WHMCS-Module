@@ -199,7 +199,7 @@ $js_serverOptions
                 array_push($created_os, $os);
                 $js_templateOptions .= "    templateOptions['$os'] = new Array();\n";
             }
-            $js_templateOptions .= "    templateOptions['$os'][$_template->_id] = '".addslashes($_template->_label)."';\n";
+            $js_templateOptions .= "    templateOptions['$os'][$_template->_id] = '".addslashes( preg_replace('/\r\n|\n|\r/', " ", $_template->_label ) )."';\n";
         };
     };
   // END Load Templates     //
