@@ -288,7 +288,7 @@ $(document).ready(function(){
 
     // sliders
         var ram_slider = create_slider_html(ram_html, 12288, 256, 4, 3);
-        var cores_slider = create_slider_html(cores_html, 8, 1, 1, 5);
+        var cores_slider = create_slider_html(cores_html, 16, 1, 1, 5);
         var priority_slider = create_slider_html(priority_html, 100, 1, 1, 7);
         var disk_slider = create_slider_html(disk_html, 240, 0, 1, 11);
         var swap_slider = create_slider_html(swap_html, 240, 0, 1, 9);
