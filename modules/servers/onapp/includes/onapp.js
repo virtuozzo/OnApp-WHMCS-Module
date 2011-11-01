@@ -1,4 +1,7 @@
 $(document).ready(function(){
+// take away server group selection
+    $("select[name='servergroup']").parent().parent().hide();
+
 // form submit action
     form = $("form[name$='packagefrm']");
 
