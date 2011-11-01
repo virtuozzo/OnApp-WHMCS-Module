@@ -1,4 +1,4 @@
-<link href="modules/servers/onapp/includes/power_buttons.css" rel="stylesheet" type="text/css">
+<link href="modules/servers/onapp/includes/onapp.css" rel="stylesheet" type="text/css">
 <div class="contentbox">
     <a title="{$LANG.onappoverview}" href="onapp.php?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
     | <a title="{$LANG.onappcpuusage}" href="onapp.php?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>

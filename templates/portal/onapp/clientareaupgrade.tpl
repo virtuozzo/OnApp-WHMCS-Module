@@ -36,7 +36,7 @@
       <td>{$configoption.order} {$configoption.prefix}</td>
       <td>
         {if $configoption.optiontype eq 1}
-        <select style="margin:5px 15px 0 5px; width:270px;" width="270" name="configoption[{$id}]">
+        <select class="optiontype1" name="configoption[{$id}]">
         {foreach from=$configoption.options item=option}
           {if $option.id eq $configoption.active}
             <option selected='selected' value="{$option.id}">{$option.name} ({$LANG.upgradenochange})</option>
@@ -48,9 +48,9 @@
         {elseif $configoption.optiontype eq 2}
         {foreach from=$configoption.options item=option}
           {if $option.id eq $configoption.active}
-            <input style="margin:5px 5px 0 5px;" type="radio" checked="checked" value="{$option.id}" name="configoption[{$id}]">{$option.name}&nbsp;({$LANG.upgradenochange})<br />
+            <input class="optiontype2" type="radio" checked="checked" value="{$option.id}" name="configoption[{$id}]">{$option.name}&nbsp;({$LANG.upgradenochange})<br />
           {else}
-            <input style="margin:5px 5px 0 5px;" type="radio" value="{$option.id}" name="configoption[{$id}]">{$option.name}<br />
+            <input class="optiontype2" type="radio" value="{$option.id}" name="configoption[{$id}]">{$option.name}<br />
           {/if}
         {/foreach}
         {elseif $configoption.optiontype eq 3}
@@ -58,7 +58,7 @@
         {foreach from=$configoption.options item=option}
         <div class="input-with-slider">
           <input type="text" value="{$configoption.value}" size="4" name="configoption[{$id}]" readonly="">
-          <div class="slider" style="float:left; margin:5px 15px 0 5px; width:200px;" max="{$option.max}" min="{$option.min}" step="{$configoption.step}" target="configoption[{$id}]" width="200">
+          <div class="slider" class="optiontype3or4" max="{$option.max}" min="{$option.min}" step="{$configoption.step}" target="configoption[{$id}]" width="200">
           </div> x {$configoption.sortorder} {$configoption.prefix}
         </div>
         {/foreach}
@@ -94,7 +94,7 @@
     <td align="center">
       {assign var='configoption' value=$configoptions.$optionid}
 
-      <select style="margin:5px 15px 0 5px; width:270px;" width="270" name="configoption[{$service.configoption19}]">
+      <select class="optiontype1" width="270" name="configoption[{$service.configoption19}]">
       {foreach from=$configoption.options item=option}
         {if $option.id eq $configoption.active}
           <option selected='selected' value="{$option.id}">{$option.name} ({$LANG.upgradenochange})</option>

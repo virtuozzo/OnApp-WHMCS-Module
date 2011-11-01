@@ -1,4 +1,4 @@
-<link href="modules/servers/onapp/includes/power_buttons.css" rel="stylesheet" type="text/css">
+<link href="modules/servers/onapp/includes/onapp.css" rel="stylesheet" type="text/css">
 {if isset($error)}
 <div class="errorbox">
     {$error}
@@ -72,7 +72,7 @@
 {/if}
     <td align="right">
       <a title="View" href="{$smarty.server.PHP_SELF}?page=productdetails&id={$num}">
-        <img style="border: none;" title="" src="images/viewdetails.gif" alt=""/>
+        <img title="" src="images/viewdetails.gif" alt=""/>
       </a>
     </td>
   </tr>

@@ -20,3 +20,111 @@
 	top:1px;
 	width:21px;
 }
+
+img {
+    border:none;
+}
+a.power {
+  float: left;
+  display: block;
+  width: 31px;
+  height: 19px;
+  margin-left: 3px;
+  text-decoration: none;
+  text-align: center;
+  color: #555 !important;
+  cursor: default;
+}
+
+.vm-overview a.power {
+  margin-left: 0;
+  margin-right: 3px;
+  text-shadow: none;
+}
+
+a.power.on-inactive:hover, a.power.off-inactive:hover {
+  cursor: pointer;
+  color: #fafafa !important;
+}
+
+a.power.on-active {
+  color: #efe !important;
+}
+
+a.power.off-active {
+  color: #fee !important;
+}
+
+a.power.on-disabled, a.power.off-disabled {
+  color: #909090 !important;
+  opacity: 0.8;
+}
+
+a.power.on-inactive, a.power.off-inactive, a.power.on-disabled, a.power.off-disabled {
+  background: transparent url(power-bg.png) no-repeat scroll 0 0;
+}
+
+a.power.on-inactive:hover {
+  background: transparent url(power-bg.png) no-repeat scroll -32px 0;
+}
+
+a.power.off-inactive:hover {
+  background: transparent url(power-bg.png) no-repeat scroll -64px 0;
+}
+
+a.power.on-active {
+  background: transparent url(power-bg.png) no-repeat scroll -96px 0;
+}
+
+a.power.off-active {
+  background: transparent url(power-bg.png) no-repeat scroll -128px 0;
+}
+
+a.power.pending {
+  background: transparent url(power-bg.png) no-repeat scroll -160px 0;
+  width: 65px;
+  color: #909090 !important;
+}
+
+table.data tr.clientareatablecancelled td {
+  background-color:#FFCFCF;
+}
+.vm-overview strong {
+}
+
+.vm-overview .hostname {
+  padding-left: 25px;
+  padding-top: 5px;
+  background: transparent url(label-icons.png) no-repeat scroll 0 0px;
+}
+
+.vm-overview .login {
+  padding-left: 25px;
+  padding-top: 5px;
+  background: transparent url(label-icons.png) no-repeat scroll 0 -60px;
+}
+
+.vm-overview .status {
+  padding-left: 25px;
+  padding-top: 5px;
+  background: transparent url(label-icons.png) no-repeat scroll 0 -30px;
+}
+
+.vm-overview .template {
+  padding-left: 25px;
+  padding-top: 5px;
+  background: transparent url(label-icons.png) no-repeat scroll 0 -90px;
+}
+
+.optiontype1 {
+    margin:5px 15px 0 5px;
+    width:270px
+}
+
+.optiontype2 {
+    margin:5px 5px 0 5px
+}
+.optiontype3or4 {
+    float:left;
+    margin:5px 15px 0 5px; width:200px
+}

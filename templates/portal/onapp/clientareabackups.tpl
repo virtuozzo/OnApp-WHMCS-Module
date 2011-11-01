@@ -1,4 +1,4 @@
-<link href="modules/servers/onapp/includes/power_buttons.css" rel="stylesheet" type="text/css">
+<link href="modules/servers/onapp/includes/onapp.css" rel="stylesheet" type="text/css">
 {literal}
 <script>
 function restoreback(id) {

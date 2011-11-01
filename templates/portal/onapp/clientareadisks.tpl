@@ -1,4 +1,4 @@
-<link href="modules/servers/onapp/includes/power_buttons.css" rel="stylesheet" type="text/css">
+<link href="modules/servers/onapp/includes/onapp.css" rel="stylesheet" type="text/css">
 {if isset($error)}
 <div class="errorbox">
     {$error}
@@ -58,7 +58,7 @@
     <td>
 {if $disk->_is_swap != true}
       <a title="Backups" href="{$smarty.server.PHP_SELF}?page=backups&id={$id}&diskid={$disk->_id}&action=add">
-        <img style="border: none;" title="" src="modules/servers/onapp/includes/backup.png" alt=""/>
+        <img title="" src="modules/servers/onapp/includes/backup.png" alt=""/>
       </a>
 {/if}
     </td>
