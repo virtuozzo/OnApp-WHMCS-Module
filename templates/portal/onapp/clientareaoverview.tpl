@@ -181,6 +181,11 @@ function stopvm(id) {
         <a href="{$smarty.server.PHP_SELF}?page=ipaddresses&id={$id}">{$LANG.onappvmmanageips}</a>
       </td>
     </tr>
+    <tr>
+      <td>
+        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=reset_pass">{$LANG.onappvmresetpassword}</a>
+      </td>
+    </tr>
   </tbody>
 </table>
     {elseif $virtualmachine->_booted eq false}
@@ -204,7 +209,9 @@ function stopvm(id) {
       <td>
         <a href="{$smarty.server.PHP_SELF}?page=ipaddresses&id={$id}">{$LANG.onappvmmanageips}</a>
       </td>
-      <td>&nbsp;</td>
+      <td>
+        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=reset_pass">{$LANG.onappvmresetpassword}</a>
+      </td>
     </tr>
   </tbody>
 </table>

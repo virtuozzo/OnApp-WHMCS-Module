@@ -307,6 +307,9 @@ function _actions_vm($action) {
             case 'delete':
                 _action_vm_delete();
                 break;
+            case 'reset_pass':
+                $_ONAPPVARS['vm']->reset_password();
+                break;
             default:
                 $_ONAPPVARS['error'] = sprintf($_LANG["onappactionnotfound"], $action);
                 break;
@@ -333,10 +336,10 @@ function _actions_vm($action) {
  * Action create virtual machine
  */
 function _action_vm_create() {
-    global $_ONAPPVARS, $_LANG;
+    global $_ONAPPVARS, $_LANG;                              
 
     foreach ( array('templateid', 'hostname' ) as $val )
-        $_ONAPPVARS[$val] = get_value($val);
+        $_ONAPPVARS[$val] = get_value($val);                  
 /* TODO check template
     $templates = get_templates($_ONAPPVARS['service']['serverid'], $_ONAPPVARS['service']["configoption2"]);
     $os = $_ONAPPVARS['service']['os'];
