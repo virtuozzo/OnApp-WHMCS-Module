@@ -175,6 +175,7 @@ function get_service($service_id) {
         tblproducts.configoption18,
         tblproducts.configoption19,
         tblproducts.configoption20,
+        tblproducts.configoption21,
         0 as additionalram,
         0 as additionalcpus,
         0 as additionalcpushares,
@@ -262,7 +263,8 @@ function get_service($service_id) {
         $service["configoption15"], // additional disk size
         $service["configoption16"], // additional ips
         $service["configoption19"], // operation system
-        $service["configoption20"]  // port spead
+        $service["configoption20"],  // port spead
+        $service["configoption21"],  // user role
     );
 
     $service["configoptions"] = array();
@@ -339,7 +341,7 @@ function get_service($service_id) {
  * Get onapp user data
  *
  */
-function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT_ROLE = 2, $ONAPP_DEFAULT_BILLING_PLAN = 1 ) {
+function get_onapp_client( $service_id, $ONAPP_DEFAULT_BILLING_PLAN = 1 ) {
     global $_LANG;
 
     $service = get_service($service_id);
@@ -359,11 +361,33 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_GROUP = 1, $ONAPP_DEFAULT
 
     $user = mysql_fetch_array( full_query($sql_select) );
 
-    if ( $user )
+    if ( $user ) 
+//  {     $user_obj = new OnApp_User();
+//
+//        $onapp_config = get_onapp_config($service['serverid']);
+//
+//        if ( $service['serverid'] == "" )
+//            return array(
+//                "error" => $_LANG['onappcantcreateuser']
+//            );
+//
+//        $user_obj->auth(
+//            $onapp_config["adress"],
+//            $onapp_config['username'],
+//            $onapp_config['password']
+//        );
+//
+//        $user_obj->load( $user['onapp_user_id'] );
+//
+//        if ( $service['configoption21'] != $user_obj->_obj->_roles[0]->_id ) {
+//            $user_obj->_id = $user['onapp_user_id'];
+//            $user_obj->_role_ids = array( $service['configoption21'] );
+//            $user_obj->save();
+//        }
+//  }
         $user["password"] = decrypt( $user["password"] );
-    else {
+    else { 
         $user = new OnApp_User();
-$user->logger->setDebug(1);
 
         $onapp_config = get_onapp_config($service['serverid']);
 
@@ -390,12 +414,8 @@ $user->logger->setDebug(1);
         $user->_login      = $clientsdetails['email'];
         $user->_first_name = $clientsdetails['firstname'];
         $user->_last_name  = $clientsdetails['lastname'];
-
-        $user->_group_id   = $ONAPP_DEFAULT_GROUP;
         $user->_billing_plan_id = $ONAPP_DEFAULT_BILLING_PLAN;
-
-        $user->_role_ids   = array( $ONAPP_DEFAULT_ROLE );
-
+        $user->_role_ids   = array( $service['configoption21'] );
         $user->save();
 
 ##TODO LOCALIZE
@@ -874,7 +894,7 @@ function create_vm( $service_id, $hostname, $template_id) {
     };
 
     $onapp_config = get_onapp_config( $service['serverid'] );
-                                                                                    //print('<pre>'); print_r($user); die();
+                                                                                    
     $vm->auth(
         $onapp_config["adress"],
         $user["email"],
@@ -1147,5 +1167,3 @@ function update_user_storagedisksize( $params, $action = 'Active' ) {
 
     serviceStatus($serviceid, $status);
 }
-
-?>

@@ -142,6 +142,15 @@ $(document).ready(function(){
     }
     addPortSpead.html(selectHTML);
 
+    addRoleSelect = $("select[name$='packageconfigoption[21]']"); 
+    addRoleSelected = addRoleSelect.val();                       
+    addRoleSelect.width(selectWidth);
+    selectHTML = '';                                              
+    for ( option in roleOptions ) {
+        selected = (option == addRoleSelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+roleOptions[option]+'</option>';
+    }                                            
+   addRoleSelect.html(selectHTML);
 
 // get base table
     var table = $('table').eq(5);
@@ -266,6 +275,10 @@ $(document).ready(function(){
     tr.remove();
     tr = table.find('tr').eq(0);
 
+// get User Roles
+    var roles_label = LANG['onappuserroles'];
+    var roles_html  = tr.find('td').eq(1).html();
+    
 // remove row
     tr.remove();
 
@@ -283,6 +296,8 @@ $(document).ready(function(){
         table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
         var second_table = $('table').eq(6);
         tbody = second_table.find('tbody');
+
+        tbody.append( cell_html(roles_label, roles_html ) );
 
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappres']+'</b></td></tr>');
 

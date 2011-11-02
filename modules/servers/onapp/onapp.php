@@ -261,6 +261,33 @@ $js_serverOptions
     };
   // END Primary networks   //
   ////////////////////////////
+  //
+   ////////////////////////////
+  // BEGIN Load Roles //
+    $role = new ONAPP_Role();
+
+    $role->auth(
+        $onapp_config["adress"],
+        $onapp_config['username'],
+        $onapp_config['password']
+    );
+
+    $roles = $role->getList();
+
+    $role_ids = array();
+    $js_roleOptions = '';
+
+    if ( ! empty ( $roles ) ) {
+        foreach ( $roles as $_role) {
+            $role_ids[$_role->_id] = array(
+                'label' => $_role->_label
+            );
+
+            $js_roleOptions .= "    roleOptions[$_role->_id] = '".addslashes($_role->_label)."';\n";
+        };
+    };
+  // END Load Roles     //
+  ////////////////////////////
 
   ////////////////////////////
   // BEGIN Config options   //
@@ -316,13 +343,14 @@ $js_serverOptions
         'netconfig',
         'addres',
         'youwantrefreshtemplates',
-	'settemplate',
+	    'settemplate',
         'wrongram',
         'wrongcpucores',
         'wrongcpuprior',
         'wrongswap',
         'wrongdisksize',
-        'wrongspead'
+        'wrongspead',
+        'userroles'
     );
 
     $js_localization_string = '';
@@ -344,6 +372,8 @@ $js_templateOptions
 $js_hvOptions
     var networkOptions = new Array();
 $js_networkOptions
+    var roleOptions = new Array();
+$js_roleOptions
     var configOptions = new Array();
 $js_ConfigOptions
     var configOptionsSub = new Array();
@@ -471,6 +501,11 @@ $js_localization_string
         $_LANG["onappadditionallportspeed"] => array(
             "Type"        => "dropdown",
             "Options"     => "0,".implode(',', $configoptions),
+            "Description" => "",
+        ),
+        $_LANG["onappuserrole"] => array(
+            "Type" => "dropdown",
+            "Options" => implode( ',', array_keys($role_ids) ),
             "Description" => "",
         ),
         "&nbsp;" => array(
