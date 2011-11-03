@@ -635,9 +635,7 @@ function onapp_ClientArea($params) {
     $service = get_service($params['serviceid']);
 
     if ( ! is_null($service["vmid"]) )
-        return '<a href="onapp.php?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmsettings"] . '</a>';
+        return '<a href="' . ONAPP_FILE_NAME . '?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmsettings"] . '</a>';
     else
-        return '<a href="onapp.php?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmcreate"] . '</a>';
+        return '<a href="' . ONAPP_FILE_NAME . '?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmcreate"] . '</a>';
 }
-
-?>

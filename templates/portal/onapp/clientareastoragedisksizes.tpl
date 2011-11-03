@@ -5,7 +5,7 @@
 </div>
 {/if}
 <div class="contentbox">
-    <a title="{$LANG.onappmyvms}" href="onapp.php">{$LANG.onappmyvms}</a>
+    <a title="{$LANG.onappmyvms}" href="{$smarty.const.ONAPP_FILE_NAME}">{$LANG.onappmyvms}</a>
     | <strong>{$LANG.onappstoragedisksize}</strong>
 </div>
 <p>{$LANG.onappstoragedisksizetitle}</p>

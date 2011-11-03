@@ -3,24 +3,24 @@
 <script>
 function restoreback(id) {
       if( confirm("{/literal}{$LANG.onappconfirmrestoreback}{literal}") ) {
-        window.location="onapp.php?page=backups&id={/literal}{$id}{literal}&action=restore&backupid="+id;
+        window.location="{/literal}{$smarty.const.ONAPP_FILE_NAME}{literal}?page=backups&id={/literal}{$id}{literal}&action=restore&backupid="+id;
     };
 }
 
 function deleteback(id) {
     if ( confirm("{/literal}{$LANG.onappconfirmdeleteback}{literal}") ) {
-        window.location="onapp.php?page=backups&id={/literal}{$id}{literal}&action=delete&backupid="+id;
+        window.location="{/literal}{$smarty.const.ONAPP_FILE_NAME}{literal}?page=backups&id={/literal}{$id}{literal}&action=delete&backupid="+id;
     };
 }
 </script>
 {/literal}
 <div class="contentbox">
-    <a title="{$LANG.onappoverview}" href="onapp.php?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
-    | <a title="{$LANG.onappcpuusage}" href="onapp.php?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
-    | <a title="{$LANG.onappipaddresses}" href="onapp.php?page=ipaddresses&id={$id}">{$LANG.onappipaddresses}</a>
-    | <a title="{$LANG.onappdisks}" href="onapp.php?page=disks&id={$id}">{$LANG.onappdisks}</a>
+    <a title="{$LANG.onappoverview}" href="{$smarty.const.ONAPP_FILE_NAME}?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
+    | <a title="{$LANG.onappcpuusage}" href="{$smarty.const.ONAPP_FILE_NAME}?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
+    | <a title="{$LANG.onappipaddresses}" href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}">{$LANG.onappipaddresses}</a>
+    | <a title="{$LANG.onappdisks}" href="{$smarty.const.ONAPP_FILE_NAME}?page=disks&id={$id}">{$LANG.onappdisks}</a>
     | <strong>{$LANG.onappbackups}</strong>
-    {if $configoptionsupgrade eq 'on'}  | <a title="{$LANG.onappupgradedowngrade}" href="onapp.php?page=upgrade&id={$id}">{$LANG.onappupgradedowngrade}</a> {/if}
+    {if $configoptionsupgrade eq 'on'}  | <a title="{$LANG.onappupgradedowngrade}" href="{$smarty.const.ONAPP_FILE_NAME}?page=upgrade&id={$id}">{$LANG.onappupgradedowngrade}</a> {/if}
 </div>
 {if isset($error)}
 <div class="errorbox">
@@ -80,4 +80,4 @@ function deleteback(id) {
   </tr>
 {/foreach}
 </table>
-<p align="center"><a href="onapp.php?page=storagedisksize">{$LANG.onappstoragedisksize}</a></p><br/>
+<p align="center"><a href="{$smarty.const.ONAPP_FILE_NAME}?page=storagedisksize">{$LANG.onappstoragedisksize}</a></p><br/>

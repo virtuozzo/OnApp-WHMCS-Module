@@ -1,12 +1,12 @@
 <link href="modules/servers/onapp/includes/onapp.css" rel="stylesheet" type="text/css">
 <div class="contentbox">
-    <a title="{$LANG.onappoverview}" href="onapp.php?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
-    | <a title="{$LANG.onappcpuusage}" href="onapp.php?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
+    <a title="{$LANG.onappoverview}" href="{$smarty.const.ONAPP_FILE_NAME}?page=productdetails&id={$id}">{$LANG.onappoverview}</a>
+    | <a title="{$LANG.onappcpuusage}" href="{$smarty.const.ONAPP_FILE_NAME}?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
     | <strong>{$LANG.onappipaddresses}</strong>
-    | <a title="{$LANG.onappdisks}" href="onapp.php?page=disks&id={$id}">{$LANG.onappdisks}</a>
-    | <a title="{$LANG.onappbackups}" href="onapp.php?page=backups&id={$id}">{$LANG.onappbackups}</a>
+    | <a title="{$LANG.onappdisks}" href="{$smarty.const.ONAPP_FILE_NAME}?page=disks&id={$id}">{$LANG.onappdisks}</a>
+    | <a title="{$LANG.onappbackups}" href="{$smarty.const.ONAPP_FILE_NAME}?page=backups&id={$id}">{$LANG.onappbackups}</a>
 {if $configoptionsupgrade eq 'on'}  
-    | <a title="{$LANG.onappupgradedowngrade}" href="onapp.php?page=upgrade&id={$id}">{$LANG.onappupgradedowngrade}</a>
+    | <a title="{$LANG.onappupgradedowngrade}" href="{$smarty.const.ONAPP_FILE_NAME}?page=upgrade&id={$id}">{$LANG.onappupgradedowngrade}</a>
 {/if}
 </div>
 {if isset($error)}
@@ -42,7 +42,7 @@
 {if count($not_resolved_ips) > 0}
       &nbsp;
 {else}
-      <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=assignbase">{$LANG.onappassign}</a>
+      <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=assignbase">{$LANG.onappassign}</a>
 {/if}
     </td>
   </tr>
@@ -77,7 +77,7 @@
 {if count($not_resolved_ips) > 0 }
       &nbsp;
 {else}
-      <a href="onapp.php?page=ipaddresses&id={$id}&action=assignadditional">{$LANG.onappassign}</a>
+      <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&action=assignadditional">{$LANG.onappassign}</a>
 {/if}
     </td>
   </tr>
@@ -104,14 +104,14 @@
     <td>{$notresolved_ip->_gateway}</td>
     <td>
       {if $not_resloved_base > 0 && $not_resloved_additional > 0}
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setbase">{$LANG.onappsetasbase}</a> |
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setadditional">{$LANG.onappsetasadditional}</a>
+        <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setbase">{$LANG.onappsetasbase}</a> |
+        <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setadditional">{$LANG.onappsetasadditional}</a>
       {elseif $not_resloved_base > 0}
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setbase">{$LANG.onappsetasbase}</a>
+        <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setbase">{$LANG.onappsetasbase}</a>
       {elseif $not_resloved_additional > 0}
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setadditional">{$LANG.onappsetasadditional}</a>
+        <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setadditional">{$LANG.onappsetasadditional}</a>
       {else}
-        <a href="onapp.php?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=delete">{$LANG.onappdelete}</a>
+        <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=delete">{$LANG.onappdelete}</a>
       {/if}
     </td>
   </tr>

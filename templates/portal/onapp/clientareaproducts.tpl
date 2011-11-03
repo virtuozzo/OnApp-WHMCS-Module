@@ -6,7 +6,7 @@
 {/if}
 <div class="contentbox">
     <strong>{$LANG.onappmyvms}</strong>
-    | <a title="{$LANG.onappstoragedisksize}" href="onapp.php?page=storagedisksize">{$LANG.onappstoragedisksize}</a>
+    | <a title="{$LANG.onappstoragedisksize}" href="{$smarty.const.ONAPP_FILE_NAME}?page=storagedisksize">{$LANG.onappstoragedisksize}</a>
 </div>
 <p>{$LANG.onappproductstitle}</p>
 <h2 class="heading2">{$LANG.clientareavirtualmachines}</h2>
@@ -115,4 +115,3 @@
 {/foreach}{/foreach}
 </table>
 {/if}
-

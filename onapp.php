@@ -1,8 +1,9 @@
 <?php
 // TODO add onapp $_LANG in to file
 // error_reporting(E_ALL);
-
+define("ONAPP_FILE_NAME", "onapp.php");
 define("CLIENTAREA",true);
+
 
 require_once "dbconnect.php";
 require_once "includes/functions.php";
@@ -44,9 +45,9 @@ foreach ( array('id', 'page', 'action') as $val )
  */
 $breadcrumbnav  = ' <a href="index.php">'.$_LANG["globalsystemname"].'</a>';
 $breadcrumbnav .= ' &gt; <a href="clientarea.php">'.$_LANG["clientareatitle"].'</a>';
-$breadcrumbnav .= ' &gt; <a href="onapp.php">'.$_LANG["onappmyvms"].'</a>';
+$breadcrumbnav .= ' &gt; <a href="' . ONAPP_FILE_NAME . '">'.$_LANG["onappmyvms"].'</a>';
 if ( in_array($_ONAPPVARS['page'], array('productdetails', 'disks', 'cpuusage', 'ipaddresses', 'backups', 'upgrade') ) )
-    $breadcrumbnav .= ' &gt; <a title="' .$_LANG["clientareaproductdetails"]. '" href="onapp.php?page=productdetails&id='.$id.'">'.$_LANG["clientareaproductdetails"].'</a>';
+    $breadcrumbnav .= ' &gt; <a title="' .$_LANG["clientareaproductdetails"]. '" href="' . ONAPP_FILE_NAME . '?page=productdetails&id='.$id.'">'.$_LANG["clientareaproductdetails"].'</a>';
 
 /**
  * Check if service exist
@@ -70,24 +71,24 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
             productdetails();
             break;
         case 'cpuusage':
-            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappcpuusage"]. '" href="onapp.php?page=cpuusage&id='.$id.'">'.$_LANG["onappcpuusage"].'</a>';
+            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappcpuusage"]. '" href="' . ONAPP_FILE_NAME . '?page=cpuusage&id='.$id.'">'.$_LANG["onappcpuusage"].'</a>';
             productcpuusage();
             break;
         case 'ipaddresses':
-            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappipaddresses"]. '" href="onapp.php?page=ipaddresses&id='.$id.'">'.$_LANG["onappipaddresses"].'</a>';
+            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappipaddresses"]. '" href="' . ONAPP_FILE_NAME . '?page=ipaddresses&id='.$id.'">'.$_LANG["onappipaddresses"].'</a>';
             productipaddresses();
             break;
         case 'disks':
-            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappdisks"]. '" href="onapp.php?page=disks&id='.$id.'">'.$_LANG["onappdisks"].'</a>';
+            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappdisks"]. '" href="' . ONAPP_FILE_NAME . '?page=disks&id='.$id.'">'.$_LANG["onappdisks"].'</a>';
             productdisks();
             break;
         case 'backups':
-            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappbackups"]. '" href="onapp.php?page=backups&id='.$id.'">'.$_LANG["onappbackups"].'</a>';
+            $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappbackups"]. '" href="' . ONAPP_FILE_NAME . '?page=backups&id='.$id.'">'.$_LANG["onappbackups"].'</a>';
             productbackups();
             break;
         case 'upgrade':
             if( $_ONAPPVARS['service']['configoptionsupgrade'] == "on" ) {
-                $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappupgradedowngrade"] .'" href="onapp.php?page=upgrade&id='.$id.'">'.$_LANG["onappupgradedowngrade"].'</a>';
+                $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappupgradedowngrade"] .'" href="' . ONAPP_FILE_NAME . '?page=upgrade&id='.$id.'">'.$_LANG["onappupgradedowngrade"].'</a>';
                 productupgrade();
             } else {
                 $_ONAPPVARS['error'] = sprintf( $_LANG["onapppagenotfound"], $_ONAPPVARS['page'] );
@@ -327,7 +328,7 @@ function _actions_vm($action) {
             $_ONAPPVARS['vm']->_obj->error;
 
     if ( ! isset($_ONAPPVARS['error']) )
-        redirect("onapp.php?page=productdetails&id=".$_ONAPPVARS['id']);
+        redirect( ONAPP_FILE_NAME . "?page=productdetails&id=".$_ONAPPVARS['id']);
     else
         productdetails();
 }
@@ -610,7 +611,7 @@ function productipaddresses() {
         if ( isset($return['error']) )
             $_ONAPPVARS['error'] = $return['error'];
         else
-            redirect("onapp.php?page=ipaddresses&id=" . $_ONAPPVARS['id']);
+            redirect( ONAPP_FILE_NAME . "?page=ipaddresses&id=" . $_ONAPPVARS['id']);
 
     clientareaipaddresses();
 }
@@ -667,7 +668,7 @@ function productdisks() {
         if ( is_array($return) && isset($return['error']) )
             $_ONAPPVARS['error'] = $return['error'];
         else
-            redirect("onapp.php?page=disks&id=" . $_ONAPPVARS['id']);
+            redirect( ONAPP_FILE_NAME . "?page=disks&id=" . $_ONAPPVARS['id']);
 
     clientareadisks();
 }
@@ -765,7 +766,7 @@ function productbackups() {
         if ( isset($return['error']) )
             $_ONAPPVARS['error'] = $return['error'];
         else
-            redirect("onapp.php?page=backups&id=".$_ONAPPVARS['id']);
+            redirect( ONAPP_FILE_NAME . "?page=backups&id=".$_ONAPPVARS['id']);
 
     clientareabackups();
 }
@@ -1006,7 +1007,7 @@ function get_storage_service( $service_id ) {
 function clientareastoragedisksizes() {
     global $_ONAPPVARS, $breadcrumbnav, $_LANG;
 
-    $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappstoragedisksize"]. '" href="onapp.php?page=storagedisksize">'.$_LANG["onappstoragedisksize"].'</a>';
+    $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappstoragedisksize"]. '" href="' . ONAPP_FILE_NAME . '?page=storagedisksize">'.$_LANG["onappstoragedisksize"].'</a>';
 
     $_ONAPPVARS['service'] = get_storage_service($_ONAPPVARS['id']);
 
@@ -1152,5 +1153,3 @@ function storagedisksizes() {
         )
     );
 }
-
-?>

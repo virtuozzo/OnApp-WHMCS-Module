@@ -7,30 +7,30 @@ function showconsole(id) {
 
 function rebuildvm(id) {
       if( confirm("{/literal}{$LANG.onappconfirmrebuildvm}{literal}") ) {
-        window.location="onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=rebuild";
+        window.location="{/literal}{$smarty.const.ONAPP_FILE_NAME}{literal}?page=productdetails&id={/literal}{$id}{literal}&action=rebuild";
     };
 }
 
 function deletevm(id) {
     if ( confirm("{/literal}{$LANG.onappconfirmdeletevm}{literal}") ) {
-        window.location="onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=delete";
+        window.location="{/literal}{$smarty.const.ONAPP_FILE_NAME}{literal}?page=productdetails&id={/literal}{$id}{literal}&action=delete";
     };
 }
 
 function stopvm(id) {
     if ( confirm("{/literal}{$LANG.onappconfirmstopvm}{literal}") ) {
-        window.location="onapp.php?page=productdetails&id={/literal}{$id}{literal}&action=stop";
+        window.location="{/literal}{$smarty.const.ONAPP_FILE_NAME}{literal}?page=productdetails&id={/literal}{$id}{literal}&action=stop";
     }
 }
 </script>
 {/literal}
 <div class="contentbox">
     <strong>{$LANG.onappoverview}</strong>
-    | <a title="{$LANG.onappcpuusage}" href="onapp.php?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
-    | <a title="{$LANG.onappipaddresses}" href="onapp.php?page=ipaddresses&id={$id}">{$LANG.onappipaddresses}</a>
-    | <a title="{$LANG.onappdisks}" href="onapp.php?page=disks&id={$id}">{$LANG.onappdisks}</a>
-    | <a title="{$LANG.onappbackups}" href="onapp.php?page=backups&id={$id}">{$LANG.onappbackups}</a>
-    {if $configoptionsupgrade eq 'on'}  | <a title="{$LANG.onappupgradedowngrade}" href="onapp.php?page=upgrade&id={$id}">{$LANG.onappupgradedowngrade}</a> {/if}
+    | <a title="{$LANG.onappcpuusage}" href="{$smarty.const.ONAPP_FILE_NAME}?page=cpuusage&id={$id}">{$LANG.onappcpuusage}</a>
+    | <a title="{$LANG.onappipaddresses}" href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}">{$LANG.onappipaddresses}</a>
+    | <a title="{$LANG.onappdisks}" href="{$smarty.const.ONAPP_FILE_NAME}?page=disks&id={$id}">{$LANG.onappdisks}</a>
+    | <a title="{$LANG.onappbackups}" href="{$smarty.const.ONAPP_FILE_NAME}?page=backups&id={$id}">{$LANG.onappbackups}</a>
+    {if $configoptionsupgrade eq 'on'}  | <a title="{$LANG.onappupgradedowngrade}" href="{$smarty.const.ONAPP_FILE_NAME}?page=upgrade&id={$id}">{$LANG.onappupgradedowngrade}</a> {/if}
 </div>
 {if isset($error)}
 <div class="errorbox">
