@@ -85,7 +85,7 @@ var disable_inputs = function(){
 }
 
 $(document).ready(function() {
-    disable_inputs();
+//    disable_inputs(); 
     init_sliders();
 
     try {
