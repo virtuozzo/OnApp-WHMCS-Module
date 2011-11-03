@@ -26,7 +26,7 @@
       <li><a href="supporttickets.php" title="{$LANG.clientareanavsupporttickets}">{$LANG.clientareanavsupporttickets}</a></li>
       <li><a href="affiliates.php" title="{$LANG.affiliatestitle}">{$LANG.affiliatestitle}</a></li>
       <li><a href="clientarea.php?action=emails" title="{$LANG.clientareaemails}">{$LANG.clientareaemails}</a></li>
-      <li><a href="{$smarty.const.ONAPP_FILE_NAME}" title="OnApp">OnApp</a></li>
+      <li><a href="onapp.php" title="OnApp">OnApp</a></li>
     </ul>
     <div class="clear"></div>
   </div>
