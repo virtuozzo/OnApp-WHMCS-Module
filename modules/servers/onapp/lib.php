@@ -415,7 +415,9 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_BILLING_PLAN = 1 ) {
         $user->_first_name = $clientsdetails['firstname'];
         $user->_last_name  = $clientsdetails['lastname'];
         $user->_billing_plan_id = $ONAPP_DEFAULT_BILLING_PLAN;
-        $user->_role_ids   = array( $service['configoption21'] );
+        $user->_role_ids   = ( $service['configoption21'] != '') ? 
+            array( $service['configoption21'] ) :
+            array ( 2 ) ;
         $user->save();
 
 ##TODO LOCALIZE
