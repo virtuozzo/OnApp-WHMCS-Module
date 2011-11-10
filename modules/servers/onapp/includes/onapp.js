@@ -593,7 +593,7 @@ function after_add() {
        if ( ! in_array( $(this).attr('value'), ALL_SELECTED_TEMPLATES ) ) {
            ALL_SELECTED_TEMPLATES.push($(this).attr('value') )
 
-           var idx = ALL_AVAILABLE_TEMPLATES.indexOf( $(this).attr('value') )
+           var idx = jQuery.inArray( $(this).attr('value'), ALL_AVAILABLE_TEMPLATES );    
            if ( idx != -1 ) {
                ALL_AVAILABLE_TEMPLATES.splice( idx, 1 )
            }
@@ -608,7 +608,7 @@ function after_remove(){
        if ( ! in_array( $(this).attr('value'), ALL_AVAILABLE_TEMPLATES ) ) {
            ALL_AVAILABLE_TEMPLATES.push($(this).attr('value') )
 
-           var idx = ALL_SELECTED_TEMPLATES.indexOf( $(this).attr('value') )
+           var idx = jQuery.inArray( $(this).attr('value'), ALL_SELECTED_TEMPLATES );
            if ( idx != -1 ) {
                ALL_SELECTED_TEMPLATES.splice( idx, 1 )
            }
