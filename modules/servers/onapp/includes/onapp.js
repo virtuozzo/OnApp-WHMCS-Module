@@ -6,6 +6,7 @@ $(document).ready(function(){
     form = $("form[name$='packagefrm']");
 
     form.submit(function() {
+        add_hv_zone()
         return checkvars(check_vars);
     });
 
@@ -29,12 +30,17 @@ $(document).ready(function(){
     templateSelect.css('display', 'none');
 
     hvSelect = $("select[name$='packageconfigoption[4]']");
+
+// if ( hv_id , hv_zone ) in database
+    var hvZoneId = ( hvAndZoneSelected ) ? hvAndZoneSelected[1] : hvZonesArray[hvSelect.val()]
+
     hvSelected = hvSelect.val();
 
     selectHTML = '';
     for ( option in hvOptions ) {
         selected = (option == hvSelected) ? ' selected="selected"' : '';
-        selectHTML += '<option value="'+option+'"'+selected+'>'+hvOptions[option]+'</option>';
+        if ( option == 0 ) hvZonesArray[option] = 'autoselect'
+        selectHTML += '<option zone="'+ hvZonesArray[option] +'" value="'+option+'"'+selected+'>'+hvOptions[option]+'</option>';
     }
 
     hvSelect.html(selectHTML);
@@ -278,14 +284,24 @@ $(document).ready(function(){
 // get User Roles
     var roles_label = LANG['onappuserroles'];
     var roles_html  = tr.find('td').eq(1).html();
+
+// get Hypervisor Zones
+    var hv_zones_label = LANG['onapphvzones']
+    var hv_zones_html  = 
+        '<select name="hvzones">' +
+        '    <option value="no_zone"></option>';
+    for ( option in hvZoneOptions )
+        hv_zones_html += 
+            '    <option value="'+option+'">'+hvZoneOptions[option]+'</option>';
+    hv_zones_html += '</select>';
     
 // remove row
     tr.remove();
 
 // tables
     var tbody = table.find('tbody');
+    tbody.find("tr").eq(0).remove()
     tbody.append( cell_html(servers_label, servers_html) );
-    tbody.append( cell_html(hypervisors_label, hypervisors_html) );
 
     if ( error_msg != "" ) {
         table.after( '<br/>'+error_msg+'<br/>' );
@@ -296,9 +312,9 @@ $(document).ready(function(){
         table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
         var second_table = $('table').eq(6);
         tbody = second_table.find('tbody');
-
+        tbody.append( cell_html(hv_zones_label, hv_zones_html ) );
+        tbody.append( cell_html(hypervisors_label, hypervisors_html) );
         tbody.append( cell_html(roles_label, roles_html ) );
-
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappres']+'</b></td></tr>');
 
     // sliders
@@ -346,6 +362,36 @@ $(document).ready(function(){
         tbody.append( cell_html(addport_speed_label, addport_speed_html) );
 //        tbody.append( cell_html(backup_label, backup_html) );
 
+        hvZonesSelect = $("select[name='hvzones']")
+        hvSelectHtml = hvSelect.html()
+        
+// set hvzones select width and value if needed
+        hvZonesSelect.width(selectWidth)
+        if ( hvZoneId ) {
+            hvZonesSelect.val( hvZoneId )
+        }
+
+// disable hypervisor select if needed
+       hvSelect = $("select[name$='packageconfigoption[4]']");
+        if ( hvZonesSelect.val() == '0' ) {
+            hvSelect.val(0).attr('disabled', 'disabled');
+        }
+
+// disable hypervisor zones options with no hypervisors
+        hvZonesSelect.children().each( function () { 
+            if ( in_array( $(this).val(), hvZonesArray ) === false &&
+                $(this).val() != 0 && $(this).val() != 'no_zone' ) {
+                $(this).attr('disabled', 'disabled')
+            }
+        })
+
+// assign hypervisor zones onChange action
+        hvZonesSelect.change( function () {
+            deal_hvs()
+        })
+        
+        deal_hvs()
+       
 // assign os templates addons onChange action
         ostemplatesSelect = $("select[name$='packageconfigoption[19]']");
 
@@ -392,7 +438,7 @@ $(document).ready(function(){
     
 });
 
-function checkvars(check_vars) { //console.log('checkvars function')
+function checkvars(check_vars) { 
 
     if (! check_vars ) return true;
 
@@ -593,17 +639,17 @@ function after_add() {
        if ( ! in_array( $(this).attr('value'), ALL_SELECTED_TEMPLATES ) ) {
            ALL_SELECTED_TEMPLATES.push($(this).attr('value') )
 
-           var idx = jQuery.inArray( $(this).attr('value'), ALL_AVAILABLE_TEMPLATES );    
+           var idx = jQuery.inArray( $(this).attr('value'), ALL_AVAILABLE_TEMPLATES );
            if ( idx != -1 ) {
                ALL_AVAILABLE_TEMPLATES.splice( idx, 1 )
            }
        }
     })
-    
+
     check_autobuild();
 }
 
-function after_remove(){ 
+function after_remove(){
     $("#available_tpl option").each( function () {
        if ( ! in_array( $(this).attr('value'), ALL_AVAILABLE_TEMPLATES ) ) {
            ALL_AVAILABLE_TEMPLATES.push($(this).attr('value') )
@@ -617,6 +663,36 @@ function after_remove(){
 
     osFilter();
     check_autobuild();
+}
+
+function add_hv_zone() {
+      if ( hvSelect.val() == 0 && hvZonesSelect.val() != 'no_zone' ) {
+          var html =
+              '<input type="hidden" value="'+hvSelect.val()+','+hvZonesSelect.val()+'" name="packageconfigoption[4]"/>'
+          var parent = hvSelect.parent()
+          hvSelect.attr('name', 'renamed');
+          parent.append(html)
+      }
+}
+
+function deal_hvs () {
+    var zone =  hvZonesSelect.val()
+        hvSelect.html(hvSelectHtml)
+        if ( zone != '0' ) {
+            hvSelect.removeAttr('disabled')
+
+            if ( hvZonesSelect.val() != 'no_zone' ) {
+                hvSelect.children().each( function () {
+                    if ( zone != $(this).attr('zone') && $(this).attr('zone') != 'autoselect' ) {
+                        $(this).remove()
+                    }
+                })
+            }
+        }
+        else {
+            hvSelect.val('0')
+            hvSelect.attr('disabled', 'disabled');
+        }
 }
 
 $(function() { 

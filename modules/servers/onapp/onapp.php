@@ -204,9 +204,41 @@ $js_serverOptions
     };
   // END Load Templates     //
   ////////////////////////////
+  //
+ ////////////////////////////
+  // BEGIN Load Hypervisor Zones // '
+    $hv_zone = new ONAPP_HypervisorZone();
 
+    $hv_zone->auth(
+        $onapp_config["adress"],
+        $onapp_config['username'],
+        $onapp_config['password']
+    );
+
+    $hv_zones = $hv_zone->getList();
+
+    $hv_zone_ids = array();
+
+    if ( ! empty( $hv_zones ) ) {
+        $js_hvZoneOptions = "    hvZoneOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
+
+        foreach ( $hv_zones as $_hv_zone ) {
+            $js_hvZoneOptions .=
+                "      hvZoneOptions[ $_hv_zone->_id ] = '".addslashes( $_hv_zone->_label )."';\n";
+        }
+    }
+  // END Load Hypervisor Zones //
+  ////////////////////////////
+  
   ////////////////////////////
   // BEGIN Load Hypervisors //
+
+    $option = explode( ",", $packageconfigoption[4] );
+    
+    if ( count($option) > 1 ) {
+        $hv_and_zone_selected = $option;
+    }                      
+
     $hv = new ONAPP_Hypervisor();
 
     $hv->auth(
@@ -220,15 +252,17 @@ $js_serverOptions
     $hv_ids = array();
 
     $js_hvOptions = "    hvOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
+    $js_hvZonesArray = '';
 
     if (!empty($hvs)) {
         foreach ($hvs as $_hv) {
-            if ( $_hv->_online == "true" ) {
+            if ( $_hv->_online == "true" && $_hv->_hypervisor_group_id ) {
                 $hv_ids[$_hv->_id] = array(
                     'label' => $_hv->_label
                 );
 
                 $js_hvOptions .= "    hvOptions[$_hv->_id] = '".addslashes($_hv->_label)."';\n";
+                $js_hvZonesArray .= " hvZonesArray[$_hv->_id] = $_hv->_hypervisor_group_id" . " \n";
             };
         };
     };
@@ -350,7 +384,8 @@ $js_serverOptions
         'wrongswap',
         'wrongdisksize',
         'wrongspead',
-        'userroles'
+        'userroles',
+        'hvzones',
     );
 
     $js_localization_string = '';
@@ -378,12 +413,17 @@ $js_roleOptions
 $js_ConfigOptions
     var configOptionsSub = new Array();
 $js_ConfigOptionsSub
+    var hvZonesArray = new Array();
+$js_hvZonesArray
+    var hvZoneOptions = new Array();
+$js_hvZoneOptions
     var productAddons = new Array();
+        
+var hvAndZoneSelected = ". json_encode( $hv_and_zone_selected ) ."
 
 $js_error;
 
 // Localization
-
     var LANG = new Array();
 $js_localization_string
 
@@ -582,7 +622,6 @@ function onapp_TerminateAccount( $params ) {
                 $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
                 $_LANG["onappcantdeletevm"] . $vm->_obj->error;
     };
-
 
     return 'success';
 }

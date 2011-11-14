@@ -909,6 +909,14 @@ function create_vm( $service_id, $hostname, $template_id) {
         $user["password"]
     );
 
+    $option = explode(",", $service['configoption4']);
+    if ( count($option) > 1 ) {
+        $vm->_hypervisor_group_id = $option[1];
+    }
+    else {
+        $vm->_hypervisor_id = $option[0];
+    }
+
     $memory            = $service['configoption3']  + $service['additionalram'];
     $cpus              = $service['configoption5']  + $service['additionalcpus'];
     $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];
@@ -916,7 +924,6 @@ function create_vm( $service_id, $hostname, $template_id) {
     $rate_limit        = $service['configoption8']  + $service['additionalportspead'];
 
     $vm->_template_id                    = isset($service['os']) ? $service['os'] : $template_id;
-    $vm->_hypervisor_id                  = $service['configoption4'];
     $vm->_primary_network_id             = $service['configoption6'];
     $vm->_required_virtual_machine_build = '0';
     $vm->_hostname                       = $hostname;

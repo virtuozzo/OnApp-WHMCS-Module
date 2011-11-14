@@ -154,3 +154,4 @@ $_LANG["onappspacelimit"] = "Space Limit";
 $_LANG["onappstoragedisksizetitle"] = "This page lists the OnApp services associated with the Storage Disk Size product. Click the Produc/Service label to see its details. The Status bar shows if the product is in the Active/ Pending/ Suspended/ Terminated state. The Space limit shows the maximum number of GB available for the service.";
 $_LANG["onappvmresetpassword"] = "Reset Root Password";
 $_LANG["onappuserroles"] = "User Roles";
+$_LANG["onapphvzones"] = "Hypervisor Zones";
