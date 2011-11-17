@@ -917,6 +917,16 @@ function create_vm( $service_id, $hostname, $template_id) {
         $vm->_hypervisor_id = $option[0];
     }
 
+    $option = explode(",", $service['configoption11']);
+    if ( count($option) > 1 ) {
+        $vm->_data_store_group_primary_id = $option[1];
+    }
+
+    $option = explode(",", $service['configoption9']);
+    if ( count($option) > 1 ) {
+        $vm->_data_store_group_swap_id = $option[1];
+    }
+
     $memory            = $service['configoption3']  + $service['additionalram'];
     $cpus              = $service['configoption5']  + $service['additionalcpus'];
     $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];

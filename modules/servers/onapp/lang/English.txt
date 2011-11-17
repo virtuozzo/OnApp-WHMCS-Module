@@ -155,3 +155,9 @@ $_LANG["onappstoragedisksizetitle"] = "This page lists the OnApp services associ
 $_LANG["onappvmresetpassword"] = "Reset Root Password";
 $_LANG["onappuserroles"] = "User Roles";
 $_LANG["onapphvzones"] = "Hypervisor Zones";
+$_LANG["onappprimarydisk"] = "Primary Disk";
+$_LANG["onappswapdisk"] = "Swap Disk";
+$_LANG["onappdszone"] = "Data Store Zone";
+$_LANG["onappvmproperties"] = "Virtual machine properties";
+
+

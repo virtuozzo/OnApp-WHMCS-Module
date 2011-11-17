@@ -502,6 +502,9 @@ function showcreateproduct() {
             $os => $templates[$os]
         );
     };
+    
+    $_ONAPPVARS['service']['configoption9'] = round( $_ONAPPVARS['service']['configoption9'] );
+    $_ONAPPVARS['service']['configoption11'] = round( $_ONAPPVARS['service']['configoption11'] );
 
     show_template(
         "onapp/clientareacreateproduct",

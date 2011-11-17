@@ -204,7 +204,43 @@ $js_serverOptions
     };
   // END Load Templates     //
   ////////////////////////////
-  //
+
+    //////////////////////////////
+  // BEGIN Load Data Store Zones //
+    $option = explode( ",", $packageconfigoption[11] );
+
+    if ( count($option) > 1 ) {
+        $ds_zone_primary_selected = $option[1];
+    }
+    else $ds_zone_primary_selected = 0;
+
+    $option = explode( ",", $packageconfigoption[9] );
+
+    if ( count($option) > 1 ) {
+        $ds_zone_swap_selected = $option[1];
+    }
+    else $ds_zone_swap_selected = 0;
+
+    $dstore_zone = new ONAPP_DataStoreZone();
+
+    $dstore_zone->auth(
+        $onapp_config["adress"],
+        $onapp_config['username'],
+        $onapp_config['password']
+    );
+
+    $dstore_zones = $dstore_zone->getList(); 
+
+    $js_dsOptions = "    dsOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
+
+    if ( ! empty ( $dstore_zones ) ) {
+        foreach ( $dstore_zones as $_ds ) {
+            $js_dsOptions .= "    dsOptions[$_ds->_id] = '".addslashes($_ds->_label)."';\n";
+        };
+    };
+  // END Load Data Store Zones //
+  ////////////////////////////
+
  ////////////////////////////
   // BEGIN Load Hypervisor Zones // '
     $hv_zone = new ONAPP_HypervisorZone();
@@ -386,6 +422,10 @@ $js_serverOptions
         'wrongspead',
         'userroles',
         'hvzones',
+        'primarydisk',
+        'swapdisk',
+        'dszone',
+        'vmproperties',
     );
 
     $js_localization_string = '';
@@ -417,9 +457,13 @@ $js_ConfigOptionsSub
 $js_hvZonesArray
     var hvZoneOptions = new Array();
 $js_hvZoneOptions
+    var dsOptions = new Array();
+$js_dsOptions
     var productAddons = new Array();
         
 var hvAndZoneSelected = ". json_encode( $hv_and_zone_selected ) ."
+var dsPrimarySelected = $ds_zone_primary_selected
+var dsSwapSelected    = $ds_zone_swap_selected
 
 $js_error;
 

@@ -7,7 +7,9 @@ $(document).ready(function(){
 
     form.submit(function() {
         add_hv_zone()
-        return checkvars(check_vars);
+        var checkresult = checkvars(check_vars);
+        add_ds_zone(checkresult)
+        
     });
 
 // replace values
@@ -157,6 +159,12 @@ $(document).ready(function(){
         selectHTML += '<option value="'+option+'"'+selected+'>'+roleOptions[option]+'</option>';
     }                                            
    addRoleSelect.html(selectHTML);
+   
+   dsZoneHtml = '';
+   for ( option in dsOptions ) {
+       dsZoneHtml += '<option value="'+option+'"'+selected+'>'+dsOptions[option]+'</option>';
+   }                                            
+
 
 // get base table
     var table = $('table').eq(5);
@@ -294,7 +302,18 @@ $(document).ready(function(){
         hv_zones_html += 
             '    <option value="'+option+'">'+hvZoneOptions[option]+'</option>';
     hv_zones_html += '</select>';
-    
+
+// get Data Store Zones
+    var ds_zones_label = LANG['onappdszone'];
+    var ds_zones_primary_html =
+        '<select name="ds_zones_primary"> '+
+            dsZoneHtml                     +
+        '</select>'
+    var ds_zones_swap_html = 
+        '<select name="ds_zones_swap"> '   +
+            dsZoneHtml                     +
+        '</select>'
+
 // remove row
     tr.remove();
 
@@ -312,6 +331,7 @@ $(document).ready(function(){
         table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
         var second_table = $('table').eq(6);
         tbody = second_table.find('tbody');
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappvmproperties']+'</b></td></tr>');
         tbody.append( cell_html(hv_zones_label, hv_zones_html ) );
         tbody.append( cell_html(hypervisors_label, hypervisors_html) );
         tbody.append( cell_html(roles_label, roles_html ) );
@@ -329,7 +349,11 @@ $(document).ready(function(){
         tbody.append( cell_html(ram_label, ram_slider) );
         tbody.append( cell_html(cores_label, cores_slider) );
         tbody.append( cell_html(priority_label, priority_slider) );
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappprimarydisk']+'</b></td></tr>');
+        tbody.append( cell_html(ds_zones_label, ds_zones_primary_html) );
         tbody.append( cell_html(disk_label, disk_slider) );
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappswapdisk']+'</b></td></tr>');
+        tbody.append( cell_html(ds_zones_label, ds_zones_swap_html) );
         tbody.append( cell_html(swap_label, swap_slider) );
 
     // second table
@@ -362,13 +386,28 @@ $(document).ready(function(){
         tbody.append( cell_html(addport_speed_label, addport_speed_html) );
 //        tbody.append( cell_html(backup_label, backup_html) );
 
+// Set selects width
         hvZonesSelect = $("select[name='hvzones']")
+        hvZonesSelect.width(selectWidth)
+        dsPrimarySelect = $("select[name='ds_zones_primary']")
+        dsPrimarySelect.width(selectWidth)
+        dsSwapSelect = $("select[name='ds_zones_swap']")
+        dsSwapSelect.width(selectWidth)
+
+// Get hypervisor Select HTML
         hvSelectHtml = hvSelect.html()
         
-// set hvzones select width and value if needed
-        hvZonesSelect.width(selectWidth)
+// set hvzones value if needed
         if ( hvZoneId ) {
             hvZonesSelect.val( hvZoneId )
+        }
+// set data store swap and primary zone values as needed
+        if ( dsPrimarySelected ) {
+            dsPrimarySelect.val( dsPrimarySelected )
+        }
+
+        if ( dsSwapSelected ) {
+            dsSwapSelect.val( dsSwapSelected )
         }
 
 // disable hypervisor select if needed
@@ -673,6 +712,27 @@ function add_hv_zone() {
           hvSelect.attr('name', 'renamed');
           parent.append(html)
       }
+}
+
+function add_ds_zone( checkresult ) {
+      input9 = $("input[name$='packageconfigoption[9]']")
+      input11 = $("input[name$='packageconfigoption[11]']")
+      var parent = input9.parent()
+      var html
+      
+      if ( dsPrimarySelect.val() != 0 ) {
+          html =
+              '<input type="hidden" value="'+input11.val()+','+dsPrimarySelect.val()+'" name="packageconfigoption[11]"/>'
+          input11.attr('name', 'renamed')
+          parent.append( html )
+      }
+      if ( dsSwapSelect.val() != 0 ) {
+          html =
+              '<input type="hidden" value="'+input9.val()+','+dsSwapSelect.val()+'" name="packageconfigoption[9]"/>'
+          input9.attr('name', 'renamed')
+          parent.append( html )
+      }
+      return ( ! checkresult ) ? false : true
 }
 
 function deal_hvs () {
