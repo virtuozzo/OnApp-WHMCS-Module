@@ -341,7 +341,7 @@ function get_service($service_id) {
  * Get onapp user data
  *
  */
-function get_onapp_client( $service_id, $ONAPP_DEFAULT_BILLING_PLAN = 1 ) {
+function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEFAULT_BILLING_PLAN = 1 ) {
     global $_LANG;
 
     $service = get_service($service_id);
@@ -408,16 +408,23 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_BILLING_PLAN = 1 ) {
         );
 
         $clientsdetails = mysql_fetch_array( full_query($sql_select_client) );
+        
+        if ( $option = (array)( json_decode( htmlspecialchars_decode ( $service['configoption21'] ) ) ) ) { 
+            $user->_role_ids        = $option['role_ids'];
+            $user->_user_group_id   = $option['user_group'];
+            $user->_time_zone       = $option['time_zone'];
+            $user->_billing_plan_id = $option['billing_plan'];
+        }
+        else {
+            $user->_role_ids        = $ONAPP_DEFAULT_USER_ROLE;
+            $user->_billing_plan_id = $ONAPP_DEFAULT_BILLING_PLAN;
+        }
 
         $user->_email      = $clientsdetails['email'];
         $user->_password   = $clientsdetails['password'];
         $user->_login      = $clientsdetails['email'];
         $user->_first_name = $clientsdetails['firstname'];
         $user->_last_name  = $clientsdetails['lastname'];
-        $user->_billing_plan_id = $ONAPP_DEFAULT_BILLING_PLAN;
-        $user->_role_ids   = ( $service['configoption21'] != '') ? 
-            array( $service['configoption21'] ) :
-            array ( 2 ) ;
         $user->save();
 
 ##TODO LOCALIZE
@@ -940,8 +947,8 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm->_memory                         = $memory;
     $vm->_cpus                           = $cpus;
     $vm->_cpu_shares                     = $cpu_shares;
-    $vm->_primary_disk_size              = $primary_disk_size;
-    $vm->_swap_disk_size                 = $service['configoption9'];
+    $vm->_primary_disk_size              = round( $primary_disk_size );
+    $vm->_swap_disk_size                 = round( $service['configoption9'] );
     $vm->_label                          = $hostname;
     $vm->_remote_access_password         = decrypt( $service['password'] );
     $vm->_initial_root_password          = decrypt( $service['password'] );

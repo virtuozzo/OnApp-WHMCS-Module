@@ -273,7 +273,10 @@ $js_serverOptions
     
     if ( count($option) > 1 ) {
         $hv_and_zone_selected = $option;
-    }                      
+    }
+    else {
+        $hv_and_zone_selected = 0;
+    }
 
     $hv = new ONAPP_Hypervisor();
 
@@ -347,16 +350,69 @@ $js_serverOptions
     $role_ids = array();
     $js_roleOptions = '';
 
+    if ( $option = (array)json_decode( htmlspecialchars_decode ( $packageconfigoption[21] ) ) ) {
+        $js_rolesSelected = $option['role_ids'];
+        $js_userGroupSelected = $option['user_group'];
+        $js_timeZoneSelected = $option['time_zone'];
+        $js_billingPlanSelected = $option['billing_plan'];
+    }
+    else {
+        $js_billingPlanSelected = 1;
+        $js_rolesSelected     = array(2);
+        $js_userGroupSelected = 0;
+        $js_timeZoneSelected  = 0;
+    }
+
     if ( ! empty ( $roles ) ) {
         foreach ( $roles as $_role) {
-            $role_ids[$_role->_id] = array(
-                'label' => $_role->_label
-            );
-
             $js_roleOptions .= "    roleOptions[$_role->_id] = '".addslashes($_role->_label)."';\n";
         };
     };
   // END Load Roles     //
+  ////////////////////////////
+
+   ////////////////////////////
+  // BEGIN Load User Groups //
+    $ugroup = new ONAPP_UserGroup();
+
+    $ugroup->auth(
+        $onapp_config["adress"],
+        $onapp_config['username'],
+        $onapp_config['password']
+    );
+
+    $ugroups = $ugroup->getList();
+
+    $js_ugroupOptions = '';
+
+    if ( ! empty ( $ugroups ) ) {
+        foreach ( $ugroups as $_group ) {
+            $js_ugroupOptions .= "    ugroupOptions[$_group->_id] = '".addslashes($_group->_label)."';\n";
+        };
+    };
+  // END Load User Groups     //
+  ////////////////////////////
+
+////////////////////////////////
+//// BEGIN Load Billing Plans //
+    $bplan = new ONAPP_BillingPlan();
+
+    $bplan->auth(
+        $onapp_config["adress"],
+        $onapp_config['username'],
+        $onapp_config['password']
+    );
+
+    $bplans = $bplan->getList();
+
+    $js_bplanOptions = '';
+
+    if ( ! empty ( $bplans ) ) {
+        foreach ( $bplans as $_plan ) {
+            $js_bplanOptions .= "    bplanOptions[$_plan->_id] = '".addslashes($_plan->_label)."';\n";
+        };
+    };
+  // END Load Billing Plans  //
   ////////////////////////////
 
   ////////////////////////////
@@ -426,6 +482,10 @@ $js_serverOptions
         'swapdisk',
         'dszone',
         'vmproperties',
+        'usergroups',
+        'userproperties',
+        'timezones',
+        'billingplans',
     );
 
     $js_localization_string = '';
@@ -459,11 +519,19 @@ $js_hvZonesArray
 $js_hvZoneOptions
     var dsOptions = new Array();
 $js_dsOptions
+    var ugroupOptions = new Array();
+$js_ugroupOptions
+    var bplanOptions = new Array();
+$js_bplanOptions
     var productAddons = new Array();
         
-var hvAndZoneSelected = ". json_encode( $hv_and_zone_selected ) ."
-var dsPrimarySelected = $ds_zone_primary_selected
-var dsSwapSelected    = $ds_zone_swap_selected
+var hvAndZoneSelected   = ". json_encode( $hv_and_zone_selected ) ."
+var dsPrimarySelected   = $ds_zone_primary_selected
+var dsSwapSelected      = $ds_zone_swap_selected
+var rolesSelected       = ". json_encode( $js_rolesSelected ) ."
+var userGroupSelected   = $js_userGroupSelected
+var timeZoneSelected    = '$js_timeZoneSelected'
+var billingPlanSelected = $js_billingPlanSelected
 
 $js_error;
 
@@ -475,6 +543,7 @@ $js_localization_string
 <script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/jquery.multiselects.js\"></script>
 <script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/onapp.js\"></script>
 <script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/slider.js\"></script>
+<script type=\"text/javascript\" src=\"../modules/servers/onapp/includes/tz.js\"></script>
 ";
 
     $configarray = array(
@@ -585,11 +654,6 @@ $js_localization_string
         $_LANG["onappadditionallportspeed"] => array(
             "Type"        => "dropdown",
             "Options"     => "0,".implode(',', $configoptions),
-            "Description" => "",
-        ),
-        $_LANG["onappuserrole"] => array(
-            "Type" => "dropdown",
-            "Options" => implode( ',', array_keys($role_ids) ),
             "Description" => "",
         ),
         "&nbsp;" => array(

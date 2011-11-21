@@ -6,6 +6,7 @@ $(document).ready(function(){
     form = $("form[name$='packagefrm']");
 
     form.submit(function() {
+        add_user_info()
         add_hv_zone()
         var checkresult = checkvars(check_vars);
         add_ds_zone(checkresult)
@@ -150,21 +151,44 @@ $(document).ready(function(){
     }
     addPortSpead.html(selectHTML);
 
-    addRoleSelect = $("select[name$='packageconfigoption[21]']"); 
-    addRoleSelected = addRoleSelect.val();                       
-    addRoleSelect.width(selectWidth);
-    selectHTML = '';                                              
+
+    var rolesHTML = '';
     for ( option in roleOptions ) {
-        selected = (option == addRoleSelected) ? ' selected="selected"' : '';
-        selectHTML += '<option value="'+option+'"'+selected+'>'+roleOptions[option]+'</option>';
+        checked = ( in_array ( option, rolesSelected ) ) ? ' checked="checked"' : '';
+        rolesHTML += '<input name="role_ids" type="checkbox" value="'+option+'"'+checked+'>'+roleOptions[option] + '<br />';
     }                                            
-   addRoleSelect.html(selectHTML);
-   
-   dsZoneHtml = '';
+
+   var dsZoneHtml = '';
    for ( option in dsOptions ) {
        dsZoneHtml += '<option value="'+option+'"'+selected+'>'+dsOptions[option]+'</option>';
-   }                                            
+   }
 
+   var userGroupHtml = 
+       '<select name="user_group">'   +
+       '    <option value="0"></option>'
+   for ( option in ugroupOptions ) {
+       if ( userGroupSelected )
+           selected = ( option == userGroupSelected ) ? 'selected' : ''
+       userGroupHtml +=
+           '    <option value="'+option+'"'+selected+'>'+ugroupOptions[option]+'</option>';
+   }
+   userGroupHtml += '</select>'
+   
+   var billingPlanHtml = 
+       '<select name="billing_plan">'   +
+       '    <option value="0"></option>'
+   for ( option in bplanOptions ) {
+       if ( billingPlanSelected )
+           selected = ( option == billingPlanSelected ) ? 'selected' : ''
+       billingPlanHtml +=
+           '    <option value="'+option+'"'+selected+'>'+bplanOptions[option]+'</option>';
+   }
+   billingPlanHtml += '</select>'
+
+   var timeZoneHtml =
+       '<select name="time_zone">'      +
+            OnAppUsersTZs               +
+       '</select>'
 
 // get base table
     var table = $('table').eq(5);
@@ -291,7 +315,7 @@ $(document).ready(function(){
 
 // get User Roles
     var roles_label = LANG['onappuserroles'];
-    var roles_html  = tr.find('td').eq(1).html();
+    var roles_html  = rolesHTML
 
 // get Hypervisor Zones
     var hv_zones_label = LANG['onapphvzones']
@@ -313,6 +337,18 @@ $(document).ready(function(){
         '<select name="ds_zones_swap"> '   +
             dsZoneHtml                     +
         '</select>'
+// get user groups
+    var user_groups_label = LANG['onappusergroups']
+    var user_groups_html  = userGroupHtml
+
+// get billing plans
+    var billing_plans_label = LANG['onappbillingplans']
+    var billing_plans_html  = billingPlanHtml
+    
+// get time zones
+    var time_zones_label = LANG['onapptimezones']
+    var time_zones_html  = timeZoneHtml
+
 
 // remove row
     tr.remove();
@@ -334,7 +370,11 @@ $(document).ready(function(){
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappvmproperties']+'</b></td></tr>');
         tbody.append( cell_html(hv_zones_label, hv_zones_html ) );
         tbody.append( cell_html(hypervisors_label, hypervisors_html) );
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappuserproperties']+'</b></td></tr>');
+        tbody.append( cell_html(billing_plans_label, billing_plans_html ) );
         tbody.append( cell_html(roles_label, roles_html ) );
+        tbody.append( cell_html(time_zones_label, time_zones_html ) );
+        tbody.append( cell_html(user_groups_label, user_groups_html ) );
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappres']+'</b></td></tr>');
 
     // sliders
@@ -393,6 +433,12 @@ $(document).ready(function(){
         dsPrimarySelect.width(selectWidth)
         dsSwapSelect = $("select[name='ds_zones_swap']")
         dsSwapSelect.width(selectWidth)
+        userGroupSelect = $("select[name='user_group']")
+        userGroupSelect.width(selectWidth)
+        timeZoneSelect = $("select[name='time_zone']")
+        timeZoneSelect.width(selectWidth)
+        billingPlanSelect = $("select[name='billing_plan']")
+        billingPlanSelect.width(selectWidth)
 
 // Get hypervisor Select HTML
         hvSelectHtml = hvSelect.html()
@@ -409,6 +455,9 @@ $(document).ready(function(){
         if ( dsSwapSelected ) {
             dsSwapSelect.val( dsSwapSelected )
         }
+// set time zone value if needed
+        if ( timeZoneSelected )
+            timeZoneSelect.val( timeZoneSelected )
 
 // disable hypervisor select if needed
        hvSelect = $("select[name$='packageconfigoption[4]']");
@@ -753,6 +802,20 @@ function deal_hvs () {
             hvSelect.val('0')
             hvSelect.attr('disabled', 'disabled');
         }
+}
+
+function add_user_info () {
+    var user_group = $("select[name='user_group']").val()
+    var role_ids   = $("input[name='role_ids']:checked").map( function(){ return this.value} ).get()
+    var time_zone  = $("select[name='time_zone']").val()
+    var billing_plan = $("select[name='billing_plan']").val()
+
+    var user_info = '{"role_ids":['+ role_ids +'], "user_group":'+ user_group +
+        ', "time_zone":"'+ time_zone +'", "billing_plan":"'+ billing_plan +'"}'
+    var html =
+        "<input type='hidden' value='"+ user_info +"' name='packageconfigoption[21]'/>"
+
+    form.append(html)
 }
 
 $(function() { 
