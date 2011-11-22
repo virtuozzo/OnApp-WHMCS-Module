@@ -56,7 +56,7 @@
 {/if}
     </td>
     <td>
-{if $disk->_is_swap != true}
+{if $disk->_is_swap != true && $vm->_locked != true}
       <a title="Backups" href="{$smarty.server.PHP_SELF}?page=backups&id={$id}&diskid={$disk->_id}&action=add">
         <img title="" src="modules/servers/onapp/includes/backup.png" alt=""/>
       </a>

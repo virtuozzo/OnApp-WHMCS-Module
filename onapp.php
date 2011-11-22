@@ -728,9 +728,18 @@ function clientareadisks() {
         $user["password"]
     );
 
+    $vms = new ONAPP_VirtualMachine();
+
+    $vms->auth(
+        $onapp_config["adress"],
+        $user["email"],
+        $user["password"]
+    );
+
     show_template(
         "onapp/clientareadisks",
         array(
+            'vm'                   => $vms->load( $_ONAPPVARS['vm']->_id ),
             'disks'                => $disks->getList( $_ONAPPVARS['vm']->_id ),
             'id'                   => $_ONAPPVARS['id'],
             'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
