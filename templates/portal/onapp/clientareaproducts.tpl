@@ -42,7 +42,7 @@
 {if isset($service.obj)}
     <td>
     {foreach item=ip_addresses from=$service.obj->_ip_addresses}
-      {$ip_addresses->_address}<br/>
+      {$ip_addresses->_address|ipv6_short}<br/>
     {foreachelse}
       -
     {/foreach}

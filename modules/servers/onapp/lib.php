@@ -1166,7 +1166,6 @@ function update_user_limits( $server_id, $client_id ) {
 
 }
 
-
 function update_user_storagedisksize( $params, $action = 'Active' ) {
     $serviceid = $params["serviceid"];
 
@@ -1192,4 +1191,21 @@ function update_user_storagedisksize( $params, $action = 'Active' ) {
             update_user_limits( $row['server_id'], $row['userid'] );
 
     serviceStatus($serviceid, $status);
+}
+
+/**
+ * Converts to short nice look ipv6 ip address
+ *
+ * @param string $ip ip address
+ * @return string short ipv6 address,
+ * if not ipv6 | ( PHP was built with IPv6 support disabled ) input ip address
+ */
+function ipv6_short ( $ip ) {
+    if ( ! strpos($ip, ':')) return $ip;
+
+    $ip_short = inet_ntop( inet_pton( $ip ) );
+
+    if ( ! $ip_short ) return $ip;
+
+    return $ip_short;
 }

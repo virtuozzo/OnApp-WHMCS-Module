@@ -28,9 +28,9 @@
 {foreach item=base_ip key=ID from=$base_ips}
   <tr>
     <td>{$base_ip->_id}</td>
-    <td>{$base_ip->_address}</td>
+    <td>{$base_ip->_address|ipv6_short}</td>
     <td>{$base_ip->_netmask}</td>
-    <td>{$base_ip->_gateway}</td>
+    <td>{$base_ip->_gateway|ipv6_short}</td>
     <td>&nbsp;</td>
   </tr>
 {/foreach}
@@ -63,9 +63,9 @@
 {foreach item=additional_ip key=ID from=$additional_ips}
   <tr>
     <td>{$additional_ip->_id}</td>
-    <td>{$additional_ip->_address}</td>
+    <td>{$additional_ip->_address|ipv6_short}</td>
     <td>{$additional_ip->_netmask}</td>
-    <td>{$additional_ip->_gateway}</td>
+    <td>{$additional_ip->_gateway|ipv6_short}</td>
     <td>&nbsp;</td>
   </tr>
 {/foreach}
@@ -99,9 +99,9 @@
 {foreach item=notresolved_ip key=ID from=$not_resolved_ips}
   <tr>
     <td>{$notresolved_ip->_id}</td>
-    <td>{$notresolved_ip->_address}</td>
+    <td>{$notresolved_ip->_address|ipv6_short}</td>
     <td>{$notresolved_ip->_netmask}</td>
-    <td>{$notresolved_ip->_gateway}</td>
+    <td>{$notresolved_ip->_gateway|ipv6_short}</td>
     <td>
       {if $not_resloved_base > 0 && $not_resloved_additional > 0}
         <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&ipid={$notresolved_ip->_id}&action=setbase">{$LANG.onappsetasbase}</a> |
