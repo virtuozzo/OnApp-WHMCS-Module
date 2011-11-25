@@ -383,7 +383,7 @@ $js_serverOptions
 
     $ugroups = $ugroup->getList();
 
-    $js_ugroupOptions = '';
+    $js_ugroupOptions = "    ugroupOptions[0] = '';\n";
 
     if ( ! empty ( $ugroups ) ) {
         foreach ( $ugroups as $_group ) {

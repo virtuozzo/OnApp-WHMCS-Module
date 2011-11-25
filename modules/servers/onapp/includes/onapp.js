@@ -164,11 +164,9 @@ $(document).ready(function(){
    }
 
    var userGroupHtml = 
-       '<select name="user_group">'   +
-       '    <option value="0"></option>'
+       '<select name="user_group">'
    for ( option in ugroupOptions ) {
-       if ( userGroupSelected )
-           selected = ( option == userGroupSelected ) ? 'selected' : ''
+       selected = ( option == userGroupSelected ) ? 'selected' : ''
        userGroupHtml +=
            '    <option value="'+option+'"'+selected+'>'+ugroupOptions[option]+'</option>';
    }
