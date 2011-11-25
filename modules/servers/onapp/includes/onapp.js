@@ -1,4 +1,4 @@
-$(document).ready(function(){console.log(dsSwapSelected)
+$(document).ready(function(){
 // take away server group selection
     $("select[name='servergroup']").parent().parent().hide();
 
