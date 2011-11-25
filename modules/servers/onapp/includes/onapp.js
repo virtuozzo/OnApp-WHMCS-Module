@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function(){console.log(dsSwapSelected)
 // take away server group selection
     $("select[name='servergroup']").parent().parent().hide();
 
@@ -160,7 +160,7 @@ $(document).ready(function(){
 
    var dsZoneHtml = '';
    for ( option in dsOptions ) {
-       dsZoneHtml += '<option value="'+option+'"'+selected+'>'+dsOptions[option]+'</option>';
+       dsZoneHtml += '<option value="'+option+'">'+dsOptions[option]+'</option>';
    }
 
    var userGroupHtml = 
