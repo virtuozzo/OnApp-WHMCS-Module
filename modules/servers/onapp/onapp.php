@@ -657,7 +657,7 @@ $js_localization_string
             "Description" => "",
         ),
         "&nbsp;" => array(
-            "Type"        => "",
+            "Type"        => "text",
             "Description" => "\n$javascript",
         )
     );
