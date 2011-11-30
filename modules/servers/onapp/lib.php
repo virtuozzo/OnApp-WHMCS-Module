@@ -1139,9 +1139,9 @@ function update_user_limits( $server_id, $client_id ) {
                 'userid'   => $user_row['serveruserid'],
                 'username' => $user_row['serverusername'],
                 'password' => decrypt($user_row['serverpassword']),
-                'hostanme' => $user_row["serveripaddres"] != "" ?
+                'hostname' => $user_row["serveripaddres"] != "" ?
                     'http://' . $user_row["serveripaddres"] :
-                    $row['serverhostname'],
+                    $user_row['serverhostname'],
             );
 
     if ($rows)
@@ -1152,7 +1152,7 @@ function update_user_limits( $server_id, $client_id ) {
         $limits = new ONAPP_ResourceLimit();
 
         $limits->auth(
-            $user["hostanme"],
+            $user["hostname"],
             $user['username'],
             $user['password']
         );
