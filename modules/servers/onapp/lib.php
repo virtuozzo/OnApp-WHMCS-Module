@@ -890,31 +890,19 @@ function update_service_ips($service_id) {
 }
 
 function create_vm( $service_id, $hostname, $template_id) {
-
-    $vm  = new ONAPP_VirtualMachine();
-    $tpl = new ONAPP_Template();
-
     $service = get_service($service_id);
     $user = get_onapp_client( $service_id );
 
+    $onapp_config = get_onapp_config( $service['serverid'] );
+   
+    $instance = new OnApp_Factory($onapp_config["adress"], $user["email"], $user["password"]);
+    $vm = $instance->factory('VirtualMachine');
+    $tpl = $instance->factory('Template');
+   
     if ( isset($user['error']) ) {
         $vm->setErrors( $user['error'] );
         return $vm;
-    };
-
-    $onapp_config = get_onapp_config( $service['serverid'] );
-                                                                                    
-    $vm->auth(
-        $onapp_config["adress"],
-        $user["email"],
-        $user["password"]
-    );
-
-    $tpl->auth(
-        $onapp_config["adress"],
-        $user["email"],
-        $user["password"]
-    );
+    };                                                                              
 
     $option = explode(",", $service['configoption4']);
     if ( count($option) > 1 ) {
