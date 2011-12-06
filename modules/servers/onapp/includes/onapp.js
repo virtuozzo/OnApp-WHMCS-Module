@@ -8,6 +8,7 @@ $(document).ready(function(){
     form.submit(function() {
         add_user_info()
         add_hv_zone()
+        add_build_options()
         var checkresult = checkvars(check_vars);
         add_ds_zone(checkresult)
         
@@ -246,7 +247,12 @@ $(document).ready(function(){
 
 // get build_auto
     var build_auto_label = tr.find('td').eq(2).html();
-    var build_auto_html  = tr.find('td').eq(3).html();
+    checked = requireAutoBuild == 'on' ? 'checked' : ''
+    var build_auto_html  = '<input type="checkbox" name="autobuild"' + checked +'>'
+// get build_autobackups
+    var backups_auto_label = LANG['onapprequireautobackups']
+    checked = requireAutoBackups == 'on' ? 'checked' : ''
+    var backups_auto_html  = '<input type="checkbox" name="autobackups"' + checked +'>'
 
 // remove row
     tr.remove();
@@ -409,6 +415,7 @@ $(document).ready(function(){
         tbody.append( cell_html('', templates_html+create_templates_html()) );
         tbody.append( cell_html(ostemplates_label, ostemplates_html ) );
         tbody.append( cell_html(build_auto_label, build_auto_html) );
+        tbody.append( cell_html(backups_auto_label, backups_auto_html) );
 
     // forth table
         third_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
@@ -706,7 +713,7 @@ function selected_tpls(){
 
 function check_autobuild(){ 
     var selected_count = 0;
-    var autobuild = $("input[name$='packageconfigoption[10]']");
+    var autobuild = $("input[name='autobuild']");
     var confsub = $("select[name$='packageconfigoption[19]']").val();
     $("#selected_tpl option").each(function(){
         if ($(this).css('display') != 'none')
@@ -749,6 +756,15 @@ function after_remove(){
 
     osFilter();
     check_autobuild();
+}
+
+function add_build_options() {
+    var autobuild   = $("input[name$='autobuild']").is(':checked') ? 'on' : '0'
+    var autobackups = $("input[name$='autobackups']").is(':checked') ? 'on' : '0'
+    var html =
+         '<input type="hidden" value="'+autobuild+','+autobackups+'" name="packageconfigoption[10]"/>'
+    var parent = hvSelect.parent()
+    parent.append(html)
 }
 
 function add_hv_zone() {

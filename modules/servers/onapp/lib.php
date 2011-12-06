@@ -922,6 +922,11 @@ function create_vm( $service_id, $hostname, $template_id) {
         $vm->_data_store_group_swap_id = $option[1];
     }
 
+    $option10 = explode(",", $service['configoption10']);
+    if ( ! $option10[1] ) {
+        $option10[1] = '0';
+    }
+
     $memory            = $service['configoption3']  + $service['additionalram'];
     $cpus              = $service['configoption5']  + $service['additionalcpus'];
     $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];
@@ -930,7 +935,8 @@ function create_vm( $service_id, $hostname, $template_id) {
 
     $vm->_template_id                    = isset($service['os']) ? $service['os'] : $template_id;
     $vm->_primary_network_id             = $service['configoption6'];
-    $vm->_required_virtual_machine_build = '0';
+    $vm->_required_virtual_machine_build = ( $option10[0] == 'on' ) ? '1' : '0';
+    $vm->_required_automatic_backup      = ( $option10[1] == 'on' ) ? '1' : '0';
     $vm->_hostname                       = $hostname;
     $vm->_memory                         = $memory;
     $vm->_cpus                           = $cpus;
@@ -941,7 +947,6 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm->_remote_access_password         = decrypt( $service['password'] );
     $vm->_initial_root_password          = decrypt( $service['password'] );
     $vm->_required_ip_address_assignment = '1';
-    $vm->_required_automatic_backup      = '0';
     $vm->_rate_limit                     = $rate_limit;
 
     $tpl->load( $vm->_template_id );
@@ -986,11 +991,6 @@ function create_vm( $service_id, $hostname, $template_id) {
             full_query($sql_username_update);
 
         if ( full_query($sql_replace) ) {
-            if ( $service['configoption10'] == 'on' ) {
-                $vm->_required_startup = 1;
-                $vm->build();
-            };
-
             sendmessage('Virtual Machine Created', $service_id);
 
 //        action_resolveall_ips();

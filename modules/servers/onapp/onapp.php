@@ -454,6 +454,11 @@ $js_serverOptions
   // END Config options     //
   ////////////////////////////
 
+ //GET build options
+    $option = explode( ',', $packageconfigoption[10] );
+    $js_requireAutoBuild   = $option[0] ? $option[0] : 0;
+    $js_requireAutoBackups = $option[1] ? $option[1] : 0;
+
     $js_error = "    var error_msg = ";
 
     if ( count($hv_ids) == 0 )
@@ -487,6 +492,7 @@ $js_serverOptions
         'userproperties',
         'timezones',
         'billingplans',
+        'requireautobackups',
     );
 
     $js_localization_string = '';
@@ -533,6 +539,8 @@ var rolesSelected       = ". json_encode( $js_rolesSelected ) ."
 var userGroupSelected   = $js_userGroupSelected
 var timeZoneSelected    = '$js_timeZoneSelected'
 var billingPlanSelected = $js_billingPlanSelected
+var requireAutoBuild    = '$js_requireAutoBuild'
+var requireAutoBackups  = '$js_requireAutoBackups'
 
 $js_error;
 

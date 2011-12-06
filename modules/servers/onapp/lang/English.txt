@@ -163,3 +163,5 @@ $_LANG["onappusergroups"] = "User Groups";
 $_LANG["onappuserproperties"] = "User Properties";
 $_LANG["onapptimezones"] = "Time Zones";
 $_LANG["onappbillingplans"] = "Billing Plans";
+$_LANG["onapptakeabackup"] = "Take a Backup";
+$_LANG["onapprequireautobackups"] = "Required automatic backup";
