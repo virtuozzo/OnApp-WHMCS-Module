@@ -1,6 +1,7 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 define( 'MODULE_WRAPPER_DIR', dirname(__FILE__).'/wrapper' );
+if ( ! defined('ONAPP_FILE_NAME') ) define("ONAPP_FILE_NAME", "onapp.php");
 
 require_once MODULE_WRAPPER_DIR.'/OnAppInit.php';
 

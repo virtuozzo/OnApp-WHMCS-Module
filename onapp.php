@@ -1,7 +1,7 @@
 <?php
 // TODO add onapp $_LANG in to file
 // error_reporting(E_ALL);
-define("ONAPP_FILE_NAME", "onapp.php");
+if ( ! defined('ONAPP_FILE_NAME') ) define("ONAPP_FILE_NAME", "onapp.php");
 define("CLIENTAREA",true);
 
 
