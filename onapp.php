@@ -189,6 +189,7 @@ function clientareaproducts() {
     $onapp_users_query = full_query($select_onapp_users);
 
     while ($onapp_user = mysql_fetch_assoc( $onapp_users_query ) ) {
+	if( ! $onapp_user['ipaddress'] && ! $onapp_user['hostname'] ) continue;
         $vm = new ONAPP_VirtualMachine();
 
         $vm->auth(
