@@ -189,8 +189,8 @@ function get_service($service_id) {
         LEFT JOIN tblonappservices ON service_id = tblhosting.id
     WHERE
         servertype = 'onapp'
-        AND tblhosting.id = '$service_id'
-        AND tblhosting.domainstatus = 'Active'";
+        AND tblhosting.id = '$service_id'";
+//        AND tblhosting.domainstatus = 'Active'"
 
     $service_rows = full_query($select_service);
 
@@ -387,7 +387,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
 //        }
 //  }
         $user["password"] = decrypt( $user["password"] );
-    else { 
+    else {
         $user = new OnApp_User();
 
         $onapp_config = get_onapp_config($service['serverid']);
