@@ -1,9 +1,11 @@
 <?php
 
 function afterConfigOptionsUpgrade($vars) {
-    require_once dirname(__FILE__).'/../../modules/servers/onapp/wrapper/VirtualMachine.php';
-    require_once dirname(__FILE__).'/../../modules/servers/onapp/wrapper/Disk.php';
-    require_once dirname(__FILE__).'/../../modules/servers/onapp/wrapper/VirtualMachine/NetworkInterface.php';
+    if ( ! defined('ONAPP_WRAPPER_INIT') )
+        define('ONAPP_WRAPPER_INIT', dirname(__FILE__).'/../../../includes/wrapper/OnAppInit.php');
+
+    if ( file_exists( ONAPP_WRAPPER_INIT ) )
+        require_once ONAPP_WRAPPER_INIT;
 
     $service_id = $_POST["id"];
     $option_ids = implode(',', array_keys( $_POST["configoption"] ) );
@@ -236,4 +238,3 @@ function afterBackupSpaceUpgrade($vars) {
 
 //add_hook("AfterConfigOptionsUpgrade", 0, 'afterConfigOptionsUpgrade','');
 //add_hook("AfterConfigOptionsUpgrade", 1, 'afterBackupSpaceUpgrade' )
-?>

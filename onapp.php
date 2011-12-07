@@ -1,17 +1,16 @@
 <?php
 // TODO add onapp $_LANG in to file
 // error_reporting(E_ALL);
+
 if ( ! defined('ONAPP_FILE_NAME') ) define("ONAPP_FILE_NAME", "onapp.php");
 define("CLIENTAREA",true);
-
 
 require_once "dbconnect.php";
 require_once "includes/functions.php";
 require_once "includes/clientareafunctions.php";
 
-define( 'PAGE_WRAPPER_DIR', dirname(__FILE__).'/modules/servers/onapp/wrapper' );
-
-require_once PAGE_WRAPPER_DIR.'/OnAppInit.php';
+if ( ! defined('ONAPP_WRAPPER_INIT') )
+    define('ONAPP_WRAPPER_INIT', dirname(__FILE__).'/includes/wrapper/OnAppInit.php');
 
 require_once dirname(__FILE__).'/modules/servers/onapp/lib.php';
 
@@ -21,6 +20,10 @@ if (isset($_POST['language']))
   $_SESSION['Language'] = $_POST['language'];
 
 load_language();
+
+if ( file_exists( ONAPP_WRAPPER_INIT ) ) {
+    require_once ONAPP_WRAPPER_INIT;
+}
 
 /**
  * If they are not logged in divert them
@@ -170,6 +173,19 @@ function show_template($templatefile, $values) {
  */
 function clientareaproducts() {
     global $user_id, $_ONAPPVARS, $_LANG;
+
+    if ( wrapper_check() ){
+        show_template(
+            "onapp/clientareaproducts",
+            array(
+                'services'         => array(),
+                'not_resolved_vms' => array(),
+                'error'            => $_LANG['onapponmaintenance'],
+            )
+        );
+        
+        return;
+    }
 
     $services = array();
     $not_resolved_vms = array();

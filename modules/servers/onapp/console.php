@@ -9,7 +9,6 @@ function getSQLResult($sql) {
     require_once dirname(__FILE__).'/../../../dbconnect.php';
     require_once dirname(__FILE__).'/../../../includes/functions.php';
     require_once dirname(__FILE__).'/lib.php';
-    require_once dirname(__FILE__).'/wrapper/OnAppInit.php';
 
     session_start(); 
     $user_id = $_SESSION["uid"];
@@ -75,4 +74,3 @@ function getSQLResult($sql) {
     $url=$onapp_config["adress"]."/console_remote/".$console->_obj->_remote_key;
 
     header( "Location: $url" ) ;
-?>

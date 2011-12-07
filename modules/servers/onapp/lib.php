@@ -1,8 +1,9 @@
 <?php
+if ( ! defined('ONAPP_WRAPPER_INIT') )
+    define('ONAPP_WRAPPER_INIT', dirname(__FILE__).'/../../../includes/wrapper/OnAppInit.php');
 
-define( 'LIB_WRAPPER_DIR', dirname(__FILE__).'/wrapper' );
-
-require_once LIB_WRAPPER_DIR.'/OnAppInit.php';
+if ( file_exists( ONAPP_WRAPPER_INIT ) )
+    require_once ONAPP_WRAPPER_INIT;
 
 function onapp_Config( $id ) {
     global $_LANG;
@@ -1196,4 +1197,21 @@ function ipv6_short ( $ip ) {
     if ( ! $ip_short ) return $ip;
 
     return $ip_short;
+}
+
+/**
+ * Displays error if wrapper not found
+ *
+ * @return void
+ */
+function wrapper_check() {
+    global $_LANG;
+    if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+        return
+            sprintf(
+                "<font color='red'><b>%s</b></font>" . realpath( dirname(__FILE__).'/../../../' ) . "/includes",
+                $_LANG['onappwrappernotfound']
+            );
+    }
+    return NULL;
 }

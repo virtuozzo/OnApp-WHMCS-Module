@@ -165,3 +165,6 @@ $_LANG["onapptimezones"] = "Time Zones";
 $_LANG["onappbillingplans"] = "Billing Plans";
 $_LANG["onapptakeabackup"] = "Take a Backup";
 $_LANG["onapprequireautobackups"] = "Required automatic backup";
+$_LANG["onappwrappernotfound"] = "Wrapper not found. Download the freshest Wrapper from http://onapp.com/downloads/. And put it into ";
+$_LANG["onapponmaintenance"] = "Module is on maintenance, please contact the administrator";
+

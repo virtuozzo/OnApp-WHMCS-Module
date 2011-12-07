@@ -1,9 +1,15 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-define( 'MODULE_WRAPPER_DIR', dirname(__FILE__).'/wrapper' );
-if ( ! defined('ONAPP_FILE_NAME') ) define("ONAPP_FILE_NAME", "onapp.php");
+//error_reporting( E_ALL );
+//ini_set( 'display_errors', 1 );
+if ( ! defined('ONAPP_FILE_NAME') )
+    define("ONAPP_FILE_NAME", "onapp.php");
 
-require_once MODULE_WRAPPER_DIR.'/OnAppInit.php';
+if ( ! defined('ONAPP_WRAPPER_INIT') )
+    define('ONAPP_WRAPPER_INIT', dirname(__FILE__).'/../../../includes/wrapper/OnAppInit.php');
+
+if ( file_exists( ONAPP_WRAPPER_INIT ) )
+    require_once ONAPP_WRAPPER_INIT;
 
 require_once dirname(__FILE__).'/lib.php';
 
@@ -95,6 +101,15 @@ function onapp_ConfigOptions() {
     $serviceid = addslashes($serviceid);
 
     $configarray = array();
+
+    if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+        return array(
+            sprintf(
+                "<font color='red'><b>%s</b></font>" . realpath( dirname(__FILE__).'/../../../' ) . "/includes",
+                $_LANG['onappwrappernotfound']
+            ) => array()
+        );
+    }
 
     $table_result = onapp_createTables();
 
@@ -677,6 +692,9 @@ $js_localization_string
 function onapp_CreateAccount($params) {
     global $_LANG;
 
+    if ( wrapper_check() )
+        return wrapper_check();
+    
     $status = serviceStatus($params['serviceid']);
     serviceStatus($params['serviceid'], 'Active');
 
@@ -720,6 +738,9 @@ function onapp_CreateAccount($params) {
 function onapp_TerminateAccount( $params ) {
     global $_LANG;
 
+    if ( wrapper_check() )
+        return wrapper_check();
+
     $status = serviceStatus($params['serviceid']);
     serviceStatus($params['serviceid'], 'Active');
 
@@ -746,6 +767,9 @@ function onapp_TerminateAccount( $params ) {
 function onapp_SuspendAccount($params) {
     global $_LANG;
 
+    if ( wrapper_check() )
+        return wrapper_check();
+
     $getvm = get_vm($params['serviceid']);
 
     if ( ! is_null($getvm->_id) && $getvm->_obj->_booted == "true" ) {
@@ -767,6 +791,9 @@ function onapp_SuspendAccount($params) {
 function onapp_UnsuspendAccount($params) {
     global $_LANG;
 
+    if ( wrapper_check() )
+        return wrapper_check();
+
     $getvm = get_vm($params['serviceid']);
 
     if ( ! is_null($getvm->_id) && $getvm->_obj->_booted == "false" ) {
@@ -787,6 +814,13 @@ function onapp_UnsuspendAccount($params) {
 
 function onapp_ClientArea($params) {
     global $_LANG;
+    
+    if ( ! file_exists( ONAPP_WRAPPER_INIT ) )
+        return
+            sprintf(
+                "<font color='red'><b>%s</b></font>",
+                $_LANG['onapponmaintenance']
+        );
 
     $service = get_service($params['serviceid']);
 
