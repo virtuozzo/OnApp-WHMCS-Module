@@ -895,16 +895,17 @@ function create_vm( $service_id, $hostname, $template_id) {
     $user = get_onapp_client( $service_id );
 
     $onapp_config = get_onapp_config( $service['serverid'] );
-   
+
+    if ( isset($user['error']) ) {
+        $vm = new OnApp_VirtualMachine();
+        $vm->setErrors( $user['error'] );
+        return $vm;
+    };
+
     $instance = new OnApp_Factory($onapp_config["adress"], $user["email"], $user["password"]);
     $vm = $instance->factory('VirtualMachine');
     $tpl = $instance->factory('Template');
    
-    if ( isset($user['error']) ) {
-        $vm->setErrors( $user['error'] );
-        return $vm;
-    };                                                                              
-
     $option = explode(",", $service['configoption4']);
     if ( count($option) > 1 ) {
         $vm->_hypervisor_group_id = $option[1];
