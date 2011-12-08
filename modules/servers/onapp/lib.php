@@ -387,7 +387,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
 //        }
 //  }
         $user["password"] = decrypt( $user["password"] );
-    else { 
+    else {
         $user = new OnApp_User();
 
         $onapp_config = get_onapp_config($service['serverid']);
