@@ -105,7 +105,7 @@ function onapp_ConfigOptions() {
     if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
         return array(
             sprintf(
-                "<font color='red'><b>%s</b></font>" . realpath( dirname(__FILE__).'/../../../' ) . "/includes",
+                "%s " . realpath( dirname(__FILE__).'/../../../' ) . "/includes",
                 $_LANG['onappwrappernotfound']
             ) => array()
         );
@@ -839,7 +839,7 @@ function onapp_ClientArea($params) {
     if ( ! file_exists( ONAPP_WRAPPER_INIT ) )
         return
             sprintf(
-                "<font color='red'><b>%s</b></font>",
+                "%s ",
                 $_LANG['onapponmaintenance']
         );
 

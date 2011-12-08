@@ -1209,7 +1209,7 @@ function wrapper_check() {
     if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
         return
             sprintf(
-                "<font color='red'><b>%s</b></font>" . realpath( dirname(__FILE__).'/../../../' ) . "/includes",
+                "%s " . realpath( dirname(__FILE__).'/../../../' ) . "/includes",
                 $_LANG['onappwrappernotfound']
             );
     }
