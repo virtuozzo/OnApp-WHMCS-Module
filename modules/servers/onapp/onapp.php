@@ -774,7 +774,7 @@ function onapp_SuspendAccount($params) {
 
     if ( $vm->_obj->_id && ! $vm->_obj->_suspended ) {
         $vm->_obj->auth(
-            $params['serverhostname'],
+            ($params['serverip']) ? $params['serverip'] : $params['serverhostname'],
             $params['serverusername'],
             $params['serverpassword']
         );
@@ -809,7 +809,7 @@ function onapp_UnsuspendAccount($params) {
 
     if ( $vm->_obj->_id && $vm->_obj->_suspended ) {
         $vm->_obj->auth(
-            $params['serverhostname'],
+            ($params['serverip']) ? $params['serverip'] : $params['serverhostname'],
             $params['serverusername'],
             $params['serverpassword']
         );
