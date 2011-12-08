@@ -770,15 +770,10 @@ function onapp_SuspendAccount($params) {
     if ( wrapper_check() )
         return wrapper_check();
 
-    $vm = get_vm($params['serviceid']);
+    $getvm = get_vm($params['serviceid']);
 
-    if ( $vm->_obj->_id && ! $vm->_obj->_suspended ) {
-        $vm->_obj->auth(
-            $params['serverhostname'],
-            $params['serverusername'],
-            $params['serverpassword']
-        );
-        $vm->_obj->suspend();
+    if ( ! is_null($getvm->_id) && $getvm->_obj->_booted == "true" ) {
+        $getvm->shutdown();
 
         if ( ! is_null($vm->error) )
             return is_array($vm->error) ?
@@ -788,10 +783,7 @@ function onapp_SuspendAccount($params) {
             return is_array($vm->_obj->error) ?
                 $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
                 $_LANG["onappcantdeletevm"] . $vm->_obj->error;
-    }
-    else {
-        return $_LANG['onappvmalreadysuspended'];
-    }
+    };
 
     return 'success';
 }
@@ -802,16 +794,11 @@ function onapp_UnsuspendAccount($params) {
     if ( wrapper_check() )
         return wrapper_check();
 
-    $vm = get_vm($params['serviceid']);
+    $getvm = get_vm($params['serviceid']);
 
-    if ( $vm->_obj->_id && $vm->_obj->_suspended ) {
-        $vm->_obj->auth(
-            $params['serverhostname'],
-            $params['serverusername'],
-            $params['serverpassword']
-        );
-        $vm->_obj->suspend();
-        
+    if ( ! is_null($getvm->_id) && $getvm->_obj->_booted == "false" ) {
+        $getvm->startup();
+
         if ( ! is_null($vm->error) )
             return is_array($vm->error) ?
                 $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->error) :
@@ -820,10 +807,7 @@ function onapp_UnsuspendAccount($params) {
             return is_array($vm->_obj->error) ?
                 $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
                 $_LANG["onappcantdeletevm"] . $vm->_obj->error;
-    }
-    else {
-        return $_LANG['onappvmalreadyactive'];
-    }
+    };
 
     return 'success';
 }
