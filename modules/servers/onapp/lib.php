@@ -5,6 +5,9 @@ if ( ! defined('ONAPP_WRAPPER_INIT') )
 if ( file_exists( ONAPP_WRAPPER_INIT ) )
     require_once ONAPP_WRAPPER_INIT;
 
+/**
+ * TODO Add description
+ */
 function onapp_Config( $id ) {
     global $_LANG;
 
@@ -28,7 +31,6 @@ function onapp_Config( $id ) {
         );
 
     //Error if server adress (IP and hostname) not set
-
     if ( ! $onapp_config["adress"] )
         return array(
             "error" => sprintf(
@@ -40,7 +42,9 @@ function onapp_Config( $id ) {
     return $onapp_config;
 }
 
-#hug to change service status when admin Create service
+/**
+ * hook to change service status when admin Create service
+ */
 function serviceStatus($id, $status = NULL) {
     $select = "select * FROM tblhosting WHERE id = '$id'";
     $rows = full_query($select);
@@ -78,17 +82,17 @@ function load_language() {
 
     closedir ($dh);
 
-	$language = $_SESSION['Language'];
+    $language = $_SESSION['Language'];
 
     if( ! in_array ($language, $arrayoflanguagefiles) ) {
-		$language =  "English";
-	}
+        $language =  "English";
+    }
 
-	if( file_exists( dirname(__FILE__) . "/lang/$language.txt" ) ) {
+    if( file_exists( dirname(__FILE__) . "/lang/$language.txt" ) ) {
         ob_start ();
         include dirname(__FILE__) . "/lang/$language.txt";
         $templang = ob_get_contents ();
-		ob_end_clean ();
+        ob_end_clean ();
         eval ($templang);
     }
 }
@@ -264,8 +268,8 @@ function get_service($service_id) {
         $service["configoption15"], // additional disk size
         $service["configoption16"], // additional ips
         $service["configoption19"], // operation system
-        $service["configoption20"],  // port spead
-        $service["configoption21"],  // user role
+        $service["configoption20"], // port spead
+        $service["configoption21"], // user role
     );
 
     $service["configoptions"] = array();
@@ -363,29 +367,6 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
     $user = mysql_fetch_array( full_query($sql_select) );
 
     if ( $user ) 
-//  {     $user_obj = new OnApp_User();
-//
-//        $onapp_config = get_onapp_config($service['serverid']);
-//
-//        if ( $service['serverid'] == "" )
-//            return array(
-//                "error" => $_LANG['onappcantcreateuser']
-//            );
-//
-//        $user_obj->auth(
-//            $onapp_config["adress"],
-//            $onapp_config['username'],
-//            $onapp_config['password']
-//        );
-//
-//        $user_obj->load( $user['onapp_user_id'] );
-//
-//        if ( $service['configoption21'] != $user_obj->_obj->_roles[0]->_id ) {
-//            $user_obj->_id = $user['onapp_user_id'];
-//            $user_obj->_role_ids = array( $service['configoption21'] );
-//            $user_obj->save();
-//        }
-//  }
         $user["password"] = decrypt( $user["password"] );
     else {
         $user = new OnApp_User();
@@ -415,8 +396,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
             $user->_user_group_id   = $option['user_group'];
             $user->_time_zone       = $option['time_zone'];
             $user->_billing_plan_id = $option['billing_plan'];
-        }
-        else {
+        } else {
             $user->_role_ids        = $ONAPP_DEFAULT_USER_ROLE;
             $user->_billing_plan_id = $ONAPP_DEFAULT_BILLING_PLAN;
         }
@@ -431,7 +411,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
 ##TODO LOCALIZE
         if ( ! is_null($user->getErrorsAsArray()) ) {
             return array('error' => $user->getErrorsAsString('<br>'));
-		}
+        }
         if ( ! is_null($user->_obj->getErrorsAsArray()) )
             return array('error' => $user->_obj->getErrorsAsString('<br>'));
         elseif ( is_null($user->_obj->_id) )
@@ -445,7 +425,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
           email = '".$clientsdetails['email']."';";
 
         if ( full_query($sql_replace) ) {
-			update_user_limits( $service['serverid'], $service["userid"] );
+            update_user_limits( $service['serverid'], $service["userid"] );
             $user = array(
                 "onapp_user_id" => $user->_obj->_id,
                 "email"         => $clientsdetails["email"],
@@ -464,9 +444,8 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
  * return object ONAPP_VirtualMachine
  */
 function get_vm( $service_id ) {
-    $user    = get_onapp_client( $service_id );
-
-    $vm = new ONAPP_VirtualMachine();
+    $user = get_onapp_client( $service_id );
+    $vm   = new ONAPP_VirtualMachine();
 
     if ( isset($user['error']) ) {
         $vm->setErrors( $user['error'] );
@@ -745,7 +724,6 @@ function _action_ip_add($service_id, $isbase) {
     return $return;
 }
 
-
 function _ips_resolve_all($service_id) {
     $service = get_service($service_id);
     $ips     = get_vm_ips($service_id);
@@ -833,7 +811,6 @@ function _ips_unassign_all($service_id) {
 /**
  * Action delete IP
  */
-
 function _action_ip_delete($service_id, $ipid) {
     $service      = get_service($service_id);
     $vm           = get_vm($service_id);
@@ -892,7 +869,7 @@ function update_service_ips($service_id) {
 
 function create_vm( $service_id, $hostname, $template_id) {
     $service = get_service($service_id);
-    $user = get_onapp_client( $service_id );
+    $user    = get_onapp_client( $service_id );
 
     $onapp_config = get_onapp_config( $service['serverid'] );
 
@@ -903,22 +880,21 @@ function create_vm( $service_id, $hostname, $template_id) {
     };
 
     $instance = new OnApp_Factory($onapp_config["adress"], $user["email"], $user["password"]);
-    if ( ! $instance->_is_auth ) return $instance;
-    $vm = $instance->factory('VirtualMachine');
+    if ( ! $instance->_is_auth ) 
+        return $instance;
+
+    $vm  = $instance->factory('VirtualMachine');
     $tpl = $instance->factory('Template');
    
     $option = explode(",", $service['configoption4']);
-    if ( count($option) > 1 ) {
+    if ( count($option) > 1 )
         $vm->_hypervisor_group_id = $option[1];
-    }
-    else {
+    else
         $vm->_hypervisor_id = $option[0];
-    }
 
     $option = explode(",", $service['configoption11']);
-    if ( count($option) > 1 ) {
+    if ( count($option) > 1 )
         $vm->_data_store_group_primary_id = $option[1];
-    }
 
     $option = explode(",", $service['configoption9']);
     if ( count($option) > 1 ) {
@@ -953,9 +929,8 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm->_rate_limit                     = $rate_limit;
 
     $tpl->load( $vm->_template_id );
-    if ( $tpl->_obj->_operating_system == 'windows' ) {
+    if ( $tpl->_obj->_operating_system == 'windows' )
         $vm->_swap_disk_size = NULL;
-    }
 
     $vm->save();
 
@@ -966,7 +941,6 @@ function create_vm( $service_id, $hostname, $template_id) {
         $vm->error = "Can't create virtual machine for service #".$service_id;
         return $vm;
     } else {
-
         $sql_replace = "REPLACE tblonappservices SET
             service_id = '$service_id',
             vm_id      = '".$vm->_obj->_id."',
@@ -1154,7 +1128,6 @@ function update_user_limits( $server_id, $client_id ) {
 
         $limits->save();
     };
-
 }
 
 function update_user_storagedisksize( $params, $action = 'Active' ) {
