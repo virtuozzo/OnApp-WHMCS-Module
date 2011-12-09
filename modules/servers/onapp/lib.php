@@ -903,7 +903,7 @@ function create_vm( $service_id, $hostname, $template_id) {
     };
 
     $instance = new OnApp_Factory($onapp_config["adress"], $user["email"], $user["password"]);
-    if ( ! $instance-_is_auth ) return $instance;
+    if ( ! $instance->_is_auth ) return $instance;
     $vm = $instance->factory('VirtualMachine');
     $tpl = $instance->factory('Template');
    
