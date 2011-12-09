@@ -59,4 +59,5 @@ var init_sliders = function() {
 
 $(document).ready(function() {
     init_sliders();
+    $('input[name^="configoption"]').each(function(){$(this).removeAttr('readonly')})
 });
