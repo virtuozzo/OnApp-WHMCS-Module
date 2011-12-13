@@ -306,10 +306,10 @@ function _actions_vm($action) {
                 $_ONAPPVARS['vm']->unlock();
                 break;
             case 'build':
-            case 'rebuild':
                 _action_update_res();
-                $_ONAPPVARS['vm']->_required_startup = 1;
                 $_ONAPPVARS['vm']->build();
+            case 'rebuild':
+                rebuild();
                 break;
             case 'start':
                 _action_update_res();
@@ -348,6 +348,20 @@ function _actions_vm($action) {
         redirect( ONAPP_FILE_NAME . "?page=productdetails&id=".$_ONAPPVARS['id']);
     else
         productdetails();
+}
+
+function rebuild(){
+    global $_ONAPPVARS, $_LANG;
+    if ( $_ONAPPVARS['service']['last_order_template_id'] &&
+         $_ONAPPVARS['service']['template_upgrade_status'] == 'Active') {
+             _action_update_res();
+             $_ONAPPVARS['vm']->_template_id = $_ONAPPVARS['service']['os'];
+             $_ONAPPVARS['vm']->build();
+    }
+    else {
+        _action_update_res();
+        $_ONAPPVARS['vm']->build();
+    }
 }
 
 /**
