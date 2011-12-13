@@ -232,8 +232,6 @@ function get_service($service_id) {
 
     $select_config = "
     SELECT
-        tblupgrades.orderid as last_order_template_id,
-        tblorders.status as template_upgrade_status,
         optionssub.id,
         optionssub.optionname,
         tblproductconfigoptions.id as configid,
@@ -255,10 +253,6 @@ function get_service($service_id) {
             AND optionid = sub.id
         LEFT JOIN tblproductconfigoptionssub AS optionssub
             ON optionssub.configid = tblproductconfigoptions.id
-        LEFT JOIN tblupgrades
-            ON tblupgrades.newvalue = options.optionid
-        LEFT JOIN tblorders
-            ON tblorders.id = tblupgrades.orderid
     WHERE
         tblproductconfiglinks.pid = $productid
     ORDER BY optionssub.id ASC;";
@@ -279,6 +273,7 @@ function get_service($service_id) {
     );
 
     $service["configoptions"] = array();
+
     while ( $row = mysql_fetch_assoc($config_rows) )
         if ( in_array($row["configid"], $onappconfigoptions ) ) {
             switch ( $row['optiontype'] ) {
@@ -342,10 +337,6 @@ function get_service($service_id) {
                 'max'  => $row['max'],
                 'min'  => $row['min']
             );
-            if ( $row['last_order_template_id'] )
-                $service['last_order_template_id'] = $row['last_order_template_id'];
-            if ( $row['template_upgrade_status'] )
-                $service['template_upgrade_status'] = $row['template_upgrade_status'];
 
         };
     return $service;
