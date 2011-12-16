@@ -90,8 +90,6 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
     onapp_UsageUpdate($params); 
 }
 
-print('<pre>');print_r($usage);die();
-
 function onapp_UsageUpdate($params) {
     $query = "
         UPDATE
