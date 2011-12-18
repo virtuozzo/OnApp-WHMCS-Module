@@ -92,6 +92,15 @@ $(document).ready(function(){
     }
     addPrioritySelect.html(selectHTML);
 
+    addBandwidthSelect = $("select[name='packageconfigoption[22]']");
+    addBandwidthSelected = addBandwidthSelect.val();
+    selectHTML = '';
+    for ( option in configOptions ) {
+        selected = (option == addPrioritySelected) ? ' selected="selected"' : '';
+        selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
+    addPrioritySelect.html(selectHTML);
+
     addDiskSelect = $("select[name$='packageconfigoption[15]']");
     addDiskSelected = addDiskSelect.val();
     addDiskSelect.width(selectWidth);
@@ -254,6 +263,12 @@ $(document).ready(function(){
     checked = requireAutoBackups == 'on' ? 'checked' : ''
     var backups_auto_html  = '<input type="checkbox" name="autobackups"' + checked +'>'
 
+// get bandwidth_suspend
+    var bw_suspend_label = LANG['onappsuspendifbwexceeded']
+    checked = bandwidthSuspend == 'on' ? 'checked' : ''
+    var bw_suspend_html =
+        '<input type="checkbox" name="bwsuspend"' + checked +'>'
+
 // remove row
     tr.remove();
     tr = table.find('tr').eq(0);
@@ -316,6 +331,17 @@ $(document).ready(function(){
 // remove row
     tr.remove();
     tr = table.find('tr').eq(0);
+
+// get additional bandwidth
+   var addbandwidth_label = LANG['onappaddbandwidth']
+   var addbandwidth_html  = '<select name="packageconfigoption[22]" >'
+
+    for ( option in configOptions ) {
+        selected = (option == addBwSelected) ? ' selected="selected"' : '';
+        addbandwidth_html += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
+
+    addbandwidth_html += '</select>'
 
 // get User Roles
     var roles_label = LANG['onappuserroles'];
@@ -416,6 +442,7 @@ $(document).ready(function(){
         tbody.append( cell_html(ostemplates_label, ostemplates_html ) );
         tbody.append( cell_html(build_auto_label, build_auto_html) );
         tbody.append( cell_html(backups_auto_label, backups_auto_html) );
+        tbody.append( cell_html(bw_suspend_label, bw_suspend_html) );
 
     // forth table
         third_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
@@ -429,6 +456,7 @@ $(document).ready(function(){
         tbody.append( cell_html(adddisk_label, adddisk_html) );
         tbody.append( cell_html(ip_label, ip_html) );
         tbody.append( cell_html(addport_speed_label, addport_speed_html) );
+        tbody.append( cell_html(addbandwidth_label, addbandwidth_html) );
 //        tbody.append( cell_html(backup_label, backup_html) );
 
 // Set selects width
@@ -444,6 +472,8 @@ $(document).ready(function(){
         timeZoneSelect.width(selectWidth)
         billingPlanSelect = $("select[name='billing_plan']")
         billingPlanSelect.width(selectWidth)
+        addBandwidthSelect = $("select[name='packageconfigoption[22]']")
+        addBandwidthSelect.width(selectWidth)
 
 // Get hypervisor Select HTML
         hvSelectHtml = hvSelect.html()
@@ -484,6 +514,22 @@ $(document).ready(function(){
         })
         
         deal_hvs()
+// deal overages Billing
+        var overagesEnabled = $("input[name='overagesenabled']")
+        var overagesIsEnabled = overagesEnabled.is(':checked')
+        var bwSuspend       = $("input[name='bwsuspend']")
+        
+        if ( overagesIsEnabled != true )
+            bwSuspend.attr('disabled', 'disabled')
+
+        overagesEnabled.change(function () {
+            if ($(this).attr("checked")) {
+                bwSuspend.removeAttr('disabled')
+                return;
+            }
+            
+            bwSuspend.removeAttr('checked').attr('disabled', 'disabled')
+        });
        
 // assign os templates addons onChange action
         ostemplatesSelect = $("select[name$='packageconfigoption[19]']");
@@ -761,8 +807,10 @@ function after_remove(){
 function add_build_options() {
     var autobuild   = $("input[name$='autobuild']").is(':checked') ? 'on' : '0'
     var autobackups = $("input[name$='autobackups']").is(':checked') ? 'on' : '0'
+    var bwsuspend   = $("input[name='bwsuspend']").is(':checked') ? 'on' : '0'
+
     var html =
-         '<input type="hidden" value="'+autobuild+','+autobackups+'" name="packageconfigoption[10]"/>'
+         '<input type="hidden" value="'+autobuild+','+autobackups+','+bwsuspend+'" name="packageconfigoption[10]"/>'
     var parent = hvSelect.parent()
     parent.append(html)
 }

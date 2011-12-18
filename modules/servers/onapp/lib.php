@@ -159,6 +159,7 @@ function get_service($service_id) {
         tblhosting.domain as domain,
         tblhosting.orderid as orderid,
         tblproducts.name as product,
+        tblproducts.overagesbwlimit as bwlimit,
         tblproducts.configoptionsupgrade,
         tblproducts.configoption1,
         tblproducts.configoption2,
@@ -181,12 +182,14 @@ function get_service($service_id) {
         tblproducts.configoption19,
         tblproducts.configoption20,
         tblproducts.configoption21,
+        tblproducts.configoption22,
         0 as additionalram,
         0 as additionalcpus,
         0 as additionalcpushares,
         0 as additionaldisksize,
         0 as additionalips,
-        0 as additionalportspead
+        0 as additionalportspead,
+        0 as addbandwidth
     FROM
         tblhosting
         LEFT JOIN tblproducts ON tblproducts.id = packageid
@@ -275,11 +278,12 @@ function get_service($service_id) {
         $service["configoption16"], // additional ips
         $service["configoption19"], // operation system
         $service["configoption20"], // port spead
-        $service["configoption21"], // user role
+        $service["configoption21"], // user data
+        $service["configoption22"], // bandwidth
     );
 
     $service["configoptions"] = array();
-    while ( $row = mysql_fetch_assoc($config_rows) )
+    while ( $row = mysql_fetch_assoc($config_rows) ) {
         if ( in_array($row["configid"], $onappconfigoptions ) ) {
             switch ( $row['optiontype'] ) {
                 case '1': // Dropdown
@@ -329,6 +333,10 @@ function get_service($service_id) {
                     $service["additionalportspead"] = $row["order"];
                     $service["configoptions"][$row['configid']]['order'] = $service['configoption8'];
                     $service["configoptions"][$row['configid']]['prefix'] = 'Mbps';
+                } elseif ($service["configoption22"] == $row["configid"]) {
+                    $service["additionalbandwidth"] = $row["order"];
+                    $service["configoptions"][$row['configid']]['order'] = $service['bwlimit'];
+                    $service["configoptions"][$row['configid']]['prefix'] = 'MB';
                 } elseif ($service["configoption19"] == $row["configid"]) {
                     $service["os"] = $row["order"];
                 };
@@ -346,8 +354,9 @@ function get_service($service_id) {
                 $service['last_order_template_id'] = $row['last_order_template_id'];
             if ( $row['template_upgrade_status'] )
                 $service['template_upgrade_status'] = $row['template_upgrade_status'];
+        }
+    }
 
-        };
     return $service;
 }
 
