@@ -466,8 +466,6 @@ $js_serverOptions
         $configoptions[] = $key;
     };
 
-    $js_addBandwidthSelected = ( $packageconfigoption[22] ) ? $packageconfigoption[22] : "0";
-
   // END Config options     //
   ////////////////////////////
 
@@ -475,7 +473,6 @@ $js_serverOptions
     $option = explode( ',', $packageconfigoption[10] );
     $js_requireAutoBuild   = $option[0] ? $option[0] : 0;
     $js_requireAutoBackups = $option[1] ? $option[1] : 0;
-    $js_bandwidthSuspend   = $option[2] ? $option[2] : 0;
 
     $js_error = "    var error_msg = ";
 
@@ -511,8 +508,6 @@ $js_serverOptions
         'timezones',
         'billingplans',
         'requireautobackups',
-        'addbandwidth',
-        'suspendifbwexceeded',
     );
 
     $js_localization_string = '';
@@ -561,8 +556,6 @@ var timeZoneSelected    = '$js_timeZoneSelected'
 var billingPlanSelected = $js_billingPlanSelected
 var requireAutoBuild    = '$js_requireAutoBuild'
 var requireAutoBackups  = '$js_requireAutoBackups'
-var addBwSelected       = '$js_addBandwidthSelected'
-var bandwidthSuspend    = '$js_bandwidthSuspend'
 
 $js_error;
 

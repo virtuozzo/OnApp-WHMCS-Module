@@ -169,5 +169,3 @@ $_LANG["onappwrappernotfound"] = "Wrapper not found. Download the freshest Wrapp
 $_LANG["onapponmaintenance"] = "Module is on maintenance, please contact the administrator";
 $_LANG['onappvmalreadysuspended'] = "This product is already suspended";
 $_LANG['onappvmalreadyactive'] = "This product is already active";
-$_LANG['onappaddbandwidth'] = "Additional Bandwidth";
-$_LANG['onappsuspendifbwexceeded'] = 'Suspend if bandwidth limit exceeded ( To make active, enable Overages Billing in "Other" tab )';
