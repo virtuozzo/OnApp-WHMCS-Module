@@ -15,6 +15,8 @@ $query =  "SELECT
                tblonappservices.vm_id,
                tblservers.ipaddress,
                tblservers.hostname,
+               tblservers.username,
+               tblservers.password,
                tblhosting.id as hosting_id,
                tblhosting.domain,
                tblhosting.server,
@@ -23,7 +25,6 @@ $query =  "SELECT
                tblhosting.domainstatus,
                MONTH ( tblhosting.lastupdate ) as lastupdate_month,
                tblonappclients.email,
-               tblonappclients.password,
                tblproducts.overagesbwlimit as bwlimit,
                tblproducts.overagesdisklimit as disklimit,
                tblproducts.overagesenabled as enabled,
@@ -72,7 +73,11 @@ if ( mysql_num_rows( $products_query ) < 1 )
 $monthBegin = date( 'Y-m-1 00:00:00');
 $enddate    = date( 'Y-m-d H:00:00' );
 
+$i = 0;
+
 while( $products = mysql_fetch_assoc( $products_query ) ) {
+    
+
     // new month begins
     if ( $products['lastupdate_month'] != date('m') ) {
         $products['bwusage'] = 0;
@@ -80,7 +85,7 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
 
     $onapp = new OnApp_Factory(
         ( $products['hostname'] ) ? $products['hostname'] : $products['ipaddress'],
-        $products['email'],
+        $products['username'],
         decrypt( $products['password'])
     );
 
@@ -101,18 +106,18 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
     );
 
     foreach ( $network_interfaces as $interface ) {
-        $usage_stats[ $interface->_id ] = $usage->getList( $interface->_virtual_machine_id, $interface->_id, $url_args );
+        $usage_stats[$i][ $interface->_id ] = $usage->getList( $interface->_virtual_machine_id, $interface->_id, $url_args );
     }
 
     $traffic = 0;
 
-    foreach ( $usage_stats as $interface ) {
+    foreach ( $usage_stats[$i] as $interface ) {
         foreach ( $interface as $bandwidth ) {
            $traffic  += $bandwidth->_data_sent;
            $traffic  += $bandwidth->_data_received;
         }
     }
-    
+
     $traffic =  $traffic / 1024;
     $traffic += $products['bwusage'];
     
@@ -130,6 +135,7 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
     $checkbox_values = explode(',', $products['configoption10'] );
 
     if ( $traffic > $products['bwlimit'] && $checkbox_values[2]  ) {
+        echo 'Limit Exceeded. Suspending VM!';
         onapp_SuspendAccount( $products, $onapp );
     }
     
@@ -158,6 +164,8 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
 //******************************************************************************
 
     onapp_UsageUpdate($params);
+
+    $i++;
 }
 
 function onapp_UsageUpdate($params) {
@@ -183,15 +191,16 @@ function onapp_SuspendAccount( $products, $onapp ){
         $query = "UPDATE
                       tblhosting
                   SET
-                      suspendreason = 'Bandwidth Limit Exceeded'
+                      suspendreason = 'Bandwidth Limit Exceeded',
                       domainstatus  = 'Suspended'
                   WHERE
-                      id = '$params[hosting_id]'";
+                      id = '$products[hosting_id]'";
 
         $result = full_query( $query );
         
         if ( ! $result )
             die('Bandwidth Usage Suspend Account Query Error #' . mysql_error() );
+    }
 
         $_vm  = $onapp->factory( 'VirtualMachine', true );
 
@@ -200,5 +209,4 @@ function onapp_SuspendAccount( $products, $onapp ){
         if ( ! $vm->_suspended ) {
             $vm->suspend();
         }
-    }
 }
