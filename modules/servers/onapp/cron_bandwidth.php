@@ -23,8 +23,9 @@ $query =  "SELECT
                tblhosting.bwusage,
                tblhosting.lastupdate,
                tblhosting.domainstatus,
+               tblhosting.userid,
+               tblhosting.suspendreason as email_sent,
                MONTH ( tblhosting.lastupdate ) as lastupdate_month,
-               tblonappclients.email,
                tblproducts.overagesbwlimit as bwlimit,
                tblproducts.overagesdisklimit as disklimit,
                tblproducts.overagesenabled as enabled,
@@ -34,7 +35,10 @@ $query =  "SELECT
                tblproductconfigoptionssub.sortorder as additional_bandwidth,
                tblupgrades.status as upgrade_status,
                tblupgrades.paid as upgrade_paid,
-               tblupgrades.id as upgrade_id
+               tblupgrades.id as upgrade_id,
+               tblclients.email,
+               tblclients.firstname,
+               tblclients.lastname
            FROM
                tblonappservices
            LEFT JOIN
@@ -58,11 +62,26 @@ $query =  "SELECT
                ON tblupgrades.newvalue = tblhostingconfigoptions.optionid
                AND tblupgrades.id = (SELECT MAX( id ) FROM tblupgrades WHERE
                newvalue = tblhostingconfigoptions.optionid )
+           LEFT JOIN tblclients
+               ON tblhosting.userid = tblclients.id
            WHERE
                tblproducts.overagesenabled = 1
                AND tblproducts.servertype = 'onapp'";
                 
 $products_query = full_query( $query );
+
+// Adding Email Template if not exists /////////////////////////////////////////
+define("SELECT_BANDWIDTH_LIMIT_NOTIFICATION",
+      "SELECT * FROM tblemailtemplates WHERE type='product' AND name='Bandwidth Limit Notification';"
+);
+
+define("INSERT_BANDWIDTH_LIMIT_NOTIFICATION",
+      "INSERT INTO tblemailtemplates ( type, name, subject, message, plaintext)
+          VALUES ('product', 'Bandwidth Limit Notification', 'Bandwidth Limit Reached 90%', 'Dear {\$client_name},<br/><br/>This is a notification that bandwidth usage of you domain {\$domain} has reached 90% of your Bandwidth Limit.', 0 );");
+
+if ( mysql_num_rows( full_query( SELECT_BANDWIDTH_LIMIT_NOTIFICATION ) ) < 1 )
+    full_query( INSERT_BANDWIDTH_LIMIT_NOTIFICATION );
+/////////////////////////////////////////////////////////////////////////////////
 
 if ( ! $products_query ) 
     die('Bandwidth Usage Update Cron Select Error #' . mysql_error() );
@@ -76,11 +95,12 @@ $enddate    = date( 'Y-m-d H:00:00' );
 $i = 0;
 
 while( $products = mysql_fetch_assoc( $products_query ) ) {
-    
-
     // new month begins
     if ( $products['lastupdate_month'] != date('m') ) {
-        $products['bwusage'] = 0;
+        if ( $products['domainstatus'] == 'Active' ) {
+            $products['bwusage'] = 0;
+            full_query( "UPDATE tblhosting SET suspendreason = '' WHERE id = $products[hosting_id]");
+        }
     }
 
     $onapp = new OnApp_Factory(
@@ -138,10 +158,22 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
         echo 'Limit Exceeded. Suspending VM!';
         onapp_SuspendAccount( $products, $onapp );
     }
-    
-//    elseif( $traffic * 100 / $bandwidth_limit > 90 ) {
-//        // send email notification
-//    }
+    elseif( $traffic * 100 / $bandwidth_limit > 90     &&
+            $products['email_sent'] == ''              &&
+            $products['domainstatus'] != 'Suspended' 
+    ) {
+       echo 'Sending Email Notification <br />';
+       sendMessage(
+           'Bandwidth Limit Notification',
+           $products['userid'],
+           array(
+               'client_name' => $products['firstname'] . ' ' . $products['lastname'],
+               'domain'      => $products['domain']
+           )
+       );
+       
+       full_query( "UPDATE tblhosting SET suspendreason = '1' WHERE id = $products[hosting_id]");
+    }
 
     $params = array(
         'bwusage'    => $traffic,
@@ -197,7 +229,7 @@ function onapp_SuspendAccount( $products, $onapp ){
                       id = '$products[hosting_id]'";
 
         $result = full_query( $query );
-        
+
         if ( ! $result )
             die('Bandwidth Usage Suspend Account Query Error #' . mysql_error() );
     }
