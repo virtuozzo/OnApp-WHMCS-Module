@@ -99,7 +99,6 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
     if ( $products['lastupdate_month'] != date('m') ) {
         if ( $products['domainstatus'] == 'Active' ) {
             $products['bwusage'] = 0;
-            full_query( "UPDATE tblhosting SET suspendreason = '' WHERE id = $products[hosting_id]");
         }
     }
 
@@ -154,7 +153,7 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
     // Checking whether suspend account
     $checkbox_values = explode(',', $products['configoption10'] );
 
-    if ( $traffic > $products['bwlimit'] && $checkbox_values[2]  ) {
+    if ( $traffic > $bandwidth_limit && $checkbox_values[2]  ) {
         echo 'Limit Exceeded. Suspending VM!';
         onapp_SuspendAccount( $products, $onapp );
     }
@@ -173,6 +172,12 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
        );
        
        full_query( "UPDATE tblhosting SET suspendreason = '1' WHERE id = $products[hosting_id]");
+    }
+    elseif( $traffic * 100 / $bandwidth_limit < 90     &&
+            $products['email_sent'] != ''              &&
+            $products['domainstatus'] != 'Suspended'
+    ) {
+        full_query( "UPDATE tblhosting SET suspendreason = '' WHERE id = $products[hosting_id]");
     }
 
     $params = array(
