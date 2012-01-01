@@ -1,240 +1,337 @@
 <?php
 
 function afterConfigOptionsUpgrade($vars) {
+    $cycle_count = count( $_SESSION['upgradeids'] );
+    
+    if ( $vars['upgradeid'] == $_SESSION['upgradeids'][$cycle_count-1]) {
+        _action();
+    }
+}
+
+/**
+ *
+ * Upgrade resources
+ * 
+ * @return void
+ */
+function _action() {
     if ( ! defined('ONAPP_WRAPPER_INIT') )
-        define('ONAPP_WRAPPER_INIT', dirname(__FILE__).'/../../../includes/wrapper/OnAppInit.php');
+        define('ONAPP_WRAPPER_INIT', dirname(__FILE__).
+               '/../wrapper/OnAppInit.php');
 
     if ( file_exists( ONAPP_WRAPPER_INIT ) )
         require_once ONAPP_WRAPPER_INIT;
 
-    $service_id = $_POST["id"];
-    $option_ids = implode(',', array_keys( $_POST["configoption"] ) );
-    $new_options = $_POST["configoption"];
+    $query = "
+        SELECT
+            tblupgrades.id as upgrade_id,
+            tblproductconfigoptionssub.configid,
+            tblproductconfigoptionssub.sortorder as additional_value,
+            tblproducts.configoption12 as ram_configid,
+            tblproducts.configoption13 as cpu_cores_configid,
+            tblproducts.configoption14 as cpu_priority_configid,
+            tblproducts.configoption15 as primary_disk_size_configid,
+            tblproducts.configoption16 as ipaddress_configid,
+            tblproducts.configoption6  as primary_network_id,
+            tblproducts.configoption19 as template_configid,
+            tblproducts.configoption20 as port_speed_configid,
+            tblproducts.configoption22 as bandwidth_configid,
+            tblproducts.configoption2 as product_template_ids,
+            tblproducts.configoption3 as product_ram,
+            tblproducts.configoption5 as product_cpu_cores,
+            tblproducts.configoption7 as product_cpu_priority,
+            tblproducts.configoption11 as product_primary_disk_size,
+            tblproducts.configoption8 as product_port_speed,
+            tblproducts.configoption18 as product_ip_addresses,
+            tblproducts.overagesbwlimit as product_bandwidth,
+            tblproducts.name as product_name,
+            tblhosting.id as hosting_id,
+            tblupgrades.newvalue as additional_value_id,
+            tblonappservices.*,
+            tblservers.ipaddress,
+            tblservers.hostname,
+            tblservers.username,
+            tblservers.password
+        FROM
+            tblupgrades
+        LEFT JOIN
+            tblproductconfigoptionssub ON
+            tblproductconfigoptionssub.id = tblupgrades.newvalue
+        LEFT JOIN
+            tblhosting ON tblhosting.id = tblupgrades.relid
+        LEFT JOIN
+            tblproducts ON tblproducts.id = tblhosting.packageid
+        LEFT JOIN
+            tblonappservices ON tblonappservices.service_id = tblhosting.id
+        LEFT JOIN
+            tblservers ON tblhosting.server = tblservers.id
+        WHERE
+            tblupgrades.id IN ( " . implode(',', $_SESSION['upgradeids']) . " )
+            AND tblservers.type = 'onapp'
+    ";
 
-    if( count($_SESSION["upgradeids"]) == 1 ) {
-        $sql_options = "
-            SELECT 
-                productconfigoptions.*
-            FROM 
-                tblhostingconfigoptions AS configoptions
-                LEFT JOIN tblproductconfigoptions AS productconfigoptions
-                    ON configoptions.configid = productconfigoptions.id
-                LEFT JOIN tblproductconfigoptionssub AS configoptionssub
-                    ON configoptionssub.configid = productconfigoptions.id
-                    AND configoptions.optionid = configoptionssub.id
-            WHERE
-                configoptions.configid in ($option_ids) 
-                AND configoptions.relid = $service_id;";
+    $result = full_query( $query );
+    
+    if ( mysql_num_rows( $result )  < 1 ) {
+        return;
+    }
 
-        $rows_options = full_query($sql_options);
+    while( $row = mysql_fetch_assoc( $result ) ) {
+        $configurableoptions_labels = array(
+            '_memory'             => $row['ram_configid'],
+            '_cpus'               => $row['cpu_cores_configid'],
+            '_cpu_shares'         => $row['cpu_priority_configid'],
+            '_primary_disk_size'  => $row['primary_disk_size_configid'],
+            'ipaddresses'         => $row['ipaddress_configid'],
+            '_template_id'        => $row['template_configid'],
+            '_rate_limit'         => $row['port_speed_configid'],
+            'bandwidth'           => $row['bandwidth_configid'],
+        );
 
-        $options = array();
-        $configoptionssub = array();
-        $configoptionssub_coufigs = array();
-        if ($rows_options) // do not go here if wrong sql query
-            while ( $row_option = mysql_fetch_assoc($rows_options) ) {
-                $options[ $row_option['id'] ] = $row_option;
-                if ( $row_option["optiontype"] != 4)
-                    $configoptionssub[] = $new_options[ $row_option['id'] ];
-                else
-                    $configoptions[] = $row_option['id'];
-            };
+        $configurableoptions_product_values = array(
+            '_memory'             => $row['product_ram'],
+            '_cpus'               => $row['product_cpu_cores'],
+            '_cpu_shares'         => $row['product_cpu_priority'],
+            '_primary_disk_size'  => $row['product_primary_disk_size'],
+            'ipaddresses'         => $row['product_ip_addresses'],
+            '_template_id'        => $row['product_template_ids'],
+            '_rate_limit'         => $row['product_port_speed'],
+            'bandwidth'           => $row['product_bandwidth'],
+        );
 
-            $configoptionssub_ids = count($configoptionssub) > 0 ? implode(',', $configoptionssub ) : '0';
-            $configoptions_ids    = count($configoptions) > 0 ? implode(',', $configoptions) : '0';
+        if( ! count($configurableoptions_labels) ==
+            count( array_unique ( $configurableoptions_labels ) ) )
+        {
+            return 'Wrong configurable options settings in '
+                . product_name . 'product';
+        }
 
-            $sql_suboptions = "
-                SELECT
-                    * 
-                FROM
-                    tblproductconfigoptionssub
-                WHERE
-                    id in ($configoptionssub_ids) OR configid in ($configoptions_ids)";
+        $resource_label = array_search($row['configid'],
+                                       $configurableoptions_labels);
 
-                $rows_suboptions = full_query($sql_suboptions);
+        if ( $resource_label != '_template_id' ){
+            $vm_resource[ $resource_label ] = $row['additional_value'] +
+                 $configurableoptions_product_values[ $resource_label ];
+        }
+        elseif ( $resource_label == '_template_id' ) {
+            $vm_resource[ $resource_label ] = $row['additional_value'];
+        }
 
-                if($rows_suboptions)
-                    while($row_suboption = mysql_fetch_assoc($rows_suboptions) )
-                        $options[ $row_suboption['configid'] ]['value'] = $options[ $row_suboption['configid'] ]["optiontype"] != "4" ?
-                            $row_suboption['sortorder'] :
-                            $new_options[ $row_suboption['configid']] * $row_suboption['sortorder'];
+        $ipaddress          = $row['ipaddress'];
+        $hostname           = $row['hostname'];
+        $username           = $row['username'];
+        $password           = $row['password'];
+        $vm_id              = $row['vm_id'];
+        $hosting_id         = $row['hosting_id'];
+        $primary_network_id = $row['primary_network_id'];
 
-           $sql_get_hosting = "
-            SELECT
-                tblproducts.configoption3,
-                tblproducts.configoption5,
-                tblproducts.configoption7,
-                tblproducts.configoption8,
-                tblproducts.configoption11,
+    }
 
-                tblproducts.configoption12,
-                tblproducts.configoption13,
-                tblproducts.configoption14,
-                tblproducts.configoption15,
-                tblproducts.configoption16,
-                tblproducts.configoption19,
-                tblproducts.configoption20,
-                tblservers.*,
-                tblonappservices.vm_id
-            FROM 
-                tblhosting 
-                LEFT JOIN tblproducts 
-                    ON tblproducts.id = packageid
-                LEFT JOIN tblservers 
-                    ON tblservers.id = tblproducts.configoption1 
-                LEFT JOIN tblonappservices 
-                    ON tblhosting.id = service_id
-            WHERE 
-                tblhosting.id = $service_id";
-
-            $rows_service = full_query($sql_get_hosting);
-
-            if ($rows_service)
-                while($row_service = mysql_fetch_assoc($rows_service) ) {
-                    $resources = array();
-
-                    if ( isset( $options[ $row_service['configoption12'] ] ) )
-                        $resources['memory']     = $row_service['configoption3']  + $options[ $row_service['configoption12'] ]['value'];
-
-                    if ( isset( $options[ $row_service['configoption13'] ] ) )
-                        $resources['cpus']       = $row_service['configoption5']  + $options[ $row_service['configoption13'] ]['value'];
-
-                    if ( isset( $options[ $row_service['configoption14'] ] ) )
-                        $resources['cpu_shares'] = $row_service['configoption7']  + $options[ $row_service['configoption14'] ]['value'];
-
-                    if ( isset( $options[ $row_service['configoption15'] ] ) )
-                        $resources['disk_size']  = $row_service['configoption11'] + $options[ $row_service['configoption15'] ]['value'];
-
-                    if ( isset( $options[ $row_service['configoption20'] ] ) )
-                        $resources['rate_limit'] = $row_service['configoption8']  + $options[ $row_service['configoption20'] ]['value'];
-
-                    if ( isset( $options[ $row_service['configoption16'] ] ) )
-                        $resources['ips'] = $row_service['configoption18']  + $options[ $row_service['configoption16'] ]['value'];
-// Close OS changing
-//                    if ( isset( $options[ $row_service['configoption19'] ] ) )
-//                        $resources['template_id'] = $options[ $row_service['configoption19'] ]['value'];
-
-                    $vm_info = array(
-                        "vm_id"    => $row_service["vm_id"],
-                        "username" => $row_service["username"],
-                        "password" => decrypt($row_service["password"]),
-                        "hostname" => $row_service["ipaddress"] != "" ?
-                            $row_service["ipaddress"] :
-                            $row_service["hostname"]
-                    );
-
-
-                    $vm = new ONAPP_VirtualMachine();
-
-                    $vm->auth(
-                        $vm_info["hostname"],
-                        $vm_info["username"],
-                        $vm_info["password"]
-                    );
-
-                    // if virtual machine not found
-                    if ($vm_info["vm_id"] > 0)
-                        $vm->load($vm_info["vm_id"]);
-                    else 
-                        return null;
-
-                    // Change resources
-                    $vm->_memory     = $resources['memory'];
-                    $vm->_cpus       = $resources['cpus'];
-                    $vm->_cpu_shares = $resources['cpu_shares'];
-                    $vm->_rate_limit = $resources['rate_limit'];
-
-                    $vm->save();
-
-                    if( ! is_null($vm->error) || ! is_null($vm->_obj->error) )
-                        return null;
-
-                    // Change Disk size
-                    $disks = new ONAPP_Disk();
-
-                    $disks->auth(
-                        $vm_info["hostname"],
-                        $vm_info["username"],
-                        $vm_info["password"]
-                    );
-
-                    $primary_disk = null;
-
-                    foreach($disks->getList( $vm_info["vm_id"] ) as $disk )
-                        if( $disk->_primary == "true" )
-                            $primary_disk = $disk;
-
-                    if ( ! is_null($primary_disk) && $primary_disk->_disk_size != $resources['disk_size'] ) {
-
-                        $primary_disk->auth(
-                            $vm_info["hostname"],
-                            $vm_info["username"],
-                            $vm_info["password"]
-                        );
-
-                        $primary_disk->_disk_size = $resources['disk_size'];
-
-                        $primary_disk->save();
-
-                    };
-
-                    // Chanege Port Speed
-                    $network = new ONAPP_VirtualMachine_NetworkInterface();
-
-                    $network->auth(
-                        $vm_info["hostname"],
-                        $vm_info["username"],
-                        $vm_info["password"]
-                    );
-
-                    $networks = $network->getList($vm_info["vm_id"]);
-
-                    $primary_network = null;
-
-                    foreach( $networks as $network )
-                        if($net->_primary == "true")
-                            $primary_network = $network;
-
-                    if( ! is_null($primary_network) 
-						&& isset($resources['rate_limit']) 
-						&& $primary_network->_rate_limit != $resources['rate_limit'] 
-					) {
-                        $primary_network->auth(
-                            $onapp_config["adress"],
-                            $onapp_config['username'],
-                            $onapp_config['password']
-                        );
-
-                        $primary_network->_rate_limit = $resources['rate_limit'];
-                        $primary_network->save();
-                    };
-
-                    // Rebuild || Restart
-                    if( isset($resources['template_id']) && $resources['template_id'] != $vm->_obj->_template_id ) {
-                        $vm->_template_id = $resources['template_id'];
-                        $vm->save();
-
-                        $vm->build();
-                    } elseif ( ($vm->_obj->_booted == "true") && (
-                         $vm->_obj->_memory     != $resources['memory'] ||
-                         $vm->_obj->_cpus       != $resources['cpus'] ||
-                         $vm->_obj->_cpu_shares != $resources['cpu_shares']
-                    )) {
-                        $vm->reboot();
-                    };
-
-                };
-    };
-
-}
-
-function afterBackupSpaceUpgrade($vars) {
-    require_once dirname(__FILE__).'/../../modules/servers/onappbackupspace/onappbackupspace.php';
-
-    update_user_storagedisksize(
-        array("serviceid" => $_POST["id"])
+    $onapp = new OnApp_Factory(
+        ( $hostname ) ? $hostname : $ipaddress,
+        $username,
+        decrypt( $password )
     );
+
+        $vm = $onapp->factory( 'VirtualMachine', true );
+
+    foreach ( $vm_resource as $label => $value ) {
+        if ( $label == 'bandwidth' ) {
+            $update_bandwidth = $value;
+        }
+        
+        if ( $label == '_template_id' ) {
+            $rebuild_vm = true;
+            $template_id = $value;
+        }
+
+        if ( $label == '_rate_limit' ) {
+            $rate_limit = $value ;
+        }
+
+        if ( $label == '_primary_disk_size' ) {
+            $primary_disk_size = $value ;
+        }
+
+        if ( $label == 'ipaddresses') {
+            $ipaddresses_number = $value;
+        }
+
+        if ( $label != '_template_id' && $label != 'bandwidth' &&
+             $label != '_rate_limit' && $label != '_primary_disk_size' &&
+             $label != 'ipaddresses' )
+        {
+            $vm->$label = $value;
+        }
+    }
+
+// Edit VM resourses RAM, cpus, cpu_shares //
+////////////////////////////////////////////
+
+    $vm->_id = $vm_id;
+    $vm->save();
+
+// Edit VM resourses RAM, cpus, cpu_shares //
+////////////////////////////////////////////
+
+// Upgrade / Downgrade Primary Disk size //
+//////////////////////////////////////////
+
+    if ( isset( $primary_disk_size ) ) {
+        $vm_disk = $onapp->factory('Disk', true);
+        $vm_disks = $vm_disk->getList( $vm_id );
+
+        foreach ( $vm_disks as $disk) {
+            if ( $disk->_primary ) {
+                $disk_id = $disk->_id;
+            }
+        }
+
+        $vm_disk->_id = $disk_id;
+        $vm_disk->_disk_size = $primary_disk_size;
+        $vm_disk->save();
+
+    }
+
+// End Upgrade / Downgrade Primary disk size //
+//////////////////////////////////////////////
+
+// Upgrade / Downgrade Rate Limit //
+///////////////////////////////////
+
+    if ( isset( $rate_limit ) ) {
+        $vm_interface = $onapp->factory('VirtualMachine_NetworkInterface');
+        $vm_interfaces = $vm_interface->getList( $vm_id );
+
+        foreach ( $vm_interfaces as $interface ) {
+            if ( $interface->_primary ) {
+                $interface_id = $interface->_id;
+            }
+        }
+
+        $vm_interface->_id = $interface_id;
+        $vm_interface->_rate_limit = $rate_limit;
+        $vm_interface->save();
+
+        if ( ! isset( $template_id ) ){
+            $vm->rebuild_network( );
+        }
+    }
+
+// End Upgrade / Downgrade Rate Limit //
+///////////////////////////////////////
+
+// Upgrade / Downgrade Bandwidth Limit //
+////////////////////////////////////////
+
+    if ( $update_bandwidth ) {
+        $query = "
+            UPDATE
+                tblhosting
+            SET
+                bwlimit    = '$update_bandwidth'
+            WHERE
+                id = '$hosting_id'";
+
+        $result = full_query( $query );
+
+    }
+
+// End Upgrade / Downgrade Bandwidth  Limit //
+/////////////////////////////////////////////
+
+// Upgrade / Downgrade Ipaddresses //
+////////////////////////////////////
+
+    if (  isset( $ipaddresses_number ) ) {
+        $vm_obj = $onapp->factory('VirtualMachine');
+        $vm     = $vm_obj->load( $vm_id );
+
+        $vm_ipaddresses_number = count( $vm->_ip_addresses);
+        $ipaddresses_to_add = $ipaddresses_number - $vm_ipaddresses_number;
+
+        if ( $ipaddresses_to_add > 0 ) {
+            $ip_address_obj = $onapp->factory('IpAddress');
+
+            $vm_network_interface = $onapp
+                                 ->factory( 'VirtualMachine_NetworkInterface' );
+
+            $vm_network_interfaces = $vm_network_interface->getList( $vm_id );
+
+            foreach ( $vm_network_interfaces as $interface ) {
+                if ( $interface->_primary ) {
+                    $primary_interface_id = $interface->_id;
+                }
+            }
+
+            for ( $i = 0; $i < $ipaddresses_to_add; $i++) {
+                $ip_addresses_list = $ip_address_obj
+                                     ->getList( $primary_network_id );
+
+                foreach( $ip_addresses_list as $ip ) {
+                    if ( $ip->_free ) {
+                        $free_ip = $ip->_id;
+                        break;
+                    }
+                }
+
+                if ( $free_ip && isset( $primary_interface_id ) ) {
+                    $ip_address_join = $onapp
+                                     ->factory( 'VirtualMachine_IpAddressJoin', true);
+                    $ip_address_join->_virtual_machine_id = $vm_id;
+                    $ip_address_join->_network_interface_id =
+                                                          $primary_interface_id;
+                    $ip_address_join->_ip_address_id = $free_ip;
+
+                    $ip_address_join->save();
+
+                    if ( $ip_address_join->_id ) {
+                        $query = "
+                            INSERT INTO
+                                tblonappips ( serviceid, ipid, isbase )
+                            VALUES
+                                ( $hosting_id, $free_ip, '0')
+                        ";
+
+                        $result = full_query( $query );
+                    }
+                }
+
+                $free_ip = null;
+            }
+
+        }
+
+        $vm_obj = $onapp->factory('VirtualMachine');
+        $vm = $vm_obj->load( $vm_id );
+
+        foreach( $vm->_ip_addresses as $ip ) {
+            $ips .= $ip->_address.'\n';
+        }
+
+        $query = "UPDATE  tblhosting SET assignedips = '$ips' WHERE id = '$hosting_id'";
+
+        $result = full_query( $query );
+
+    }
+    
+// End Upgrade / Downgrade Ipaddresses //
+////////////////////////////////////////
+
+// Upgrade / Downgrade template //
+/////////////////////////////////
+
+    if ( isset( $rebuild_vm ) && $index == 0 ) {
+        $_vm = $onapp->factory('VirtualMachine',true);
+        $_vm->_id = $vm_id;
+        $_vm->_required_startup = 1;
+        $_vm->_template_id = $template_id;
+        $_vm->build( );
+    }
+
+// End Upgrade / Downgrade Template //
+/////////////////////////////////////
+    
 }
 
-//add_hook("AfterConfigOptionsUpgrade", 0, 'afterConfigOptionsUpgrade','');
-//add_hook("AfterConfigOptionsUpgrade", 1, 'afterBackupSpaceUpgrade' )
+add_hook( "AfterConfigOptionsUpgrade", 1, 'afterConfigOptionsUpgrade' );
