@@ -324,7 +324,7 @@ function _action() {
     if ( isset( $rebuild_vm ) && $index == 0 ) {
         $_vm = $onapp->factory('VirtualMachine',true);
         $_vm->_id = $vm_id;
-        $_vm->_required_startup = 1;
+        $_vm->_required_startup = '1';
         $_vm->_template_id = $template_id;
         $_vm->build( );
     }
