@@ -434,9 +434,6 @@ function _action_update_res() {
         $_ONAPPVARS['vm']->_template_id       = isset($service['os']) ? $service['os'] : $service['configoption2'];
 
         $_ONAPPVARS['vm']->save();
-
-        if(! is_null($_ONAPPVARS['vm']->_obj->error) || ! is_null($_ONAPPVARS['vm']->error))
-            return false;
     };
 
     // Change Disk size
@@ -464,14 +461,12 @@ function _action_update_res() {
         );
 
         $primary_disk->save();
-
-        if(! is_null($primary_disk->_obj->error) || ! is_null($primary_disk->error))
-            return false;
     };
 
     // Chanege Port Speed
     $network = get_vm_interface( $_ONAPPVARS['id'] );
-    if ($network) {
+    
+    if ( $network && $rate_limit != $network->_rate_limit ) {
       $network->_rate_limit = $rate_limit;
       $network->save();
     }
