@@ -228,7 +228,7 @@ function clientareaproducts() {
     $select_services = "SELECT
         tblhosting.id as id,
         tblhosting.domain as domain,
-        tblproducts.configoption1 as serverid,
+	tblhosting.server as serverid,
         tblonappservices.vm_id as vmid,
         tblproducts.name as product
     FROM
