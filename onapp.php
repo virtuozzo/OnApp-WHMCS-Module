@@ -228,7 +228,7 @@ function clientareaproducts() {
     $select_services = "SELECT
         tblhosting.id as id,
         tblhosting.domain as domain,
-	tblhosting.server as serverid,
+        tblhosting.server as serverid,
         tblonappservices.vm_id as vmid,
         tblproducts.name as product
     FROM
@@ -567,24 +567,14 @@ function productcpuusage() {
 
     $xaxis = '';
     $yaxis = '';
-
-    $date = array();
-    foreach( $list as $item)
-        if (isset($date[$item->_created_at]))
-            $date[$item->_created_at]++;
-        else
-            $date[$item->_created_at] = 1;
-
+  
     for ($i = 0; $i < count($list); $i++) {
         $created_at = str_replace(array('T', 'Z'), ' ', $list[$i]->_created_at);
 
-        if ( $date[$list[$i]->_created_at] * 10 != 0 )
-            $usage = $list[$i]->_cpu_time / ($date[$list[$i]->_created_at] * 10) / 100 ;
-        else
-            $usage = 0;
+        $usage = number_format( $list[$i]->_cpu_time / 365 / 100, 2 );
 
-        $xaxis .= "<value xid='$i'>". $created_at."</value>";
-        $yaxis .= "<value xid='$i'>".number_format($usage, 2)."</value>";
+        $xaxis .= "<value xid='$i'> $created_at </value>";
+        $yaxis .= "<value xid='$i'> $usage </value>";
     }
 
     show_template(
