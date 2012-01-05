@@ -153,7 +153,7 @@ function get_service($service_id) {
         tblproducts.id as productid,
         tblhosting.id as id,
         userid,
-        tblproducts.configoption1 as serverid,
+        tblhosting.server as serverid,
         tblonappservices.vm_id as vmid,
         tblhosting.password,
         tblhosting.domain as domain,
@@ -689,7 +689,7 @@ function _action_ip_add($service_id, $isbase) {
 
     if ($ips)
         foreach( $ips as $ip)
-            if( $ip->_free == "true" && ! isset($free_ip) )
+            if( $ip->_free == true && ! isset($free_ip) )
                 $free_ip = $ip;
 
     if ( ! isset($free_ip) || is_null($free_ip) )
@@ -1055,7 +1055,7 @@ function get_vm_interface( $service_id ) {
     $networks = $network->getList();
 
     foreach( $networks as $net )
-        if($net->_primary == "true")
+        if($net->_primary == true)
             $result = $net;
 
     $result->auth(
