@@ -91,6 +91,7 @@ if ( mysql_num_rows( $products_query ) < 1 )
 
 $monthBegin = date( 'Y-m-1 00:00:00');
 $enddate    = date( 'Y-m-d H:00:00' );
+$realdate   = date( 'Y-m-d H:i:s' );
 
 $i = 0;
 
@@ -182,7 +183,7 @@ while( $products = mysql_fetch_assoc( $products_query ) ) {
 
     $params = array(
         'bwusage'    => $traffic,
-        'lastupdate' => $enddate,
+        'lastupdate' => $realdate,
         'hosting_id' => $products['hosting_id'],
         'disklimit'  => $products['disklimit'],
         'bwlimit'    => $bandwidth_limit,
