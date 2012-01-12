@@ -415,7 +415,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
             $user->_time_zone       = $option['time_zone'];
             $user->_billing_plan_id = $option['billing_plan'];
         } else {
-            $user->_role_ids        = $ONAPP_DEFAULT_USER_ROLE;
+            $user->_role_ids        = array( $ONAPP_DEFAULT_USER_ROLE );
             $user->_billing_plan_id = $ONAPP_DEFAULT_BILLING_PLAN;
         }
 
