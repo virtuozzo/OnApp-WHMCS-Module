@@ -154,6 +154,7 @@ function get_service($service_id) {
         tblhosting.id as id,
         userid,
         tblhosting.server as serverid,
+        tblproducts.configoption1 as productserverid,
         tblonappservices.vm_id as vmid,
         tblhosting.password,
         tblhosting.domain as domain,
@@ -390,7 +391,6 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
         $user = new OnApp_User();
 
         $onapp_config = get_onapp_config($service['serverid']);
-
         if ( $service['serverid'] == "" )
             return array(
                 "error" => $_LANG['onappcantcreateuser']
@@ -887,6 +887,11 @@ function update_service_ips($service_id) {
 
 function create_vm( $service_id, $hostname, $template_id) {
     $service = get_service($service_id);
+
+    if ( $service['serverid'] != $service['productserverid']) {
+        $service['serverid'] = $service['productserverid'];
+    }
+
     $user    = get_onapp_client( $service_id );
 
     $onapp_config = get_onapp_config( $service['serverid'] );
