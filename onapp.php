@@ -308,6 +308,7 @@ function _actions_vm($action) {
             case 'build':
                 _action_update_res();
                 $_ONAPPVARS['vm']->build();
+                break;
             case 'rebuild':
                 rebuild();
                 break;
