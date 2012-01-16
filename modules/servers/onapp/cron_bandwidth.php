@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set("display_errors", 1);
 date_default_timezone_set('UTC');
 
-define("ROOT", "../../../");
+define("ROOT", realpath( '../../../' ). '/' );
 
 require_once ROOT . "dbconnect.php";
 require_once ROOT . "includes/functions.php";
