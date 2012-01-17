@@ -105,8 +105,8 @@ function onapp_ConfigOptions() {
     if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
         return array(
             sprintf(
-                "%s " . realpath( dirname(__FILE__).'/../../../' ) . "/includes",
-                $_LANG['onappwrappernotfound']
+                "%s " . realpath( dirname(__FILE__).'/../../../' ) . "/includes ( %s )",
+                $_LANG['onappwrappernotfound'], $_LANG['onappmakesuredirectoryisaccessible']
             ) => array()
         );
     }
