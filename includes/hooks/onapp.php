@@ -1,5 +1,51 @@
 <?php
 
+/**
+ * Set subscription server id in accordance with product server id if it differs
+ * from default server id
+ *
+ * @param array $vars with orderid
+ * @return
+ */
+function AfterAcceptOrder( $vars ) {
+    $query = "
+        SELECT
+            tblhosting.server as default_server_id,
+            tblproducts.configoption1 as product_server_id,
+            tblhosting.id as hosting_id
+        FROM
+            tblorders
+        LEFT JOIN
+            tblhosting ON tblorders.id = tblhosting.orderid
+        LEFT JOIN
+            tblproducts ON tblhosting.packageid = tblproducts.id
+        WHERE
+            tblorders.id = $vars[orderid]
+    ";
+
+    $result = full_query( $query );
+
+    if ( ! $result || mysql_num_rows( $result )  < 1 ) {
+        return;
+    }
+
+    $row = mysql_fetch_assoc( $result );
+
+    if ( $row['default_server_id'] != $row['product_server_id'] ) {
+        $query = "
+            UPDATE tblhosting SET
+                server = $row[product_server_id]
+            WHERE
+                id = $row[hosting_id]
+        ";
+
+        $result = full_query( $query );
+    }
+    
+    return;
+}
+
+
 function afterConfigOptionsUpgrade($vars) {
     $cycle_count = count( $_SESSION['upgradeids'] );
     
@@ -335,3 +381,4 @@ function _action() {
 }
 
 add_hook( "AfterConfigOptionsUpgrade", 1, 'afterConfigOptionsUpgrade' );
+add_hook( "AcceptOrder", 1, 'AfterAcceptOrder' );
