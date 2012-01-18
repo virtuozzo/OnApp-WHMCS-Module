@@ -7,7 +7,7 @@
  * @param array $vars with orderid
  * @return
  */
-function AfterAcceptOrder( $vars ) {
+function updateSubscriptionServerId ( $vars ) {
     $query = "
         SELECT
             tblhosting.server as default_server_id,
@@ -381,4 +381,4 @@ function _action() {
 }
 
 add_hook( "AfterConfigOptionsUpgrade", 1, 'afterConfigOptionsUpgrade' );
-add_hook( "AcceptOrder", 1, 'AfterAcceptOrder' );
+add_hook( "AcceptOrder", 1, 'updateSubscriptionServerId' );
