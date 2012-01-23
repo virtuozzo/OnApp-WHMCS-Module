@@ -50,6 +50,16 @@ function onapp_createTables() {
   KEY `id` (`serviceid`, `ipid`)
 ) ENGINE=InnoDB;");
 
+    define("CREATE_TABLE_CRON_DATES",
+"CREATE TABLE IF NOT EXISTS `tblonappcronhostingdates` (
+  `hosting_id` int(11) NOT NULL,
+  `account_date` DATETIME NOT NULL,
+  UNIQUE (
+`hosting_id`
+))
+ ENGINE=InnoDB;");
+
+
     if ( ! full_query( CREATE_TABLE_CLIENTS, $whmcsmysql ) ) {
         return array(
             "error" => sprintf($_LANG["onapperrtablecreate"], 'onappclients')
@@ -63,6 +73,11 @@ function onapp_createTables() {
             "error" => sprintf(
                 $_LANG["onapperrtablecreate"],
                 'tblonappips'));
+    } else if ( ! full_query( CREATE_TABLE_CRON_DATES, $whmcsmysql ) ) {
+        return array(
+            "error" => sprintf(
+                $_LANG["onapperrtablecreate"],
+                'tblonappcronhostingdates'));
     };
 
 // Add VM creation template in to DB
@@ -475,7 +490,6 @@ $js_serverOptions
     $option = explode( ',', $packageconfigoption[10] );
     $js_requireAutoBuild   = $option[0] ? $option[0] : 0;
     $js_requireAutoBackups = $option[1] ? $option[1] : 0;
-    $js_bandwidthSuspend   = $option[2] ? $option[2] : 0;
 
     $js_error = "    var error_msg = ";
 
@@ -562,7 +576,6 @@ var billingPlanSelected = $js_billingPlanSelected
 var requireAutoBuild    = '$js_requireAutoBuild'
 var requireAutoBackups  = '$js_requireAutoBackups'
 var addBwSelected       = '$js_addBandwidthSelected'
-var bandwidthSuspend    = '$js_bandwidthSuspend'
 
 $js_error;
 
@@ -856,4 +869,282 @@ function onapp_ClientArea($params) {
         return '<a href="' . ONAPP_FILE_NAME . '?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmsettings"] . '</a>';
     else
         return '<a href="' . ONAPP_FILE_NAME . '?page=productdetails&id=' . $params['serviceid'] . '">' . $_LANG["onappvmcreate"] . '</a>';
+}
+
+function onapp_UsageUpdate($params) {
+    global $_LANG, $CONFIG;
+
+    error_reporting(E_ERROR);
+    ini_set("display_errors", 1);
+
+    date_default_timezone_set('UTC');
+    $serverid = $params['serverid'];
+
+    $query = "
+        SELECT
+            tblservers.id,
+            tblservers.password,
+            tblservers.hostname,
+            tblservers.ipaddress,
+            tblservers.username,
+            tblhosting.regdate,
+            tblhosting.id as hosting_id,
+            tblhosting.bwusage,
+            tblhosting.domain,
+            tblhosting.bwlimit,
+            tblproducts.servertype,
+            tblhosting.lastupdate,
+            tblhosting.nextinvoicedate,
+            tblhosting.paymentmethod,
+            tblonappservices.vm_id,
+            tblproducts.overagesbwlimit as bwlimit,
+            tblproducts.overagesdisklimit as disklimit,
+            tblproducts.overagesenabled as enabled,
+            tblproducts.configoption10 as configoption10,
+            tblproducts.configoption22 as bandwidthconfigoption,
+            tblproducts.name as packagename,
+            tblproducts.overagesbwprice,
+            tblproducts.tax,
+            tblhostingconfigoptions.optionid,
+            tblupgrades.status as upgrade_status,
+            tblupgrades.paid as upgrade_paid,
+            tblupgrades.id as upgrade_id,
+            tblproductconfigoptionssub.sortorder as additional_bandwidth,
+            tblclients.id as clientid,
+            tblclients.taxexempt,
+            tblclients.state,
+            tblclients.country,
+            tblcurrencies.prefix,
+            tblcurrencies.code,
+            tblcurrencies.rate,
+            tblonappcronhostingdates.account_date
+        FROM
+            tblservers
+    
+        LEFT JOIN
+            tblhosting ON tblhosting.server = tblservers.id
+        LEFT JOIN
+            tblproducts ON tblhosting.packageid = tblproducts.id
+        LEFT JOIN
+            tblonappservices ON tblhosting.id = tblonappservices.service_id
+        LEFT JOIN
+            tblhostingconfigoptions
+            ON tblhostingconfigoptions.relid = tblhosting.id
+            AND tblhostingconfigoptions.configid = tblproducts.configoption22
+        LEFT JOIN
+            tblproductconfigoptionssub
+            ON
+            tblhostingconfigoptions.optionid = tblproductconfigoptionssub.id
+        LEFT JOIN
+            tblupgrades
+            ON tblupgrades.newvalue = tblhostingconfigoptions.optionid
+            AND tblupgrades.id = (SELECT MAX( id ) FROM tblupgrades WHERE
+            newvalue = tblhostingconfigoptions.optionid )
+        LEFT JOIN 
+            tblclients ON tblhosting.userid = tblclients.id
+        LEFT JOIN
+            tblcurrencies ON tblcurrencies.id = tblclients.currency
+        LEFT JOIN
+            tblonappcronhostingdates ON tblonappcronhostingdates.hosting_id = tblhosting.id
+
+        WHERE
+           tblservers.id = $serverid AND
+           tblproducts.servertype = 'onapp' AND
+           tblproducts.overagesenabled = 1 AND
+           tblonappservices.vm_id != ''
+    ";
+
+    $result = full_query($query);
+
+    if ( ! $result || mysql_num_rows($result) < 1 ) {
+        return;
+    }
+
+    $duedate     = date( 'Ymd', ( time() + $GLOBALS[ 'CONFIG' ][ 'CreateInvoiceDaysBefore' ] * 86400 ) );
+    $today       = date( 'Y-m-d H:i:s' );
+    $enddate     = $today;
+    $todayshort  = date('Y/m/d');
+
+    $i = 0;
+
+    while( $products = mysql_fetch_assoc( $result ) ) {
+
+        if ( $products['account_date']) {
+            $invoicedate = date('Y-m-d', strtotime( $products['account_date'] ) + ( 31 * 24 * 60 * 60 ) );
+            $startdate = $products['account_date'];
+        }
+        else {
+            $invoicedate = getAccountDate( $products['regdate'] );
+            $time = strtotime( $invoicedate ) - 2678400;
+            $startdate = date ('Y-m-d H:00:00', $time );
+        }
+
+        $onapp = new OnApp_Factory(
+            ( $products['hostname'] ) ? $products['hostname'] : $products['ipaddress'],
+            $products['username'],
+            decrypt( $products['password'])
+        );
+
+        $network_interface  = $onapp->factory('VirtualMachine_NetworkInterface');
+        $network_interfaces = $network_interface->getList( $products['vm_id']);
+
+        $usage = $onapp->factory('VirtualMachine_NetworkInterface_Usage', true );
+
+        $url_args = array(
+            'period[startdate]'      => $startdate,
+            'period[enddate]'        => $enddate,
+    //        'period[use_local_time]' => '1'
+        );
+
+        foreach ( $network_interfaces as $interface ) {
+            $usage_stats[$i][ $interface->_id ] = $usage->getList( $interface->_virtual_machine_id, $interface->_id, $url_args );
+        }
+
+        $traffic = 0;
+
+        foreach ( $usage_stats[$i] as $interface ) {
+            foreach ( $interface as $bandwidth ) {
+               $traffic  += $bandwidth->_data_sent;
+               $traffic  += $bandwidth->_data_received;
+            }
+        }
+
+        $traffic =  $traffic / 1024;
+
+// Count bandwidth limit + upgrades if needed
+        $bandwidth_limit = (
+            $products['optionid']                        &&
+            $products['additional_bandwidth']            &&
+            $products['upgrade_status']  == 'Completed'  &&
+            $products['upgrade_paid'] == 'Y'
+        )
+        ? $products['bwlimit'] + $products['additional_bandwidth']
+        : $products['bwlimit'];
+
+        if ( date('Y-m-d') == $invoicedate ) {
+// debug
+            echo 'Payment Day' . PHP_EOL;
+            
+            if ( $traffic > $bandwidth_limit && ! $params['extracall'] ){
+// debug
+                echo 'Called by the main cron' . PHP_EOL;
+                echo 'Update cron dates' . PHP_EOL;
+
+                $query = "REPLACE INTO
+                              tblonappcronhostingdates
+                              ( hosting_id, account_date )
+                          VALUES ( $products[hosting_id], '" . $enddate . "'  )
+                ";
+
+                $result = full_query( $query );
+                if ( ! $result ) {
+// debug
+                    echo 'cron date REPLACE error ' . mysql_error() . PHP_EOL;
+                }
+
+/// Generating Invoice ///
+/////////////////////////
+
+// debug
+                echo 'Generating Invoice' . PHP_EOL;
+                
+                $sql = 'SELECT username FROM tbladmins LIMIT 1';
+
+                $res = full_query( $sql );
+                
+                $admin = mysql_fetch_assoc( $res );
+
+                $taxed = empty( $products[ 'taxexempt' ] ) && $CONFIG['TaxEnabled'] ;
+                
+                if( $taxed ) {
+// debug
+                    echo 'taxed invoice' . PHP_EOL;
+                    $taxrate = getTaxRate( 1, $products[ 'state' ], $products[ 'country' ] );
+                    $taxrate = $taxrate[ 'rate' ];
+                }
+                else {
+                    $taxrate = '';
+                }
+
+                $amount = round( ( ( $traffic - $bandwidth_limit ) * $products['overagesbwprice'] ) * $products['rate'] , 2 );
+
+                $description = $products[ 'packagename' ]. ' - ' .$products[ 'domain' ] . ' ( ' . $startdate .' / '. $enddate . ' )'. PHP_EOL .
+                    $_LANG['onappbwusage'] . ' - ' . $traffic . ' MB' . PHP_EOL .
+                    $_LANG['onappbwlimit'] . ' - ' . $bandwidth_limit . ' MB' . PHP_EOL .
+                    $_LANG['onappbwoverages'] . ' - ' . ( $traffic - $bandwidth_limit ). ' MB' . PHP_EOL .
+                    $_LANG['onapppriceformbbwoverages'] . ' - ' . $products['prefix'] . round( $products['rate'] * $products['overagesbwprice'], 2) . ' ' . $products['code']. PHP_EOL ;
+
+                $data = array(
+                    'userid'           => $products[ 'clientid' ],
+                    'date'             => $today,
+                    'duedate'          => $duedate ,
+                    'paymentmethod'    => $products[ 'paymentmethod' ],
+                    'taxrate'          => $taxrate,
+                    'sendinvoice'      => true,
+                    'itemdescription1' => $description,
+                    'itemamount1'      => $amount,
+                    'itemtaxed1'       => $taxed
+                 );
+
+// debug          
+                print('<pre>'); print_r($data); echo PHP_EOL;
+
+                $result = localAPI( 'CreateInvoice', $data, $admin );
+
+                if( $result[ 'result' ] != 'success' ) {
+// debug
+                   echo 'Following error occurred: ' . $result[ 'result' ] . PHP_EOL;
+                }
+                 
+// Generating Invoice End //
+///////////////////////////
+                 
+            }
+            if ( ! $params['extracall'] ) {
+// debug
+                echo 'Reset bwusage to 0' . PHP_EOL;
+                $traffic = 0;
+
+            }
+        }
+
+        $results[] = array(
+            'bwusage'    => $traffic,
+            'disklimit'  => $products['disklimit'],
+            'bwlimit'    => $bandwidth_limit,
+            'domain'     => $products['domain'],
+        );
+
+/// Debug block ///
+//////////////////
+        
+        print('<pre>'); print_r($products); echo PHP_EOL;
+        echo 'today  => ' . $today  . PHP_EOL;
+        echo 'regdate  => ' . $products['regdate']  . PHP_EOL;
+        echo 'invoicedate  => ' . $invoicedate  . PHP_EOL;
+        echo 'startdate  => ' . $startdate . PHP_EOL;
+        echo 'enddate  => ' . $enddate .  PHP_EOL;
+        echo 'bwlimit  (' .$products['bwlimit'] . ') + ';
+        echo 'additional bwlimit (' . $products['additional_bandwidth'] . ') = ';
+        echo $bandwidth_limit. PHP_EOL. PHP_EOL;
+        echo 'Updating bwusage => '. PHP_EOL;
+        print('<pre>'); print_r($results);
+        echo '************************************************'. PHP_EOL . PHP_EOL;
+
+/// Debug block END ///
+//////////////////////
+
+        $i++;
+    }
+
+// Updating Usage Overages
+	foreach ( $results as $domain => $values ) {
+        update_query("tblhosting",array(
+            "disklimit"  =>  $values['disklimit'],
+            "bwusage"    =>  $values['bwusage'],
+            "bwlimit"    =>  $values['bwlimit'],
+            "lastupdate" =>  $today,
+        ),array( "server" => $serverid, "domain" => $values['domain'] ) );
+    }
+
 }

@@ -1213,3 +1213,24 @@ function wrapper_check() {
     }
     return NULL;
 }
+
+/**
+ * Gets next account period date
+ *
+ * @param string  $register_date hosting subscription register date in 'Y-m-d' forman
+ * @return string account date
+ */
+function getAccountDate ( $register_date ) {
+
+    $today     = date('Y-m-d');
+    $_date_reg = strtotime( $register_date );
+    $_today    = strtotime( date('Y-m-d') );
+
+    $days_left = ( $today == $register_date ) ?
+        31 :
+        31 - ( $_today - $_date_reg ) / ( 86400 ) % 31;
+
+    return ( $days_left == 31 && $today != $register_date ) ?
+        date('Y-m-d') :
+        date( 'Y-m-d', $_today + ( 86400 * $days_left ) );
+}
