@@ -963,7 +963,6 @@ function onapp_UsageUpdate($params) {
     $duedate     = date( 'Ymd', ( time() + $GLOBALS[ 'CONFIG' ][ 'CreateInvoiceDaysBefore' ] * 86400 ) );
     $today       = date( 'Y-m-d H:i:s' );
     $enddate     = $today;
-    $todayshort  = date('Y/m/d');
 
     $i = 0;
 
