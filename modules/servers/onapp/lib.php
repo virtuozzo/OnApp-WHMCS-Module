@@ -408,6 +408,12 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
         );
 
         $clientsdetails = mysql_fetch_array( full_query($sql_select_client) );
+
+        $password = $clientsdetails['password'];
+
+        if ( strlen( $password ) > 40 ) {
+            $password = substr( $password, 0, 20 );
+        }
         
         if ( $option = (array)( json_decode( htmlspecialchars_decode ( $service['configoption21'] ) ) ) ) { 
             $user->_role_ids        = $option['role_ids'];
@@ -420,7 +426,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
         }
 
         $user->_email      = $clientsdetails['email'];
-        $user->_password   = $clientsdetails['password'];
+        $user->_password   = $password;
         $user->_login      = $clientsdetails['email'];
         $user->_first_name = $clientsdetails['firstname'];
         $user->_last_name  = $clientsdetails['lastname'];
@@ -439,7 +445,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
           server_id = '".$service['serverid']."' ,
           client_id = '".$service["userid"]."' ,
           onapp_user_id = '".$user->_obj->_id."' ,
-          password = '".encrypt($clientsdetails['password'])."' ,
+          password = '".encrypt( $password )."' ,
           email = '".$clientsdetails['email']."';";
 
         if ( full_query($sql_replace) ) {
@@ -447,7 +453,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
             $user = array(
                 "onapp_user_id" => $user->_obj->_id,
                 "email"         => $clientsdetails["email"],
-                "password"      => $clientsdetails['password']
+                "password"      => $password
             );
         } else {
             return array( "error" => "Can't update user data in Data Base");
