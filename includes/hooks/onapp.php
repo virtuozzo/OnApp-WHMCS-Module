@@ -48,7 +48,7 @@ function updateSubscriptionServerId ( $vars ) {
 
 function afterConfigOptionsUpgrade($vars) {
     $cycle_count = count( $_SESSION['upgradeids'] );
-    
+
     if ( $vars['upgradeid'] == $_SESSION['upgradeids'][$cycle_count-1]) {
         _action();
     }
@@ -173,13 +173,17 @@ function _action() {
 
     }
 
+// Debug block
+//    print('<pre>VM_RESOURCE:');
+//    print_r($vm_resource);
+
     $onapp = new OnApp_Factory(
         ( $hostname ) ? $hostname : $ipaddress,
         $username,
         decrypt( $password )
     );
 
-        $vm = $onapp->factory( 'VirtualMachine', true );
+    $vm = $onapp->factory( 'VirtualMachine', true );
 
     foreach ( $vm_resource as $label => $value ) {
         if ( $label == 'bandwidth' ) {
@@ -215,7 +219,18 @@ function _action() {
 ////////////////////////////////////////////
 
     $vm->_id = $vm_id;
-    $vm->save();
+// Debug block
+//    print('VM_Object:<pre>');
+//    print_r($vm);
+//    die();
+
+    if ( isset ( $vm->_cpu_shares )        ||
+         isset ( $vm->_primary_disk_size ) ||
+         isset ( $vm->_memory )            ||
+         isset ( $vm->_cpus )
+    ){
+        $vm->save();
+    }
 
 // Edit VM resourses RAM, cpus, cpu_shares //
 ////////////////////////////////////////////
