@@ -115,6 +115,7 @@ function _action() {
             tblupgrades.id IN ( " . implode(',', $_SESSION['upgradeids']) . " )
             AND tblservers.type = 'onapp'
     ";
+// AND tblupgrades.status != 'Completed' couldn't be used because of own cycle...
 
     $result = full_query( $query );
     
@@ -123,6 +124,10 @@ function _action() {
     }
 
     while( $row = mysql_fetch_assoc( $result ) ) {
+// Debug block
+//        print('<pre>');
+//        print_r($row); echo '<hr />'. PHP_EOL;
+
         $configurableoptions_labels = array(
             '_memory'             => $row['ram_configid'],
             '_cpus'               => $row['cpu_cores_configid'],
@@ -222,7 +227,6 @@ function _action() {
 // Debug block
 //    print('VM_Object:<pre>');
 //    print_r($vm);
-//    die();
 
     if ( isset ( $vm->_cpu_shares )        ||
          isset ( $vm->_primary_disk_size ) ||
@@ -384,15 +388,20 @@ function _action() {
 
     if ( isset( $rebuild_vm ) && $index == 0 ) {
         $_vm = $onapp->factory('VirtualMachine',true);
-        $_vm->_id = $vm_id;
-        $_vm->_required_startup = '1';
-        $_vm->_template_id = $template_id;
-        $_vm->build( );
+        
+        $vm = $_vm->load( $vm_id );
+        
+        if ( $vm->_template_id != $template_id ) {
+            $_vm->_id = $vm_id;
+            $_vm->_required_startup = '1';
+            $_vm->_template_id = $template_id;
+            $_vm->build( );
+        }
     }
 
 // End Upgrade / Downgrade Template //
 /////////////////////////////////////
-    
+
 }
 
 add_hook( "AfterConfigOptionsUpgrade", 1, 'afterConfigOptionsUpgrade' );
