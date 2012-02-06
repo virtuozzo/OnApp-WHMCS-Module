@@ -72,6 +72,7 @@ function _action() {
         SELECT
             tblupgrades.id as upgrade_id,
             tblproductconfigoptionssub.configid,
+            SUBSTRING_INDEX( tblupgrades.originalvalue,  '=', 1 ) as _configid,
             tblproductconfigoptionssub.sortorder as additional_value,
             tblproducts.configoption12 as ram_configid,
             tblproducts.configoption13 as cpu_cores_configid,
@@ -92,7 +93,7 @@ function _action() {
             tblproducts.overagesbwlimit as product_bandwidth,
             tblproducts.name as product_name,
             tblhosting.id as hosting_id,
-            tblupgrades.newvalue as additional_value_id,
+            tblupgrades.newvalue as additional_value_slider,
             tblonappservices.*,
             tblservers.ipaddress,
             tblservers.hostname,
@@ -114,12 +115,14 @@ function _action() {
         WHERE
             tblupgrades.id IN ( " . implode(',', $_SESSION['upgradeids']) . " )
             AND tblservers.type = 'onapp'
+            AND tblupgrades.paid = 'Y'
     ";
+
 // AND tblupgrades.status != 'Completed' couldn't be used because of own cycle...
 
     $result = full_query( $query );
     
-    if ( mysql_num_rows( $result )  < 1 ) {
+    if ( !$result || mysql_num_rows( $result )  < 1 ) {
         return;
     }
 
@@ -155,6 +158,12 @@ function _action() {
         {
             return 'Wrong configurable options settings in '
                 . product_name . 'product';
+        }
+
+// IF configurableoption type "Quantity"
+        if ( is_null( $row['additional_value'] ) && is_null( $row['configid'] ) ) {
+            $row['additional_value'] = $row['additional_value_slider'];
+            $row['configid'] = $row['_configid'];
         }
 
         $resource_label = array_search($row['configid'],
