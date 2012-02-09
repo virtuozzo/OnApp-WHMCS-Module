@@ -572,7 +572,7 @@ function productcpuusage() {
     for ($i = 0; $i < count($list); $i++) {
         $created_at = str_replace(array('T', 'Z'), ' ', $list[$i]->_created_at);
 
-        $usage = number_format( $list[$i]->_cpu_time / 365 / 100, 2 );
+        $usage = number_format( $list[$i]->_cpu_time / 360 / 100, 2 );
 
         $xaxis .= "<value xid='$i'> $created_at </value>";
         $yaxis .= "<value xid='$i'> $usage </value>";
