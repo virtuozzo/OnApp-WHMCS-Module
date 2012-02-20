@@ -253,7 +253,7 @@ function get_service($service_id) {
         LEFT JOIN tblproductconfigoptions
             ON tblproductconfigoptions.gid = tblproductconfiglinks.gid
         LEFT JOIN tblhostingconfigoptions AS options
-            ON options.configid = tblproductconfigoptions.id AND relid = $service_id
+            ON options.configid = tblproductconfigoptions.id AND options.relid = $service_id
         LEFT JOIN tblproductconfigoptionssub AS sub
             ON options.configid = sub.configid
             AND optionid = sub.id
