@@ -413,5 +413,5 @@ function _action() {
 
 }
 
-add_hook( "AfterConfigOptionsUpgrade", 1, 'afterConfigOptionsUpgrade' );
+//add_hook( "AfterConfigOptionsUpgrade", 1, 'afterConfigOptionsUpgrade' );
 add_hook( "AcceptOrder", 1, 'updateSubscriptionServerId' );
