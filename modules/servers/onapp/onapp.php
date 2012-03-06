@@ -877,7 +877,7 @@ function onapp_UsageUpdate($params) {
     error_reporting(E_ERROR);
     ini_set("display_errors", 1);
 
-    date_default_timezone_set('UTC');
+//    date_default_timezone_set('UTC');
     $serverid = $params['serverid'];
 
     $query = "
