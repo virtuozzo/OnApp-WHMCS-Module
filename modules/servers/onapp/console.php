@@ -71,6 +71,6 @@ function getSQLResult($sql) {
 
     $console->load($vm_id);
 
-    $url=$onapp_config["adress"]."/console_remote/".$console->_obj->_remote_key;
+    $url=$onapp_config["hostname"]."/console_remote/".$console->_obj->_remote_key;
 
     header( "Location: $url" ) ;
