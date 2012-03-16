@@ -247,7 +247,8 @@ function get_service($service_id) {
         tblproductconfigoptions.qtyminimum AS min,
         options.qty,
         optionssub.sortorder,
-        IF(options.optionid, options.optionid, 0) as active
+        IF(options.optionid, options.optionid, 0) as active,
+        MAX( tblupgrades.id )
     FROM
         tblproductconfiglinks
         LEFT JOIN tblproductconfigoptions
@@ -259,13 +260,18 @@ function get_service($service_id) {
             AND optionid = sub.id
         LEFT JOIN tblproductconfigoptionssub AS optionssub
             ON optionssub.configid = tblproductconfigoptions.id
+    
         LEFT JOIN tblupgrades
             ON tblupgrades.newvalue = options.optionid
         LEFT JOIN tblorders
             ON tblorders.id = tblupgrades.orderid
+ 
     WHERE
         tblproductconfiglinks.pid = $productid
-    ORDER BY optionssub.id ASC;";
+    GROUP BY 
+        optionssub.id
+    ORDER BY optionssub.id ASC";
+    
     $config_rows = full_query($select_config);
 
     if ( ! $config_rows )
