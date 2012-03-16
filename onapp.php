@@ -359,7 +359,7 @@ function rebuild(){
     if ( $_ONAPPVARS['service']['last_order_template_id'] &&
          $_ONAPPVARS['service']['template_upgrade_status'] == 'Active')
     {
-        $_ONAPPVARS['vm']->_template_id = $_ONAPPVARS['service']['os'];
+        $_ONAPPVARS['vm']->_template_id = isset($_ONAPPVARS['service']['os']) ? $_ONAPPVARS['service']['os'] : $_ONAPPVARS['service']['configoption2'];
     }
 
     $_ONAPPVARS['vm']->_required_startup = '1';
@@ -432,7 +432,6 @@ function _action_update_res() {
         $_ONAPPVARS['vm']->_cpus              = $cpus;
         $_ONAPPVARS['vm']->_cpu_shares        = $cpu_shares;
         $_ONAPPVARS['vm']->_primary_disk_size = $primary_disk_size;
-        $_ONAPPVARS['vm']->_template_id       = isset($service['os']) ? $service['os'] : $service['configoption2'];
 
         $_ONAPPVARS['vm']->save();
     };
