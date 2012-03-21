@@ -22,6 +22,34 @@ function stopvm(id) {
         window.location="{/literal}{$smarty.const.ONAPP_FILE_NAME}{literal}?page=productdetails&id={/literal}{$id}{literal}&action=stop";
     }
 }
+
+function show_logs( id, logid, date, action, status, type ) { 
+                    
+    jQuery.ajax( {
+        url: document.location.href,
+        data: 'transactionid=' + id + '&type=' + type,
+        success: function( data ) {
+            
+        data = JSON.parse( data )
+        jQuery('.log_details').remove()
+        var html = '<h4>{/literal}{$LANG.onapploginfo}{literal}</h4>'+
+            '<div class="log_info"><pre>' + '\n' +
+                'Log ID:\t' + logid       + '\n' +
+                'Type:\t'   + type        + '\n' +    
+                'Date:\t'   + date        + '\n' +
+                'Action:\t' + action      + '\n' +
+                'Status:\t' + status      + '\n' +                                     
+            '</pre></div>'                + '\n' +
+                '<h4>{/literal}{$LANG.onappoutput}{literal}</h4>'+        
+            '<div class="log_details"><pre>' + '\n' +
+                 data.output                 + '\n' +
+            '</div>'
+                                
+            jQuery('#vm_logs').html(html)
+        }
+     });
+                        
+}
 </script>
 {/literal}
 <div class="contentbox">
@@ -134,6 +162,7 @@ function stopvm(id) {
           };
         //   -->
         </script>
+
 {/literal}
 <!--
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=unlock">Unlock Virtual Machine</a>
@@ -217,4 +246,35 @@ function stopvm(id) {
   </tbody>
 </table>
     {/if}
+    <h2 class="heading2">{$LANG.onappvmactivitylog}</h2>
+    <h5>{$LANG.onappvmactivityloginfo}</h5> 
+<table class="data" cellspacing="0" cellpadding="10" border="0" width="100%">
+    <tr>
+        <th>{$LANG.onappref}</th>
+        <th>{$LANG.onappdate}</th>
+        <th>{$LANG.onappaction}</th>
+        <th>{$LANG.onappstatus}</th>
+    </tr>    
+{if $vm_logs eq false}
+    <tr><td>No logs found.</td></tr>
+{else}
+{foreach from=$vm_logs key=id item=log}
+    <tr>
+        <td>
+            <a class="logdetailslink" onclick="show_logs({$log.target_id}, {$id}, '{$log.created_at}', '{$log.action}', '{$log.status}', '{$log.target_type}'); return false;" href="#output"  >
+                {$id}
+            </a>
+        </td>
+        <td>{$log.created_at}</td>
+        <td>{$log.action}</td>
+        <td>{$log.status}</td>
+    </tr>
+{/foreach}
+          
+{/if}
+       
+</table> 
+
+<div id="vm_logs"></div>
+<a name="output"> </a>
 <br/>

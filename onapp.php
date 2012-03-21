@@ -107,7 +107,7 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
     } else {
         clientareaproducts();
     };
-
+    
 /**
  * Redirect to another page
  *
@@ -482,6 +482,30 @@ function _action_update_res() {
 function showproduct() {
     global $_ONAPPVARS, $_LANG;
 
+// Geting transaction by Ajax request //
+///////////////////////////////////////    
+    if( isset( $_GET[ 'transactionid' ] ) ) {
+        if ( $_GET['type'] != 'Transaction' ) {
+            exit();
+        }
+        
+        $user = get_onapp_client( $_ONAPPVARS['id'] );
+        $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
+        $onapp = new OnApp_Factory( $onapp_config["adress"], $user["email"], $user["password"] );
+        
+        $transaction = $onapp->factory( 'Transaction', true );
+        $_transaction = $transaction->load( $_GET[ 'transactionid' ] );
+        
+        $transaction_js ['output'] = $_transaction->_log_output;
+        
+        $transaction_js = json_encode(  $transaction_js  );
+        
+	    ob_end_clean();
+	    exit( $transaction_js );
+    }
+// End Geting transaction by Ajax request //
+///////////////////////////////////////////     
+
     $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
 
     if ( ! is_null($_ONAPPVARS['vm']->error) ) {
@@ -501,7 +525,37 @@ function showproduct() {
     } else {
 
         $network = get_vm_interface( $_ONAPPVARS['id'] );
+        
+// Getting log info //
+/////////////////////
+        
+        $user = get_onapp_client( $_ONAPPVARS['id'] );
+        $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
+        
+        $onapp = new OnApp_Factory( $onapp_config["adress"], $user["email"], $user["password"] );
+        
+        $log         = $onapp->factory( 'Log', true );
 
+        $url_args = array(
+            'q' => $_ONAPPVARS['vm']->_obj->_identifier,
+        );
+
+        $logs = $log->getList( $url_args ); 
+        
+        foreach ( $logs as $item ) {
+            $log_items[ $item->_id ]['target_type'] = $item->_target_type;
+            $log_items[ $item->_id ]['target_id']   = $item->_target_id;
+            $log_items[ $item->_id ]['created_at']  = str_replace('T', ' ', substr($item->_created_at, 0, 16)  );
+            $log_items[ $item->_id ]['updated_at']  = $item->_updated_at;
+            $log_items[ $item->_id ]['status']      = $item->_status;
+            $log_items[ $item->_id ]['action']      = $item->_action;
+        }
+        
+        $log_items = array_slice( $log_items, 0, 15, true);
+
+// End Getting Log Info //
+/////////////////////////        
+        
         show_template(
             "onapp/clientareaoverview",
             array(
@@ -510,6 +564,7 @@ function showproduct() {
                 'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
                 'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
                 'rate_limit'           => $network->_rate_limit,
+                'vm_logs'              => $log_items,
             )
         );
     }

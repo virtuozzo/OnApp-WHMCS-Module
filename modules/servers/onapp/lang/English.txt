@@ -176,5 +176,12 @@ $_LANG['onappbwusage'] = 'Bandwidth Usage';
 $_LANG['onappbwlimit'] = 'Bandwidth Limit';
 $_LANG['onapppriceformbbwoverages'] = 'Bandwidth Overages Price for 1MB';
 $_LANG['onappbwoverages'] = 'Bandwidth Overages';
-
-
+$_LANG['onappvmactivitylog'] = 'Virtual Machine Activity Log';
+$_LANG['onappref'] = 'Ref';
+$_LANG['onappdate'] = 'Date';
+$_LANG['onapptarget'] = 'Target';
+$_LANG['onappdependent'] = 'Dependent';
+$_LANG['onappaction'] = 'Action';
+$_LANG['onapploginfo'] = 'Log Info';
+$_LANG['onappoutput'] = 'Output';
+$_LANG['onappvmactivityloginfo'] = 'Displays 15 last VM  activity logs. Click on Ref to see more details below.';
