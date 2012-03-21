@@ -413,5 +413,18 @@ function _action() {
 
 }
 
+/**
+ * Deletes onapp user mapping info from database when it's deleted in WHMCS
+ */
+function afterClientDelete ( $vars ) {
+    
+    $query = "
+        DELETE FROM tblonappclients WHERE client_id=$vars[userid]
+    ";
+    
+    full_query( $query );
+}
+
 //add_hook( "AfterConfigOptionsUpgrade", 1, 'afterConfigOptionsUpgrade' );
 add_hook( "AcceptOrder", 1, 'updateSubscriptionServerId' );
+add_hook( "ClientDelete", 1, 'afterClientDelete' );
