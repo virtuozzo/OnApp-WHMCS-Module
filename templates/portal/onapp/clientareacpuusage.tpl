@@ -9,20 +9,13 @@
 </div>
 <p>{$LANG.onappcpuusagetitle}</p>
 <br/>
-{if $xaxis != "" || $yaxis != ""}
-<script type="text/javascript" src="modules/servers/onapp/includes/swfobject.js"></script>
-<h2 class="heading2">Per Hour</h2>
-      <div id="chart7c402aad61"><strong>You need to upgrade your Flash Player</strong></div>
+<script type="text/javascript" src="{$address}/javascripts/Highcharts-2.1.9/js/highcharts.js"></script>
+      <div id="chart7c402aad61"></div>
+      {literal}
       <script type="text/javascript">
-      // <![CDATA[
-      var so7c402aad61 = new SWFObject("{$address}/charts/amline/amline.swf", "chart7c402aad61", "680", "300", "8", "#ffffff");
-      so7c402aad61.addVariable("path", "{$address}/charts/");
-      so7c402aad61.addVariable("chart_settings", encodeURIComponent('<?xml version="1.0" encoding="UTF_8"?> <settings> <plot_area> <margins> <bottom>0</bottom> <top>10</top> <left>60</left> <right>60</right> </margins> </plot_area> <legend> <x>330</x> </legend> <graphs> <graph gid="1"> <line_width>2</line_width> <color>#000099</color> <title><![CDATA[CPU Usage (Cores)]]></title> <color_hover>#000099</color_hover> <selected>true</selected> </graph> </graphs> <values> <x> <color>#999999</color> </x> <y_left> <text_size>9</text_size> <color>#999999</color> <min>0</min> <max>1</max> </y_left> </values> <indicator> <x_balloon_text_color>#FFFFFF</x_balloon_text_color> <color>#999999</color> <line_alpha>50</line_alpha> <selection_color>#0000DD</selection_color> <selection_alpha>20</selection_alpha> </indicator> <font_size>10</font_size> <font>Tahoma</font> <height>300</height> <balloon> <only_one>true</only_one> </balloon> <decimals_separator>.</decimals_separator> <axes> <x> <color>#999999</color> <width>0</width> </x> <y_left> <color>#999999</color> <width>1</width> </y_left> </axes> <background_color>#ffffff</background_color> <grid> <x> <enabled>true</enabled> </x> <y_right> <enabled>false</enabled> </y_right> </grid> <width>680</width> </settings> '));
-      so7c402aad61.addVariable("chart_data", encodeURIComponent("<chart><xaxis>{$xaxis}</xaxis><graphs><graph gid='1'>{$yaxis}</graph></graphs></chart>"));
-      so7c402aad61.write("chart7c402aad61");
-      // ]]>
+              //<![CDATA[
+          new Highcharts.Chart({series: {/literal}{$data}{literal}}], title: {text: '{/literal}{$LANG.onapphourly}{literal}', x: -20}, credits: {enabled: false}, chart: {height: 300, renderTo: 'chart7c402aad61', width: 680, defaultSeriesType: 'line', zoomType: 'x'}, tooltip: {shared: true, crosshairs: true}, xAxis: {type: 'datetime', labels: {formatter: function() { return Highcharts.dateFormat("%e %b %H:%M", this.value); }}}, yAxis: {title: {text: null}}, plotOptions: {series: {marker: {states: {hover: {enabled: true}}, enabled: false, lineWidth: 0}}}, lang: {decimalPoint: '.', thousandsSep: 3, downloadPNG: 'Download PNG image', weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], downloadJPEG: 'Download JPEG image', resetZoomTitle: 'Reset zoom level 1:1', exportButtonTitle: 'Export to raster or vector image', resetZoom: 'Reset zoom', loading: 'Loading....', downloadPDF: 'Download PDF document', months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], printButtonTitle: 'Print the chart', downloadSVG: 'Download SVG vector image', shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']}});
+        //]]
       </script>
-{else}
-<div align="center"><strong>No data found</strong></div>
-{/if}
+      {/literal}
 <br/>

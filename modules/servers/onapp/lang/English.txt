@@ -185,3 +185,4 @@ $_LANG['onappaction'] = 'Action';
 $_LANG['onapploginfo'] = 'Log Info';
 $_LANG['onappoutput'] = 'Output';
 $_LANG['onappvmactivityloginfo'] = 'Displays 15 last VM  activity logs. Click on Ref to see more details below.';
+$_LANG['onapphourly'] = 'Hourly';

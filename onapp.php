@@ -602,7 +602,7 @@ function showcreateproduct() {
  * Show Virtual machine CPU usage
  */
 function productcpuusage() {
-    global $_ONAPPVARS;
+    global $_ONAPPVARS, $_LANG; 
 
     $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
 
@@ -619,29 +619,31 @@ function productcpuusage() {
     );
 
     $list = $cpuusage->getList();
-
-    $xaxis = '';
-    $yaxis = '';
-  
-    for ($i = 0; $i < count($list); $i++) {
-        $created_at = str_replace(array('T', 'Z'), ' ', $list[$i]->_created_at);
-
-        $usage = number_format( $list[$i]->_cpu_time / 360 / 100, 2 );
-
-        $xaxis .= "<value xid='$i'> $created_at </value>";
-        $yaxis .= "<value xid='$i'> $usage </value>";
+    
+    $hourly_stat = array();
+    
+    foreach ( $list as $key => $stat ) {
+        $hourly_stat[$key]['date']  = strtotime($stat->_created_at);
+        $hourly_stat[$key]['usage'] = number_format( $stat->_cpu_time / 360 / 100, 2 );;
     }
+    
+    $content = '';
+    
+    foreach ( $hourly_stat as $stat ) {
+        $content .= '['.$stat[date].', '.$stat[usage].'],';
+    }
+    
+    $data = "[{data: [ " . $content . "], name: '".$_LANG[onappcpuusage]."'";
+    
+    $data = str_replace( '],]', ']]', $data );
 
     show_template(
         "onapp/clientareacpuusage",
         array(
             'id'                   => $_ONAPPVARS['id'],
-            'templates'            => $templates,
-            'xaxis'                => $xaxis,
-            'yaxis'                => $yaxis,
             'address'              => $onapp_config["adress"],
             'error'                => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
-            'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
+            'data'                 => $data,
         )
     );
 }
