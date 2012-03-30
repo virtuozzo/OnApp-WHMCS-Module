@@ -48,7 +48,7 @@ function getSQLResult($sql) {
 // Load VM
 
     $vm = new OnApp_VirtualMachine();
-
+    
     $vm->auth(
         $onapp_config["adress"],
         $user["email"],
@@ -69,8 +69,12 @@ function getSQLResult($sql) {
         $user["password"]
     );
 
-    $console->load($vm_id);
+    $console->load($vm_id); 
 
     $url=$onapp_config["hostname"]."/console_remote/".$console->_obj->_remote_key;
+
+    if ( ! strpos( 'http', $url ) && ! strpos( 'https', $url) ) {
+        $url = 'http://'.$url;
+    }
 
     header( "Location: $url" ) ;
