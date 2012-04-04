@@ -209,33 +209,20 @@ function get_service($service_id) {
 
     $productid =  $service["productid"];
 
-    $select_config ="
-    SELECT
-        optionssub.id,
-        optionssub.optionname,
-        sub.configid,
-        tblproductconfigoptions.optionname as configoptionname,
-        tblproductconfigoptions.optiontype,
-        tblproductconfigoptions.qtymaximum AS max,
-        tblproductconfigoptions.qtyminimum AS min,
-        options.qty,
-        optionssub.sortorder,
-        options.optionid as active
-    FROM
-        tblhostingconfigoptions AS options
-        LEFT JOIN tblproductconfigoptionssub AS sub
-            ON options.configid = sub.configid
-            AND optionid = sub.id
-        LEFT JOIN tblproductconfigoptions
-            ON tblproductconfigoptions.id = options.configid
-        LEFT JOIN tblproductconfigoptionssub AS optionssub
-            ON optionssub.configid = tblproductconfigoptions.id
-    WHERE
-        relid = '$service_id'
-    ORDER BY optionssub.id ASC;";
-
     $select_config = "
     SELECT
+        CASE LCASE(hosting.billingcycle) 
+            WHEN 'monthly'      THEN tblpricing.monthly
+            WHEN 'quarterly'    THEN tblpricing.quarterly
+            WHEN 'semiannually' THEN tblpricing.semiannually
+            WHEN 'annually'     THEN tblpricing.annually
+            WHEN 'biennially'   THEN tblpricing.biennially
+            WHEN 'triennially'  THEN tblpricing.triennially
+        ELSE
+            '0.00'
+        END as price,
+        currencies.prefix,
+        currencies.suffix,
         tblupgrades.orderid as last_order_template_id,
         tblorders.status as template_upgrade_status,
         optionssub.id,
@@ -252,7 +239,7 @@ function get_service($service_id) {
     FROM
         tblproductconfiglinks
         LEFT JOIN tblproductconfigoptions
-            ON tblproductconfigoptions.gid = tblproductconfiglinks.gid
+           ON tblproductconfigoptions.gid = tblproductconfiglinks.gid
         LEFT JOIN tblhostingconfigoptions AS options
             ON options.configid = tblproductconfigoptions.id AND options.relid = $service_id
         LEFT JOIN tblproductconfigoptionssub AS sub
@@ -263,10 +250,18 @@ function get_service($service_id) {
     
         LEFT JOIN tblupgrades
             ON tblupgrades.newvalue = options.optionid
-	    AND tblupgrades.relid = $service_id			
+            AND tblupgrades.relid = $service_id
         LEFT JOIN tblorders
             ON tblorders.id = tblupgrades.orderid
- 
+        LEFT JOIN tblhosting as hosting 
+            ON hosting.id = $service_id
+        LEFT JOIN tblclients as clients
+            ON clients.id = hosting.userid
+        LEFT JOIN tblpricing
+            ON tblpricing.relid = optionssub.id
+            AND tblpricing.currency = clients.currency
+        LEFT JOIN tblcurrencies as currencies
+            ON currencies.id = clients.currency
     WHERE
         tblproductconfiglinks.pid = $productid
     GROUP BY 
@@ -289,8 +284,9 @@ function get_service($service_id) {
         $service["configoption21"], // user data
         $service["configoption22"], // bandwidth
     );
-
+    
     $service["configoptions"] = array();
+    
     while ( $row = mysql_fetch_assoc($config_rows) ) {
         if ( in_array($row["configid"], $onappconfigoptions ) ) {
             switch ( $row['optiontype'] ) {
@@ -354,7 +350,7 @@ function get_service($service_id) {
 
             $service["configoptions"][$row['configid']]['options'][$row['sortorder']] = array(
                 'id'   => $row['id'],
-                'name' => $row['optionname'],
+                'name' => $row['optionname'] .' - ' . $row['prefix'].' ' . $row['price']. $row['suffix'],
                 'max'  => $row['max'],
                 'min'  => $row['min']
             );
