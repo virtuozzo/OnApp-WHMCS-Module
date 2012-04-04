@@ -263,6 +263,7 @@ function get_service($service_id) {
     
         LEFT JOIN tblupgrades
             ON tblupgrades.newvalue = options.optionid
+	    AND tblupgrades.relid = $service_id			
         LEFT JOIN tblorders
             ON tblorders.id = tblupgrades.orderid
  
