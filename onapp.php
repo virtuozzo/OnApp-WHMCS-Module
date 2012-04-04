@@ -329,6 +329,9 @@ function _actions_vm($action) {
             case 'reset_pass':
                 $_ONAPPVARS['vm']->reset_password();
                 break;
+            case 'rebuild_network':
+                $_ONAPPVARS['vm']->rebuild_network();
+                break;
             default:
                 $_ONAPPVARS['error'] = sprintf($_LANG["onappactionnotfound"], $action);
                 break;

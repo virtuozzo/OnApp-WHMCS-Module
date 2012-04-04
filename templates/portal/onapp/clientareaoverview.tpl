@@ -215,6 +215,9 @@ function show_logs( id, logid, date, action, status, type ) {
       <td>
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=reset_pass">{$LANG.onappvmresetpassword}</a>
       </td>
+      <td>
+        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=rebuild_network">{$LANG.onappvmrebuildnetwork}</a>
+      </td>
     </tr>
   </tbody>
 </table>
