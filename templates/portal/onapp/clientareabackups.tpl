@@ -80,4 +80,3 @@ function deleteback(id) {
   </tr>
 {/foreach}
 </table>
-<p align="center"><a href="{$smarty.const.ONAPP_FILE_NAME}?page=storagedisksize">{$LANG.onappstoragedisksize}</a></p><br/>
