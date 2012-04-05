@@ -71,9 +71,9 @@ function getSQLResult($sql) {
 
     $console->load($vm_id); 
 
-    $url=$onapp_config["hostname"]."/console_remote/".$console->_obj->_remote_key;
+    $url = ( ($onapp_config["hostname"]) ? $onapp_config["hostname"] : $onapp_config["adress"]  ). "/console_remote/".$console->_obj->_remote_key;
 
-    if ( ! strpos( 'http', $url ) && ! strpos( 'https', $url) ) {
+    if ( strpos( $url, 'http' ) === false && strpos( $url, 'http' ) === false ) {
         $url = 'http://'.$url;
     }
 
