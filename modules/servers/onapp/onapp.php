@@ -983,9 +983,27 @@ function onapp_UsageUpdate($params) {
             $products['username'],
             decrypt( $products['password'])
         );
-
+        
+        if ( $onapp->getErrorsAsArray() ) {
+// Debug            
+            echo ('<b>Get OnApp Version Permission Error: </b>' . implode( PHP_EOL , $onapp->getErrorsAsArray() )) . '. Skipping' . PHP_EOL;
+            continue;
+        }
+        
         $network_interface  = $onapp->factory('VirtualMachine_NetworkInterface');
+        
+        if ( ! $products['vm_id'] ) {
+// Debug
+            echo 'virtual_machine_id is empty. Skipping' . PHP_EOL;  
+            continue;
+        }
         $network_interfaces = $network_interface->getList( $products['vm_id']);
+        
+        if ( $network_interface->getErrorsAsArray() ) {
+// Debug            
+            echo ('<b>Network Interface Get List Error : </b>' . implode( PHP_EOL , $network_interface->getErrorsAsArray() )).'. Skipping'. PHP_EOL;
+            continue;
+        }        
 
         $usage = $onapp->factory('VirtualMachine_NetworkInterface_Usage', true );
 
