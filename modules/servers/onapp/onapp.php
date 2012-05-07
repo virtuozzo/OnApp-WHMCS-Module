@@ -1030,10 +1030,7 @@ function onapp_UsageUpdate($params) {
 
 // Count bandwidth limit + upgrades if needed
         $bandwidth_limit = (
-            $products['optionid']                        &&
-            $products['additional_bandwidth']            &&
-            $products['upgrade_status']  == 'Completed'  &&
-            $products['upgrade_paid'] == 'Y'
+            $products['optionid'] && $products['additional_bandwidth'] 
         )
         ? $products['bwlimit'] + $products['additional_bandwidth']
         : $products['bwlimit'];
