@@ -260,6 +260,7 @@ function get_service($service_id) {
         LEFT JOIN tblpricing
             ON tblpricing.relid = optionssub.id
             AND tblpricing.currency = clients.currency
+            AND tblpricing.type = 'configoptions'		
         LEFT JOIN tblcurrencies as currencies
             ON currencies.id = clients.currency
     WHERE
