@@ -699,7 +699,7 @@ function _action_ip_add($service_id, $isbase) {
 
     if ($ips)
         foreach( $ips as $ip)
-            if( $ip->_free == true && ! isset($free_ip) )
+            if( $ip->_free == true && ! isset($free_ip) && ! is_private_ip( $ip->_address ) )
                 $free_ip = $ip;
 
     if ( ! isset($free_ip) || is_null($free_ip) )
@@ -960,6 +960,7 @@ function create_vm( $service_id, $hostname, $template_id) {
     $vm->_initial_root_password          = decrypt( $service['password'] );
     $vm->_required_ip_address_assignment = '1';
     $vm->_rate_limit                     = $rate_limit;
+    $vm->_required_public_ip_address     = '1'; 
 
     $tpl->load( $vm->_template_id );
     if ( $tpl->_obj->_operating_system == 'windows' )
@@ -1244,3 +1245,11 @@ function getAccountDate ( $register_date ) {
         date('Y-m-d') :
         date( 'Y-m-d', $_today + ( 86400 * $days_left ) );
 }
+
+function is_private_ip( $ip ){
+    if ( preg_match( '/^127/',$ip) ) {
+        return true;
+    }
+
+    return !filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+}	
