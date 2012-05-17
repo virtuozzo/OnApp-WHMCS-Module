@@ -906,9 +906,6 @@ function onapp_UsageUpdate($params) {
             tblproducts.overagesbwprice,
             tblproducts.tax,
             tblhostingconfigoptions.optionid,
-            tblupgrades.status as upgrade_status,
-            tblupgrades.paid as upgrade_paid,
-            tblupgrades.id as upgrade_id,
             tblproductconfigoptionssub.sortorder as additional_bandwidth,
             tblclients.id as clientid,
             tblclients.taxexempt,
@@ -935,11 +932,6 @@ function onapp_UsageUpdate($params) {
             tblproductconfigoptionssub
             ON
             tblhostingconfigoptions.optionid = tblproductconfigoptionssub.id
-        LEFT JOIN
-            tblupgrades
-            ON tblupgrades.newvalue = tblhostingconfigoptions.optionid
-            AND tblupgrades.id = (SELECT MAX( id ) FROM tblupgrades WHERE
-            newvalue = tblhostingconfigoptions.optionid )
         LEFT JOIN 
             tblclients ON tblhosting.userid = tblclients.id
         LEFT JOIN
@@ -1042,6 +1034,7 @@ function onapp_UsageUpdate($params) {
             if ( $traffic > $bandwidth_limit && ! $params['extracall'] ){
 // debug
                 echo 'Called by the main cron' . PHP_EOL;
+                echo 'Bandwidth Limit have been exceeded' . PHP_EOL;
                 echo 'Update cron dates' . PHP_EOL;
 
                 $query = "REPLACE INTO
@@ -1112,13 +1105,35 @@ function onapp_UsageUpdate($params) {
                  
 // Generating Invoice End //
 ///////////////////////////
-                 
-            }
-            if ( ! $params['extracall'] ) {
-// debug
+// debug                
                 echo 'Reset bwusage to 0' . PHP_EOL;
+                $traffic = 0;                 
+            }
+            elseif ( ! $params['extracall'] &&  $traffic <= $bandwidth_limit ) {
+// debug
+                echo 'Called by the main cron' . PHP_EOL;
+                echo 'Bandwidth Limit have not been exceeded' . PHP_EOL;
+                echo 'Update cron dates' . PHP_EOL;
+                echo 'Reset bwusage to 0 no invoice needed' . PHP_EOL;
                 $traffic = 0;
-
+                
+                $query = "REPLACE INTO
+                              tblonappcronhostingdates
+                              ( hosting_id, account_date )
+                          VALUES ( $products[hosting_id], '" . $enddate . "'  )
+                ";  
+                
+                $result = full_query( $query );
+                
+                if ( ! $result ) {
+// debug
+                    echo 'cron date REPLACE error ' . mysql_error() . PHP_EOL;
+                }                
+            } else {
+// debug            
+                echo 'Called not by the main cron, but by 
+                    bandwidth statistics cron: then neither updates account 
+                    dates nor creates invoices, only collects bandwidth statistics' . PHP_EOL;    
             }
         }
 
