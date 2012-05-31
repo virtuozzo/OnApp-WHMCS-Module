@@ -1024,15 +1024,14 @@ function delete_vm( $service_id ) {
     if( ! isset($vm->_id)) {
         $vm->setErrors( "Can't Load Virtual Machine" );
         return $vm;
-    };
+    }
 
     $vm->delete();
-
-    if( $vm->error ) {
-       $vm->setErrors( "Can't Delete Virtual Machine" );
-       return $vm;
-    };
-
+    
+    if( count( $vm->getErrorsAsArray() ) > 0 ){
+        return $vm;
+    }
+   
     $sql_delete_service = sprintf(
         "DELETE FROM tblonappservices WHERE service_id = '%s'",
         $service_id
