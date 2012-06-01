@@ -371,9 +371,13 @@ function get_service($service_id) {
  */
 function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEFAULT_BILLING_PLAN = 1 ) {
     global $_LANG;
-
+    
     $service = get_service($service_id);
-
+    
+    if ( $service['serverid'] != $service['productserverid']) {
+        $service['serverid'] = $service['productserverid'];
+    }    
+    
     $sql_select = sprintf(
         "SELECT
             onapp_user_id,
@@ -902,7 +906,7 @@ function create_vm( $service_id, $hostname, $template_id) {
         $service['serverid'] = $service['productserverid'];
     }
 
-    $user    = get_onapp_client( $service_id );
+    $user = get_onapp_client( $service_id );
 
     $onapp_config = get_onapp_config( $service['serverid'] );
 

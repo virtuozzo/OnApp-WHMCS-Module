@@ -583,8 +583,15 @@ function showproduct() {
  */
 function showcreateproduct() {
     global $_ONAPPVARS;
+    
+    $service_server_id = $_ONAPPVARS['service']['serverid'];
+    $product_server_id = $_ONAPPVARS['service']['productserverid'];
+    
+    if ( $service_server_id != $product_server_id ) {
+        $service_server_id = $product_server_id;
+    }
 
-    $templates = get_templates($_ONAPPVARS['service']['serverid'], $_ONAPPVARS['service']["configoption2"]);
+    $templates = get_templates( $service_server_id, $_ONAPPVARS['service']["configoption2"]);
     $os = $_ONAPPVARS['service']['os'];
 
     if (! is_null($os) && isset($templates[$os]) ) {
