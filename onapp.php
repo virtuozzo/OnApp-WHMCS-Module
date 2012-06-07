@@ -51,10 +51,12 @@ foreach ( array('id', 'page', 'action') as $val )
 /**
  * Set base noavigation bar
  */
+
 $breadcrumbnav  = ' <a href="index.php">'.$_LANG["globalsystemname"].'</a>';
 $breadcrumbnav .= ' &gt; <a href="clientarea.php">'.$_LANG["clientareatitle"].'</a>';
 $breadcrumbnav .= ' &gt; <a href="' . ONAPP_FILE_NAME . '">'.$_LANG["onappmyvms"].'</a>';
-if ( in_array($_ONAPPVARS['page'], array('productdetails', 'disks', 'cpuusage', 'ipaddresses', 'backups', 'upgrade') ) )
+
+if ( in_array($_ONAPPVARS['page'], array('productdetails', 'disks', 'cpuusage', 'ipaddresses', 'backups', 'upgrade', 'firewallrules') ) )
     $breadcrumbnav .= ' &gt; <a title="' .$_LANG["clientareaproductdetails"]. '" href="' . ONAPP_FILE_NAME . '?page=productdetails&id='.$id.'">'.$_LANG["clientareaproductdetails"].'</a>';
 
 /**
@@ -94,6 +96,9 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
             $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappbackups"]. '" href="' . ONAPP_FILE_NAME . '?page=backups&id='.$id.'">'.$_LANG["onappbackups"].'</a>';
             productbackups();
             break;
+        case 'firewallrules':
+            firewallrules();
+            break;
         case 'upgrade':
             if( $_ONAPPVARS['service']['configoptionsupgrade'] == "on" ) {
                 $breadcrumbnav .= ' &gt; <a title="' .$_LANG["onappupgradedowngrade"] .'" href="' . ONAPP_FILE_NAME . '?page=upgrade&id='.$id.'">'.$_LANG["onappupgradedowngrade"].'</a>';
@@ -112,7 +117,198 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
     } else {
         clientareaproducts();
     };
+
+/**
+ * Manage firewall rules tab
+ * 
+ * @global mixed $_ONAPPVARS
+ * @global mixed $_LANG 
+ */    
+function firewallrules() {
+    global $_ONAPPVARS, $_LANG;
     
+    $user = get_onapp_client( $_ONAPPVARS['id'] );
+    $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
+
+    $onapp = new OnApp_Factory( $onapp_config["adress"], $user["email"], $user["password"] );
+    $firewallrule = $onapp->factory('VirtualMachine_FirewallRule', true );
+
+    
+    $fr = isset( $_POST['fr'] ) ? $_POST['fr'] : NULL;
+    
+    $action = $_ONAPPVARS['action'];
+    
+    $network_interfaces = isset( $_POST['network_interfaces'] ) ? $_POST['network_interfaces'] : NULL;
+    $ruleid = get_value('ruleid');
+    $position = get_value('position');
+    
+    if( ! is_null($action) && $action != "" )
+        switch ( $action ) {
+            case 'save':
+                $return = _firewallrule_save( $_ONAPPVARS['service']['vmid'], $fr, $firewallrule );
+                break;
+            case 'delete':
+                if ( ! $ruleid ){
+                    $_ONAPPVARS['error'] = sprintf($_LANG["onappnotenoughparams"], $action);
+                    break;}
+                $return = _firewallrule_delete( $_ONAPPVARS['service']['vmid'], $ruleid, $firewallrule );
+                break;
+            case 'move':
+                if ( ! $ruleid || ! $position ){
+                    $_ONAPPVARS['error'] = sprintf($_LANG["onappnotenoughparams"], $action);
+                    break;
+                }
+                $return = _firewallrule_move( $_ONAPPVARS['service']['vmid'], $ruleid, $position, $firewallrule );
+                break;
+            case 'set_defaults':
+                if ( ! $network_interfaces ){
+                    $_ONAPPVARS['error'] = sprintf($_LANG["onappnotenoughparams"], $action);
+                    break;
+                }
+                $return = _firewallrule_set_default( $_ONAPPVARS['service']['vmid'], $network_interfaces, $firewallrule );
+                break;
+            case 'apply':
+                
+                $return = _firewallrule_apply( $_ONAPPVARS['service']['vmid'], $firewallrule );
+                
+            default:
+                $_ONAPPVARS['error'] = sprintf($_LANG["onappactionnotfound"], $action);
+                break;
+        }    
+    
+    $networkinterface = $onapp->factory('VirtualMachine_NetworkInterface', true );
+    
+    $firewallrules = $firewallrule->getList( $_ONAPPVARS['service']['vmid'] ); 
+    $networkinterfaces = $networkinterface->getList( $_ONAPPVARS['service']['vmid'] );
+    
+    $error = isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : getFlashError();
+    
+    $_networkinterfaces = array();
+    
+    foreach ( $networkinterfaces as $interface ) {
+        $_networkinterfaces[ $interface->_id ] = $interface;
+    }
+    
+    if ( ! is_null( $firewallrules )) {
+        foreach ($firewallrules as $firewall)
+            $firewall_by_network[$firewall->_network_interface_id][] = $firewall;
+    }
+    else 
+        $firewall_by_network = NULL;  
+    
+    show_template(
+        "onapp/clientareafirewallrules",
+        array(
+            'commands'             => array('ACCEPT', 'DROP'),
+            'networkinterfaces'    => $_networkinterfaces,
+            'firewall_by_network'  => $firewall_by_network,
+            'id'                   => $_ONAPPVARS['id'],
+            'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
+            'error'                => $error,
+        )
+    );    
+}
+
+function _firewallrule_apply( $vmid, $firewallrule ) {
+    global $_ONAPPVARS;
+    
+    $firewallrule->update( $vmid );
+
+    if ( $firewallrule->getErrorsAsArray() ){
+        setFlashError( $firewallrule->getErrorsAsArray() );
+    }
+    
+    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);
+}
+
+/**
+ * Set default commands for network interfaces
+ * 
+ * @global mixed $_ONAPPVARS
+ * @param integer $vmid
+ * @param mixed $network_interfaces
+ * @param mixed $firewallrule 
+ */
+function _firewallrule_set_default( $vmid, $network_interfaces, $firewallrule ) {
+    global $_ONAPPVARS;
+    
+    $firewallrule->updateDefaults( $vmid, $network_interfaces );
+
+    //todo add error verification Ticket #4885 codebase 
+    
+    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
+}
+
+/**
+ * Delete firewall rule
+ * 
+ * @global mixed $_ONAPPVARS
+ * @param integer $vmid
+ * @param integer $ruleid
+ * @param mixed $firewallrule 
+ */
+function _firewallrule_delete( $vmid, $ruleid, $firewallrule ) {
+    global $_ONAPPVARS;
+    
+    $firewallrule->_id = $ruleid;
+    $firewallrule->_virtual_machine_id = $vmid;
+    $firewallrule->delete();
+    
+    if ( $firewallrule->getErrorsAsArray() ){
+        setFlashError( $firewallrule->getErrorsAsArray() );
+    }
+    
+    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
+}
+
+/**
+ * Create a new firewall rule
+ * 
+ * @global mixed $_ONAPPVARS
+ * @param integer $vmid
+ * @param mixed $fr
+ * @param mixed $firewallrule 
+ */
+function _firewallrule_save( $vmid, $fr, $firewallrule ){
+    global $_ONAPPVARS;
+    
+    foreach( $fr as $field => $value ){
+        $_field = '_'.$field;
+        $firewallrule->$_field = $value;
+    }
+    
+    $firewallrule->_virtual_machine_id = $vmid;
+    
+    $firewallrule->save();
+    
+    if ( $firewallrule->getErrorsAsArray() ){
+        setFlashError( $firewallrule->getErrorsAsArray() );
+    }
+    
+    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
+}
+
+/**
+ * Move firewall rule
+ * 
+ * @global mixed $_ONAPPVARS
+ * @param integer $vmid
+ * @param integer $ruleid
+ * @param integer $position
+ * @param mixed $firewallrule 
+ */
+function _firewallrule_move( $vmid, $ruleid, $position, $firewallrule ) {
+    global $_ONAPPVARS;
+
+    $firewallrule->_virtual_machine_id = $vmid;
+    $firewallrule->_id = $ruleid;
+    $firewallrule->move( $position );
+    
+    //todo add error verification Ticket #2358 codebase 
+    
+    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);
+}
+
 /**
  * Redirect to another page
  *
@@ -155,6 +351,7 @@ function get_value($name) {
  * @param array $values smarty values
  */
 function show_template($templatefile, $values) {
+    
     global $_LANG, $breadcrumbnav, $smartyvalues, $CONFIG;
 
     $pagetitle = $_LANG["clientareatitle"];
@@ -170,6 +367,8 @@ function show_template($templatefile, $values) {
         /* Do not change this URL!!! - Otherwise WHMCS Failed ! */
         $smartyvalues['systemurl'] = $CONFIG['SystemURL'] . '/';
 
+    if ( isset($_SESSION['onapp_flash']['error']) )
+        unset( $_SESSION['onapp_flash']['error'] ); 
     outputClientArea($templatefile);
 }
 

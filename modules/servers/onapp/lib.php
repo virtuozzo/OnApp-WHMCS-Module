@@ -1255,4 +1255,25 @@ function is_private_ip( $ip ){
     }
 
     return !filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
-}	
+}
+
+/**
+ * Set flash error
+ * 
+ * @param mixed $error_message 
+ */
+function setFlashError( $error_message ) {
+    if ( is_array( $error_message ) ) 
+        $_SESSION['onapp_flash']['error'] = implode(  PHP_EOL, $error_message  ); 
+    else
+        $_SESSION['onapp_flash']['error'] = $error_message; 
+}
+
+/**
+ * Get flash error
+ * 
+ * @return string error message 
+ */
+function getFlashError() {
+    return $_SESSION['onapp_flash']['error'];
+}

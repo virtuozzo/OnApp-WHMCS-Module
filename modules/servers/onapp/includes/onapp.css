@@ -136,3 +136,21 @@ table.data tr.clientareatablecancelled td {
     border:1px solid #EBEBEB;
     padding:10px;
 }
+
+div.f_left {
+    float:left;
+    padding:10px 20px 10px 0;
+}
+
+div.f_right {
+    float:right;
+    padding:10px 20px 10px 0;
+}
+
+div.f_left input[type="text"]{
+    width:100px;
+}
+
+table .controll_td a{
+    text-decoration: none;
+}

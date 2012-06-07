@@ -187,3 +187,24 @@ $_LANG['onappoutput'] = 'Output';
 $_LANG['onappvmactivityloginfo'] = 'Displays 15 last VM  activity logs. Click on Ref to see more details below.';
 $_LANG['onapphourly'] = 'Hourly';
 $_LANG['onappvmrebuildnetwork'] = 'Rebuild Network';
+$_LANG['onappfirewallrules'] = 'Firewall Rules';
+$_LANG['onappfirewallrulestitle'] = 'The firewall rules running for this VM. To add a new rule, choose a network interface, command and protocol, enter a source IP and port, and click the Save button. Click the icons to delete and prioritize rules (up/down arrows). To run the transaction and initiate the rules, or save the change in rule priorities, click the Apply Firewall Rules button.';
+$_LANG['onappinterface'] = 'Interface';
+$_LANG['onappcommand'] = 'Command';
+$_LANG['onappsourceaddress'] = 'Source Address';
+$_LANG['onappdestinationport'] = 'Destination Port';
+$_LANG['onappprotocol'] = 'Protocol';
+$_LANG['onappsave'] = 'Save';
+$_LANG['onapprule'] = 'Rule';
+$_LANG['onappnotenoughparams'] = 'Not Enough Parameters';
+$_LANG['onappdefaultfirewallrule'] = 'Default Firewall Rules';
+$_LANG['onappinterfaceup'] = 'INTERFACE';
+$_LANG['onappcommandup'] = 'COMMAND';
+$_LANG['onappfirewall'] = 'Firewall';
+$_LANG['onappapplyfirewallrules'] = 'Apply Firewall Rules';
+
+
+
+
+
+
