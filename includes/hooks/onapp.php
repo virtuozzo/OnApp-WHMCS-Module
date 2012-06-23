@@ -21,6 +21,8 @@ function updateSubscriptionServerId ( $vars ) {
             tblproducts ON tblhosting.packageid = tblproducts.id
         WHERE
             tblorders.id = $vars[orderid]
+	AND 
+            tblproducts.servertype = 'onapp'		
     ";
 
     $result = full_query( $query );
