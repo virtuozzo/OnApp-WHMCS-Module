@@ -70,6 +70,8 @@
     <td>&nbsp;</td>
   </tr>
 {/foreach}
+
+
 {section name = mySection start = 0 loop = $not_resloved_additional step = 1}
   <tr>
     <td>&nbsp;</td>
@@ -83,6 +85,7 @@
     </td>
   </tr>
 {/section}
+
 </table>
 <br>
 {/if}
@@ -118,5 +121,84 @@
   </tr>
 {/foreach}
 </table>
-<br>
 {/if}
+
+{if count($sec_net_base) > 0 || $sec_net_not_resloved_base > 0 }
+<h2 class="heading2">{$LANG.onappvmsecondarynetworkbaseips}</h2>
+<table cellspacing="0" cellpadding="10" border="0" width="100%" class="data">
+  <tr>
+    <th>{$LANG.onappid} #</th>
+    <th>{$LANG.onappipaddress}</th>
+    <th>{$LANG.onappnetmask}</th>
+    <th>{$LANG.onappgateway}</th>
+    <th>&nbsp;</th>
+  </tr>
+{foreach item=ip key=ID from=$sec_net_base}
+  <tr>
+    <td>{$ip->_id}</td>
+    <td>{$ip->_address|ipv6_short}</td>
+    <td>{$ip->_netmask}</td>
+    <td>{$ip->_gateway|ipv6_short}</td>
+    <td>
+    &nbsp;
+    </td>
+  </tr>
+{/foreach}
+
+{section name = mySection start = 0 loop = $sec_net_not_resloved_base step = 1}
+  <tr>
+    <td>&nbsp;</td>
+    <td colspan="3"><b><font color='red'>{$LANG.onappnotassigned}</font></b></td>
+    <td>
+{if count($not_resolved_ips) > 0 }
+      &nbsp;
+{else}
+      <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&action=sec_net_assignbase">{$LANG.onappassign}</a>
+{/if}
+    </td>
+  </tr>
+{/section}
+
+</table>
+{/if}
+
+{if count($sec_net_additional) > 0 || $sec_net_not_resloved_additional > 0 }
+<h2 class="heading2">{$LANG.onappvmsecondarynetworkadditionalips}</h2>
+<table cellspacing="0" cellpadding="10" border="0" width="100%" class="data">
+  <tr>
+    <th>{$LANG.onappid} #</th>
+    <th>{$LANG.onappipaddress}</th>
+    <th>{$LANG.onappnetmask}</th>
+    <th>{$LANG.onappgateway}</th>
+    <th>&nbsp;</th>
+  </tr>
+{foreach item=ip key=ID from=$sec_net_additional}
+  <tr>
+    <td>{$ip->_id}</td>
+    <td>{$ip->_address|ipv6_short}</td>
+    <td>{$ip->_netmask}</td>
+    <td>{$ip->_gateway|ipv6_short}</td>
+    <td>
+    &nbsp;
+    </td>
+  </tr>
+{/foreach}
+
+{section name = mySection start = 0 loop = $sec_net_not_resloved_additional step = 1}
+  <tr>
+    <td>&nbsp;</td>
+    <td colspan="3"><b><font color='red'>{$LANG.onappnotassigned}</font></b></td>
+    <td>
+{if count($not_resolved_ips) > 0 }
+      &nbsp;
+{else}
+      <a href="{$smarty.const.ONAPP_FILE_NAME}?page=ipaddresses&id={$id}&action=sec_net_assignadditional">{$LANG.onappassign}</a>
+{/if}
+    </td>
+  </tr>
+{/section}
+
+</table>
+{/if}
+
+</br>

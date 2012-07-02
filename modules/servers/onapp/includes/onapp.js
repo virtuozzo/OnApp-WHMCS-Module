@@ -3,17 +3,20 @@ $(document).ready(function(){
     $("select[name='servergroup']").parent().parent().hide();
 
 // form submit action
-    form = $("form[name$='packagefrm']");
+    var form = $("form[name$='packagefrm']");
 
     form.submit(function() {
+        if ( ! add_secondary_network_info() ) {
+            return false
+        }
+        
         add_user_info()
         add_hv_zone()
         add_build_options()
         var checkresult = checkvars(check_vars);
         add_ds_zone(checkresult)
-        
     });
-
+    
 // replace values
     serverSelect = $("select[name$='packageconfigoption[1]']");
 
@@ -61,7 +64,7 @@ $(document).ready(function(){
 
     networkSelect.html(selectHTML);
     networkSelect.width(selectWidth);
-
+    
     addRAMSelect = $("select[name$='packageconfigoption[12]']");
     addRAMSelected = addRAMSelect.val();
     addRAMSelect.width(selectWidth);
@@ -160,8 +163,7 @@ $(document).ready(function(){
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
     addPortSpead.html(selectHTML);
-
-
+    
     var rolesHTML = '';
     for ( option in roleOptions ) {
         checked = ( in_array ( option, rolesSelected ) ) ? ' checked="checked"' : '';
@@ -245,7 +247,7 @@ $(document).ready(function(){
 // get port speed
     var port_speed_label = tr.find('td').eq(2).html();
    var port_speed_html   = tr.find('td').eq(3).html();
-
+  
 // remove row
     tr.remove();
     tr = table.find('tr').eq(0);
@@ -310,7 +312,7 @@ $(document).ready(function(){
 // get IP Address
     var ipbase_label = tr.find('td').eq(2).html();
     var ipbase_html  = tr.find('td').eq(3).html();
-
+    
 // remove row
     tr.remove();
     tr = table.find('tr').eq(0);
@@ -337,6 +339,23 @@ $(document).ready(function(){
 
     addbandwidth_html += '</select>'
 
+// set secondary network port speed  
+   var sec_net_port_speed_html = '<input type="text" name="sec_net_port_speed" size="5" value="'+SecNetworkPortSpeedSelected+'"> Mbps ( Unlimited if not set )'
+   var sec_net_port_speed_label = port_speed_label
+// set secondary network ip addresses
+   var sec_net_ips_html = '<input type="text" name="sec_net_ips" size="5" value="'+SecNetworkIps+'">'
+
+// get additional secondary network configurable options ip addresses
+   var add_sec_net_ips_label = LANG['onappaddsecnetips']
+   var add_sec_net_ips_html  = '<select name="sec_net_configurable_option_id" >'
+
+    for ( option in configOptions ) {
+        selected = (option == addSecNetworkIPSelected) ? ' selected="selected"' : '';
+        add_sec_net_ips_html += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
+    }
+
+    add_sec_net_ips_html += '</select>'  
+    
 // get User Roles
     var roles_label = LANG['onappuserroles'];
     var roles_html  = rolesHTML
@@ -350,6 +369,16 @@ $(document).ready(function(){
         hv_zones_html += 
             '    <option value="'+option+'">'+hvZoneOptions[option]+'</option>';
     hv_zones_html += '</select>';
+    
+// get Secondary Networks Select
+    var sec_net_networks_label = LANG['onappsecnet']
+    var sec_networks_html = '<select name="sec_network_id">'
+    for ( option in networkOptions ) {
+        selected = (option == SecNetworkIdSelected) ? ' selected="selected"' : '';
+        sec_networks_html += '<option value="'+option+'"'+selected+'>'+networkOptions[option]+'</option>';
+    }
+    
+    sec_networks_html += '</select>';
 
 // get Data Store Zones
     var ds_zones_label = LANG['onappdszone'];
@@ -372,7 +401,6 @@ $(document).ready(function(){
 // get time zones
     var time_zones_label = LANG['onapptimezones']
     var time_zones_html  = timeZoneHtml
-
 
 // remove row
     tr.remove();
@@ -402,13 +430,15 @@ $(document).ready(function(){
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappres']+'</b></td></tr>');
 
     // sliders
-        var ram_slider = create_slider_html(ram_html, 12288, 256, 4, 3);
-        var cores_slider = create_slider_html(cores_html, 16, 1, 1, 5);
-        var priority_slider = create_slider_html(priority_html, 100, 1, 1, 7);
-        var disk_slider = create_slider_html(disk_html, 240, 0, 1, 11);
-        var swap_slider = create_slider_html(swap_html, 240, 0, 1, 9);
-        var port_speed_slider = create_slider_html(port_speed_html, 1000, 0, 1, 8);
-        var ip_address_slider = create_slider_html(ipbase_html, 20, 1, 1, 18);
+        var ram_slider = create_slider_html(ram_html, 12288, 256, 4, 'packageconfigoption[3]');
+        var cores_slider = create_slider_html(cores_html, 16, 1, 1, 'packageconfigoption[5]');
+        var priority_slider = create_slider_html(priority_html, 100, 1, 1, 'packageconfigoption[5]');
+        var disk_slider = create_slider_html(disk_html, 240, 0, 1, 'packageconfigoption[11]');
+        var swap_slider = create_slider_html(swap_html, 240, 0, 1, 'packageconfigoption[9]');
+        var port_speed_slider = create_slider_html(port_speed_html, 1000, 0, 1, 'packageconfigoption[8]');
+        var ip_address_slider = create_slider_html(ipbase_html, 20, 1, 1, 'packageconfigoption[18]');
+        var sec_net_port_speed_slider = create_slider_html(sec_net_port_speed_html, 1000, 0, 1, 'sec_net_port_speed');
+        var sec_net_ips_slider = create_slider_html(sec_net_ips_html, 200, 0, 1, 'sec_net_ips');
 
         tbody.append( cell_html(ram_label, ram_slider) );
         tbody.append( cell_html(cores_label, cores_slider) );
@@ -425,8 +455,14 @@ $(document).ready(function(){
         tbody.append( cell_html(networks_label, networks_html) );
         tbody.append( cell_html(port_speed_label, port_speed_slider) );
         tbody.append( cell_html(ipbase_label, ip_address_slider) );
+        
+    // third third
+        tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappsecnetconfiguration']+'</b></td></tr>');
+        tbody.append( cell_html(sec_net_networks_label, sec_networks_html) );
+        tbody.append( cell_html(sec_net_port_speed_label, sec_net_port_speed_slider) );
+        tbody.append( cell_html(ipbase_label, sec_net_ips_slider) );        
 
-    // third table
+    // forth table
         second_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
         var third_table = $('table').eq(7);
         tbody = third_table.find('tbody');
@@ -437,7 +473,7 @@ $(document).ready(function(){
         tbody.append( cell_html(build_auto_label, build_auto_html) );
         tbody.append( cell_html(backups_auto_label, backups_auto_html) );
 
-    // forth table
+    // fifth table
         third_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
         var forth_table = $('table').eq(8);
         tbody = forth_table.find('tbody');
@@ -450,7 +486,7 @@ $(document).ready(function(){
         tbody.append( cell_html(ip_label, ip_html) );
         tbody.append( cell_html(addport_speed_label, addport_speed_html) );
         tbody.append( cell_html(addbandwidth_label, addbandwidth_html) );
-//        tbody.append( cell_html(backup_label, backup_html) );
+        tbody.append( cell_html(add_sec_net_ips_label, add_sec_net_ips_html) );
 
 // Set selects width
         hvZonesSelect = $("select[name='hvzones']")
@@ -459,14 +495,13 @@ $(document).ready(function(){
         dsPrimarySelect.width(selectWidth)
         dsSwapSelect = $("select[name='ds_zones_swap']")
         dsSwapSelect.width(selectWidth)
-        userGroupSelect = $("select[name='user_group']")
-        userGroupSelect.width(selectWidth)
         timeZoneSelect = $("select[name='time_zone']")
         timeZoneSelect.width(selectWidth)
-        billingPlanSelect = $("select[name='billing_plan']")
-        billingPlanSelect.width(selectWidth)
-        addBandwidthSelect = $("select[name='packageconfigoption[22]']")
-        addBandwidthSelect.width(selectWidth)
+        $("select[name='user_group']").width(selectWidth)
+        $("select[name='billing_plan']").width(selectWidth)
+        $("select[name='packageconfigoption[22]']").width(selectWidth)
+        $("select[name='sec_net_configurable_option_id']").width(selectWidth)
+        $("select[name='sec_network_id']").width(selectWidth)
 
 // Get hypervisor Select HTML
         hvSelectHtml = hvSelect.html()
@@ -500,14 +535,42 @@ $(document).ready(function(){
                 $(this).attr('disabled', 'disabled')
             }
         })
-
+        
 // assign hypervisor zones onChange action
         hvZonesSelect.change( function () {
             deal_hvs()
         })
         
         deal_hvs()
-       
+
+// hide secondary network configuration if configurable additional resources option is not checked
+ console.log(addSecNetworkIPSelected)
+ 
+       if ( addSecNetworkIPSelected == 0){
+           $('table').eq(6).find('tr').eq(22).hide()
+           $('table').eq(6).find('tr').eq(23).hide()
+           $('table').eq(6).find('tr').eq(24).hide()
+           $('table').eq(6).find('tr').eq(25).hide()
+       }  
+
+// assign secondary network ip configurable option onChange function
+        addSecNetworkIpAddressSelect = $("select[name='sec_net_configurable_option_id']");
+        
+        addSecNetworkIpAddressSelect.change( function(){
+            if ( addSecNetworkIpAddressSelect.val() != '0' ){
+               $('table').eq(6).find('tr').eq(22).show()
+               $('table').eq(6).find('tr').eq(23).show()
+               $('table').eq(6).find('tr').eq(24).show()
+               $('table').eq(6).find('tr').eq(25).show()
+               $("select[name='sec_network_id']").focus()
+            } else {
+               $('table').eq(6).find('tr').eq(22).hide()
+               $('table').eq(6).find('tr').eq(23).hide()
+               $('table').eq(6).find('tr').eq(24).hide()
+               $('table').eq(6).find('tr').eq(25).hide()
+            }
+        })
+        
 // assign os templates addons onChange action
         ostemplatesSelect = $("select[name$='packageconfigoption[19]']");
 
@@ -554,7 +617,7 @@ $(document).ready(function(){
     
 });
 
-function checkvars(check_vars) { 
+function checkvars(check_vars) {
 
     if (! check_vars ) return true;
 
@@ -602,7 +665,7 @@ function cell_html(label, html) {
 function create_slider_html(input_html, max, min, step, target_id){ 
     return '<div class="input-with-slider">'+
                  input_html+
-            '    <div class="slider" style="float:left; margin:5px 15px 0 5px; width:200px;" max="'+max+'" min="'+min+'" step="'+step+'" target="packageconfigoption['+target_id+']" width="200"></div>'+
+            '    <div class="slider" style="float:left; margin:5px 15px 0 5px; width:200px;" max="'+max+'" min="'+min+'" step="'+step+'" target="'+target_id+'" width="200"></div>'+
             '</div>';
 }
 
@@ -843,6 +906,7 @@ function deal_hvs () {
 }
 
 function add_user_info () {
+    var form = $("form[name$='packagefrm']");
     var user_group = $("select[name='user_group']").val()
     var role_ids   = $("input[name='role_ids']:checked").map( function(){ return this.value} ).get()
     var time_zone  = $("select[name='time_zone']").val()
@@ -854,6 +918,63 @@ function add_user_info () {
         "<input type='hidden' value='"+ user_info +"' name='packageconfigoption[21]'/>"
 
     form.append(html)
+}
+
+function primary_is_equal_secondary(){
+    if( $('select[name="sec_network_id"]').val() == $('select[name="packageconfigoption[6]"]').val() ){
+        return true
+    }
+    
+    return false
+}
+
+function add_secondary_network_info () {
+    var form = $("form[name$='packagefrm']");
+    var f = []
+    var html
+  
+    f.sec_net_ips                    = $("input[name='sec_net_ips']").val()
+    f.sec_network_id                 = $("select[name='sec_network_id']").val()
+    f.sec_net_port_speed             = $("input[name='sec_net_port_speed']").val()
+    f.sec_net_configurable_option_id = $("select[name='sec_net_configurable_option_id']").val()
+    
+    if ( f.sec_net_configurable_option_id == 0 ) {
+        html = "<input type='hidden' value='' name='packageconfigoption[23]'/>"
+    } else {
+        if( ! if_hypervisor_zone_set() ) {
+            alert( LANG['onappsecondarynetworkhvzonenotseterror'] )
+            $('select[name="hvzones"]').focus()
+            return false
+        }
+        
+        if( primary_is_equal_secondary() ) {
+            alert( LANG['onappprimaryhavetodiffersecondary'] )
+            $('select[name="sec_network_id"]').focus()
+            return false
+        }        
+        
+        var configurations = '{'
+
+        for ( var i in f ) {
+            configurations += '"'+i+'":"'+f[i]+'", '
+        }
+
+        configurations = configurations.replace(/,\s$/, '}');
+        html = "<input type='hidden' value='"+ configurations +"' name='packageconfigoption[23]'/>" 
+    }
+
+    form.append(html) 
+    
+    return true
+}
+
+function if_hypervisor_zone_set() {
+    var hvzoneid = $('select[name="hvzones"]').val() 
+    if ( hvzoneid != 'no_zone' && hvzoneid != '0' ) {
+        return true
+    }
+    
+    return false
 }
 
 $(function() { 

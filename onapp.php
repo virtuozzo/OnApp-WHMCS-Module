@@ -577,20 +577,10 @@ function rebuild(){
  * Action create virtual machine
  */
 function _action_vm_create() {
-    global $_ONAPPVARS, $_LANG;                              
+    global $_ONAPPVARS, $_LANG;  
 
     foreach ( array('templateid', 'hostname' ) as $val )
         $_ONAPPVARS[$val] = get_value($val);                  
-/* TODO check template
-    $templates = get_templates($_ONAPPVARS['service']['serverid'], $_ONAPPVARS['service']["configoption2"]);
-    $os = $_ONAPPVARS['service']['os'];
-
-    if (! is_null($os) && isset($templates[$os]) ) {
-        $templates = array(
-            $os => $templates[$os]
-        );
-    };
-*/
 
     if( isset($_ONAPPVARS['vm']->_id) )
         $_ONAPPVARS['error'] =  $_LANG["onappvmexist"];
@@ -629,6 +619,11 @@ function _action_update_res() {
     $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];
     $primary_disk_size = $service['configoption11'] + $service['additionaldisksize'];
     $rate_limit        = $service['configoption8']  + $service['additionalportspead'];
+    
+    if ( $option = (array)( json_decode( htmlspecialchars_decode ( $service['configoption23'] ) ) ) ) {
+        $sec_net_port_speed = $option['sec_net_port_speed'];
+        $sec_network_id     = $option['sec_network_id'];
+    }
 
     // Adjust Resource Allocations
     if ( $vm->_memory != $memory ||
@@ -670,17 +665,67 @@ function _action_update_res() {
         $primary_disk->save();
     };
 
-    // Chanege Port Speed
+// Update Primary Network Port Speed
     $network = get_vm_interface( $_ONAPPVARS['id'] );
     
     if ( $network && $rate_limit != $network->_rate_limit ) {
       $network->_rate_limit = $rate_limit;
       $network->save();
     }
+    
+    
+// Update Secondary Network Port Speed if exists and needed
+    if ( $sec_network_id ){
+        $sec_network = get_sec_networkinterface( $service['vmid'], $service['serverid'] );
+
+        if( $sec_net_port_speed != $sec_network->_rate_limit ){
+            $sec_network->_rate_limit = $sec_net_port_speed;
+            $sec_network->save();
+        }
+    } 
+     
     // resolve all IPs
     _ips_resolve_all($_ONAPPVARS['id']);
 
     return true;
+}
+
+/**
+ * Get secondary network interface
+ * 
+ * @param type $vmid
+ * @param type $serverid
+ * @return type 
+ */
+function get_sec_networkinterface( $vmid, $serverid ) {
+    $result = false;
+    $network = new ONAPP_VirtualMachine_NetworkInterface();
+  
+    $onapp_config = get_onapp_config( $serverid );
+
+    $network->auth(
+        $onapp_config["adress"],
+        $onapp_config['username'],
+        $onapp_config['password']
+    );
+
+    $network->_virtual_machine_id = $vmid;
+
+    $networks = $network->getList();
+  
+    foreach( $networks as $net )
+        if($net->_primary != true)
+            $result = $net;
+
+    if( $result ){    
+        $result->auth(
+            $onapp_config["adress"],
+            $onapp_config['username'],
+            $onapp_config['password']
+        );    
+    }
+
+    return $result;
 }
 
 /**
@@ -884,9 +929,15 @@ function productipaddresses() {
             case 'assignbase':
                 $return = _action_ip_add($_ONAPPVARS['id'], 1);
                 break;
+            case 'sec_net_assignbase':
+                $return = _action_ip_add($_ONAPPVARS['id'], 1, 1);
+                break;            
             case 'assignadditional':
                 $return = _action_ip_add($_ONAPPVARS['id'], 0);
                 break;
+            case 'sec_net_assignadditional':
+                $return = _action_ip_add($_ONAPPVARS['id'], 0, 1);
+                break;            
             case 'resolveall':
                 $return = _ips_resolve_all($_ONAPPVARS['id']);
                 break;
@@ -914,21 +965,29 @@ function clientareaipaddresses() {
     global $_ONAPPVARS;
 
     $service = $_ONAPPVARS['service'];
+    
+    if ( $option = (array)( json_decode( htmlspecialchars_decode ( $service['configoption23'] ) ) ) ) {
+        $sec_net_ips        = $option['sec_net_ips'];
+    }    
 
     $ips = get_vm_ips($_ONAPPVARS['id']);
 
     show_template(
         "onapp/clientareaipaddresses",
         array(
-            'base_ips'                => $ips['base'],
-            'additional_ips'          => $ips['additional'],
-            'not_resolved_ips'        => $ips['notresolved'],
-            'not_resloved_base'       => $service['configoption18'] - count($ips['base']),
-            'not_resloved_additional' => $service['additionalips']  - count($ips['additional']),
-            'id'                      => $_ONAPPVARS['id'],
-            'service'                 => $_ONAPPVARS['service'],
-            'error'                   => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
-            'configoptionsupgrade'    => $_ONAPPVARS['service']['configoptionsupgrade'],
+            'base_ips'                        => $ips['base'],
+            'additional_ips'                  => $ips['additional'],
+            'not_resolved_ips'                => $ips['notresolved'],
+            'not_resloved_base'               => $service['configoption18'] - count($ips['base']),
+            'not_resloved_additional'         => $service['additionalips']  - count($ips['additional']),
+            'sec_net_not_resloved_base'       => $sec_net_ips - count($ips['sec_net_base']),
+            'sec_net_not_resloved_additional' => $service['sec_net_additionalips']  - count($ips['sec_net_additional']),
+            'sec_net_additional'              => $ips['sec_net_additional'],
+            'sec_net_base'                    => $ips['sec_net_base'],
+            'id'                              => $_ONAPPVARS['id'],
+            'service'                         => $_ONAPPVARS['service'],
+            'error'                           => isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : NULL,
+            'configoptionsupgrade'            => $_ONAPPVARS['service']['configoptionsupgrade'],
         )
     );
 }

@@ -202,8 +202,13 @@ $_LANG['onappinterfaceup'] = 'INTERFACE';
 $_LANG['onappcommandup'] = 'COMMAND';
 $_LANG['onappfirewall'] = 'Firewall';
 $_LANG['onappapplyfirewallrules'] = 'Apply Firewall Rules';
-
-
+$_LANG['onappaddsecnetips'] = 'Secondary Network Ip Addresses';
+$_LANG['onappsecnet'] = 'Secondary network';
+$_LANG['onappsecnetconfiguration'] = 'Secondary Network Configuration';
+$_LANG['onappsecondarynetworkhvzonenotseterror'] = 'Hv Zone have to be defined in case of using secondary network settings';
+$_LANG['onappprimaryhavetodiffersecondary'] = 'Primary network interface should differ from secondary one';
+$_LANG['onappvmsecondarynetworkadditionalips'] = 'Secondary Network Additional IP Addresses for this Vitrual Machine';
+$_LANG['onappvmsecondarynetworkbaseips'] = 'Secondary Network IP Addresses for this Vitrual Machine';
 
 
 

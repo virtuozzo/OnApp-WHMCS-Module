@@ -401,6 +401,23 @@ $js_serverOptions
     };
   // END Load Roles     //
   ////////////////////////////
+    
+ // BEGIG get Secondary Network Params //
+ ///////////////////////////////////////
+    if ( $option = (array)json_decode( htmlspecialchars_decode ( $packageconfigoption[23] ) ) ) {
+        $js_SecNetIps               = $option['sec_net_ips'];
+        $js_SecNetIdSelected        = $option['sec_network_id'];
+        $js_SecNetPortSpeedSelected = $option['sec_net_port_speed'];
+        $js_addSecNetIpsSelected    = $option['sec_net_configurable_option_id'];
+    } else {
+        $js_SecNetIps               = 0;
+        $js_SecNetIdSelected        = 0;
+        $js_SecNetPortSpeedSelected = 0;
+        $js_addSecNetIpsSelected    = 0;
+    }
+    
+ // END get Secondary Network Params //
+//////////////////////////////////////  
 
    ////////////////////////////
   // BEGIN Load User Groups //
@@ -527,6 +544,11 @@ $js_serverOptions
         'requireautobackups',
         'addbandwidth',
         'suspendifbwexceeded',
+        'addsecnetips',
+        'secnet',
+        'secnetconfiguration',
+        'secondarynetworkhvzonenotseterror',
+        'primaryhavetodiffersecondary',
     );
 
     $js_localization_string = '';
@@ -576,6 +598,11 @@ var billingPlanSelected = $js_billingPlanSelected
 var requireAutoBuild    = '$js_requireAutoBuild'
 var requireAutoBackups  = '$js_requireAutoBackups'
 var addBwSelected       = '$js_addBandwidthSelected'
+            
+var addSecNetworkIPSelected      = '$js_addSecNetIpsSelected'
+var SecNetworkIps                = '$js_SecNetIps'
+var SecNetworkIdSelected         = '$js_SecNetIdSelected'
+var SecNetworkPortSpeedSelected  = '$js_SecNetPortSpeedSelected'            
 
 $js_error;
 
@@ -723,22 +750,31 @@ function onapp_CreateAccount($params) {
     $getvm = get_vm($params['serviceid']);
 
     serviceStatus($params['serviceid'], $status);
-
-    if( isset($getvm->_id) )
-        return $_LANG["onappvmexist"];
+    
+    if( isset($getvm->_id) ){
+        return $_LANG["onappvmexist"];}
     elseif ( $params['domain'] == "" )
         return $_LANG["onapphostnamenotfound"];
     elseif( ($params['configoption2'] == "" || count(explode(',', $params['configoption2'])) != 1 ) && ! isset($service['os']) )
         return $_LANG["onapptemplatenotone"];
 
     serviceStatus($params['serviceid'], 'Active');
-
+    
     $vm = create_vm(
         $params['accountid'],
         $params['domain'],
         isset($service['os']) ? $service['os'] : $params['configoption2']
     );
-
+    
+// create secondary network interface if needed    
+    if ( $options = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) ) ) {
+        $hvzoneid = array_pop( explode( ',', $service['configoption4'] ) );
+        
+        if ( $hvzoneid && is_numeric( $hvzoneid ) ){
+            _add_sec_network_intetface( $vm->_obj->_id, $hvzoneid, $service, $options['sec_network_id'], $options['sec_net_port_speed'] );
+        }
+    }
+    
     _ips_resolve_all( $params['accountid'] );
 
     serviceStatus($params['serviceid'], $status);
