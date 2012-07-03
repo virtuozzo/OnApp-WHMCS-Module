@@ -2,6 +2,7 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 //error_reporting( E_ALL );
 //ini_set( 'display_errors', 1 );
+//ini_set('html_errors', 1);
 if ( ! defined('ONAPP_FILE_NAME') )
     define("ONAPP_FILE_NAME", "onapp.php");
 
@@ -163,6 +164,17 @@ function onapp_ConfigOptions() {
 
     $onapp_config = onapp_Config( $onapp_server_id );
 
+// GET OnApp Instance //
+///////////////////////
+    $onapp = new OnApp_Factory( 
+        $onapp_config["adress"],
+        $onapp_config['username'],
+        $onapp_config['password']
+    );    
+// END Get OnApp Instance //
+///////////////////////////    
+    
+    
     if ( isset($onapp_config["error"]) ) {
 
 // Error JS Begin
@@ -202,13 +214,7 @@ $js_serverOptions
 
   ////////////////////////////
   // BEGIN Load Templates   //
-    $template = new ONAPP_Template();
-
-    $template->auth(
-        $onapp_config["adress"],
-        $onapp_config['username'],
-        $onapp_config['password']
-    );
+    $template = $onapp->factory('Template');
 
     $templates = $template->getList();
 
@@ -252,13 +258,7 @@ $js_serverOptions
     }
     else $ds_zone_swap_selected = 0;
 
-    $dstore_zone = new ONAPP_DataStoreZone();
-
-    $dstore_zone->auth(
-        $onapp_config["adress"],
-        $onapp_config['username'],
-        $onapp_config['password']
-    );
+    $dstore_zone = $onapp->factory('DataStoreZone');
 
     $dstore_zones = $dstore_zone->getList(); 
 
@@ -269,27 +269,30 @@ $js_serverOptions
             $js_dsOptions .= "    dsOptions[$_ds->_id] = '".addslashes($_ds->_label)."';\n";
         };
     };
+    
   // END Load Data Store Zones //
   ////////////////////////////
 
  ////////////////////////////
-  // BEGIN Load Hypervisor Zones // '
-    $hv_zone = new ONAPP_HypervisorZone();
-
-    $hv_zone->auth(
-        $onapp_config["adress"],
-        $onapp_config['username'],
-        $onapp_config['password']
-    );
+  // BEGIN Load Hypervisor Zones //
+    
+    $hv_zone = $onapp->factory('HypervisorZone'); 
+    $net_join = $onapp->factory('HypervisorZone_NetworkJoin');
 
     $hv_zones = $hv_zone->getList();
-
-    $hv_zone_ids = array();
 
     if ( ! empty( $hv_zones ) ) {
         $js_hvZoneOptions = "    hvZoneOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
 
         foreach ( $hv_zones as $_hv_zone ) {
+            $nets_join = $net_join->getList( $_hv_zone->_id );
+
+            if( is_array( $nets_join ) ){
+                foreach( $nets_join as $net ){
+                    $nets_by_hvzone[ $_hv_zone->_id ][] = $net->_network_id; 
+                }
+            }
+            
             $js_hvZoneOptions .=
                 "      hvZoneOptions[ $_hv_zone->_id ] = '".addslashes( $_hv_zone->_label )."';\n";
         }
@@ -309,16 +312,11 @@ $js_serverOptions
         $hv_and_zone_selected = 0;
     }
 
-    $hv = new ONAPP_Hypervisor();
-
-    $hv->auth(
-        $onapp_config["adress"],
-        $onapp_config['username'],
-        $onapp_config['password']
-    );
+    $hv       = $onapp->factory('Hypervisor');
+    $net_join = $onapp->factory('Hypervisor_NetworkJoin');
 
     $hvs = $hv->getList();
-
+    
     $hv_ids = array();
 
     $js_hvOptions = "    hvOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
@@ -327,6 +325,15 @@ $js_serverOptions
     if (!empty($hvs)) {
         foreach ($hvs as $_hv) {
             if ( $_hv->_online == "true" && $_hv->_hypervisor_group_id ) {
+// get networks by hypervisor                
+                $nets_join = $net_join->getList( $_hv->_id );
+
+                if( is_array( $nets_join ) ){
+                    foreach( $nets_join as $net ){
+                        $nets_by_hv[ $_hv->_id ][] = $net->_network_id; 
+                    }
+                }                
+                
                 $hv_ids[$_hv->_id] = array(
                     'label' => $_hv->_label
                 );
@@ -341,13 +348,7 @@ $js_serverOptions
 
   ////////////////////////////
   // BEGIN Primary networks //
-    $network = new ONAPP_Network();
-
-    $network->auth(
-        $onapp_config["adress"],
-        $onapp_config['username'],
-        $onapp_config['password']
-    );
+    $network = $onapp->factory('Network');
 
     $networks = $network->getList();
 
@@ -365,16 +366,10 @@ $js_serverOptions
     };
   // END Primary networks   //
   ////////////////////////////
-  //
+
    ////////////////////////////
   // BEGIN Load Roles //
-    $role = new ONAPP_Role();
-
-    $role->auth(
-        $onapp_config["adress"],
-        $onapp_config['username'],
-        $onapp_config['password']
-    );
+    $role = $onapp->factory('Role');
 
     $roles = $role->getList();
 
@@ -421,13 +416,7 @@ $js_serverOptions
 
    ////////////////////////////
   // BEGIN Load User Groups //
-    $ugroup = new ONAPP_UserGroup();
-
-    $ugroup->auth(
-        $onapp_config["adress"],
-        $onapp_config['username'],
-        $onapp_config['password']
-    );
+    $ugroup = $onapp->factory('UserGroup');
 
     $ugroups = $ugroup->getList();
 
@@ -443,13 +432,7 @@ $js_serverOptions
 
 ////////////////////////////////
 //// BEGIN Load Billing Plans //
-    $bplan = new ONAPP_BillingPlan();
-
-    $bplan->auth(
-        $onapp_config["adress"],
-        $onapp_config['username'],
-        $onapp_config['password']
-    );
+    $bplan = $onapp->factory('BillingPlan');
 
     $bplans = $bplan->getList();
 
@@ -602,7 +585,10 @@ var addBwSelected       = '$js_addBandwidthSelected'
 var addSecNetworkIPSelected      = '$js_addSecNetIpsSelected'
 var SecNetworkIps                = '$js_SecNetIps'
 var SecNetworkIdSelected         = '$js_SecNetIdSelected'
-var SecNetworkPortSpeedSelected  = '$js_SecNetPortSpeedSelected'            
+var SecNetworkPortSpeedSelected  = '$js_SecNetPortSpeedSelected'
+            
+var networksByHypervisorZone     =  ". ( isset( $nets_by_hvzone ) ? json_encode( $nets_by_hvzone ) : '[]' )."
+var networksByHypervisor         =  ". ( isset( $nets_by_hv )     ? json_encode( $nets_by_hv )     : '[]' )."            
 
 $js_error;
 

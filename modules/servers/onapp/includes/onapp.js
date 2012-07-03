@@ -539,12 +539,12 @@ $(document).ready(function(){
 // assign hypervisor zones onChange action
         hvZonesSelect.change( function () {
             deal_hvs()
+            deal_networks()
         })
         
         deal_hvs()
 
 // hide secondary network configuration if configurable additional resources option is not checked
- console.log(addSecNetworkIPSelected)
  
        if ( addSecNetworkIPSelected == 0){
            $('table').eq(6).find('tr').eq(22).hide()
@@ -597,6 +597,14 @@ $(document).ready(function(){
         form = $("form[name$='packagefrm']");
         form.submit();
     } );
+    
+// assign     
+    
+    $('select[name="packageconfigoption[4]"]').change( function(){
+        deal_networks()
+    })
+    
+    
 
     serverSelect.val(serverSelected);
 
@@ -615,6 +623,7 @@ $(document).ready(function(){
 
     ALL_AVAILABLE_HTML = $("#available_tpl").html()
     
+    deal_networks()
 });
 
 function checkvars(check_vars) {
@@ -975,6 +984,35 @@ function if_hypervisor_zone_set() {
     }
     
     return false
+}
+
+function deal_networks ( ) {
+    var hv_zone_id = $('select[name="hvzones"]').val()
+    var hv_id = $('select[name="packageconfigoption[4]"]').val()
+    
+    if ( typeof networksByHypervisorZone[hv_zone_id] == 'undefined' ) {
+        networksByHypervisorZone[hv_zone_id] = []
+    }
+    if ( typeof networksByHypervisor[hv_id] == 'undefined' ) {
+        networksByHypervisor[hv_id] = []
+    }
+    
+    var $nets   = networksByHypervisorZone[hv_zone_id].concat(networksByHypervisor[hv_id])
+    var options = $('select[name="sec_network_id"] option, select[name="packageconfigoption[6]"] option') 
+    
+    if ( hv_zone_id == 'no_zone' || hv_zone_id == '0'){
+        options.each( function(){
+            $(this).removeAttr("disabled")
+        })
+    } else {
+        options.each( function(){
+            if ( ! in_array( $(this).val(), $nets ) ){
+                $(this).attr('disabled', 'disabled')
+            } else {
+                $(this).removeAttr('disabled')
+            }
+        })        
+    }   
 }
 
 $(function() { 

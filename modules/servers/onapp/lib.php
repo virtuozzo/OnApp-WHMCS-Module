@@ -69,6 +69,7 @@ function load_language() {
     global $_LANG;
     $dh = opendir (dirname(__FILE__).'/lang/');
 
+    $arrayoflanguagefiles = array();
     while (false !== $file2 = readdir ($dh)) {
         if (!is_dir ('' . 'lang/' . $file2) ) {
             $pieces = explode ('.', $file2);
@@ -78,16 +79,24 @@ function load_language() {
             }
             continue;
         }
-    };
+    }
 
     closedir ($dh);
-
-    $language = $_SESSION['Language'];
+   
+    $language = 'English';
+    
+    if ( isset( $GLOBALS['CONFIG']['Language'] ) ) {
+        $_SESSION['Language'] = ucfirst( $GLOBALS['CONFIG']['Language']);
+    }    
+    
+    if ( isset( $_SESSION['Language']) ){
+        $language = $_SESSION['Language'];
+    }
 
     if( ! in_array ($language, $arrayoflanguagefiles) ) {
         $language =  "English";
     }
-
+    
     if( file_exists( dirname(__FILE__) . "/lang/$language.txt" ) ) {
         ob_start ();
         include dirname(__FILE__) . "/lang/$language.txt";
