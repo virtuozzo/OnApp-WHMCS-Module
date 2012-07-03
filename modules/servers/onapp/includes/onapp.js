@@ -12,10 +12,35 @@ $(document).ready(function(){
         
         add_user_info()
         add_hv_zone()
+        if ( ! check_networks() ){
+            return false
+        }
+        
         add_build_options()
         var checkresult = checkvars(check_vars);
         add_ds_zone(checkresult)
+        
+        return true
     });
+    
+    function check_networks() {
+        var secondary_network_id = $('select[name="sec_network_id"]').val()
+        var primary_network_id   = $('select[name="packageconfigoption[6]"]').val()
+        
+        if ( !in_array( secondary_network_id, get_networks() ) ){
+            alert( LANG['onappyouhavetoselectactivenetwork'])
+            $('select[name="sec_network_id"]').focus()
+            return false;
+        }
+        
+        if ( !in_array( primary_network_id, get_networks() ) ){
+            alert( LANG['onappyouhavetoselectactivenetwork'])
+            $('select[name="packageconfigoption[6]"]').focus()
+            return false;
+        }  
+        
+        return true;
+    }
     
 // replace values
     serverSelect = $("select[name$='packageconfigoption[1]']");
@@ -986,9 +1011,9 @@ function if_hypervisor_zone_set() {
     return false
 }
 
-function deal_networks ( ) {
+function get_networks() {
     var hv_zone_id = $('select[name="hvzones"]').val()
-    var hv_id = $('select[name="packageconfigoption[4]"]').val()
+    var hv_id = $('select[name="packageconfigoption[4]"]').val()    
     
     if ( typeof networksByHypervisorZone[hv_zone_id] == 'undefined' ) {
         networksByHypervisorZone[hv_zone_id] = []
@@ -997,7 +1022,13 @@ function deal_networks ( ) {
         networksByHypervisor[hv_id] = []
     }
     
-    var $nets   = networksByHypervisorZone[hv_zone_id].concat(networksByHypervisor[hv_id])
+    return networksByHypervisorZone[hv_zone_id].concat(networksByHypervisor[hv_id])    
+}
+
+function deal_networks ( ) {
+    var $nets   = get_networks()
+    var hv_zone_id = $('select[name="hvzones"]').val()
+    
     var options = $('select[name="sec_network_id"] option, select[name="packageconfigoption[6]"] option') 
     
     if ( hv_zone_id == 'no_zone' || hv_zone_id == '0'){
@@ -1012,7 +1043,9 @@ function deal_networks ( ) {
                 $(this).removeAttr('disabled')
             }
         })        
-    }   
+    }
+    
+    
 }
 
 $(function() { 

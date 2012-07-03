@@ -209,6 +209,8 @@ $_LANG['onappsecondarynetworkhvzonenotseterror'] = 'Hv Zone have to be defined i
 $_LANG['onappprimaryhavetodiffersecondary'] = 'Primary network interface should differ from secondary one';
 $_LANG['onappvmsecondarynetworkadditionalips'] = 'Secondary Network Additional IP Addresses for this Vitrual Machine';
 $_LANG['onappvmsecondarynetworkbaseips'] = 'Secondary Network IP Addresses for this Vitrual Machine';
+$_LANG['onappyouhavetoselectactivenetwork'] = 'You have to select available network for selected Hypervisor Zone / Hypervisor';
+
 
 
 

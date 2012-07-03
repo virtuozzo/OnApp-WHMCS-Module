@@ -532,6 +532,7 @@ $js_serverOptions
         'secnetconfiguration',
         'secondarynetworkhvzonenotseterror',
         'primaryhavetodiffersecondary',
+        'youhavetoselectactivenetwork',
     );
 
     $js_localization_string = '';
