@@ -412,8 +412,14 @@ function clientareaproducts() {
 	if( ! $onapp_user['ipaddress'] && ! $onapp_user['hostname'] ) continue;
         $vm = new ONAPP_VirtualMachine();
 
+        $url = ( $onapp_user['hostname'] ) ? $onapp_user['hostname'] : $onapp_user['ipaddress'];
+         
+        if ( strpos( $url, 'http' ) === false ) {
+            $url = 'http://'. $url;
+        } 
+        
         $vm->auth(
-            $onapp_user["ipaddress"] != "" ? $onapp_user["ipaddress"] : $onapp_user["hostname"],
+            $url,
             $onapp_user["email"],
             decrypt($onapp_user["userpassword"])
         );

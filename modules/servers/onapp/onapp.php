@@ -993,8 +993,14 @@ function onapp_UsageUpdate($params) {
             $startdate = date ('Y-m-d H:00:00', $time );
         }
 
+        $url = ( $products['hostname'] ) ? $products['hostname'] : $products['ipaddress'];
+         
+        if ( strpos( $url, 'http' ) === false ) {
+            $url = 'http://'. $url;
+        }        
+        
         $onapp = new OnApp_Factory(
-            ( $products['hostname'] ) ? $products['hostname'] : $products['ipaddress'],
+            $url,
             $products['username'],
             decrypt( $products['password'])
         );

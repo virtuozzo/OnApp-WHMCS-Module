@@ -24,6 +24,11 @@ function onapp_Config( $id ) {
         $onapp_config["adress"] = $onapp_config["ipaddress"] != "" ?
             $onapp_config["ipaddress"] :
             $onapp_config["hostname"];
+        
+        if ( strpos( $onapp_config["adress"], 'http' ) === false ) {
+            $onapp_config["adress"] = 'http://'. $onapp_config["adress"];
+        }
+        
         $onapp_config[] = $onapp_config["adress"];
    } else
         return array(
@@ -136,8 +141,13 @@ function get_onapp_config($id){
     if ( $onapp_config ) {
         $onapp_config["password"] = decrypt($onapp_config["password"]);
         $onapp_config["adress"] = $onapp_config["ipaddress"] != "" ?
-            "http://" . $onapp_config["ipaddress"] :
+            $onapp_config["ipaddress"] :
             $onapp_config["hostname"];
+
+        if ( strpos( $onapp_config["adress"], 'http' ) === false ) {
+            $onapp_config["adress"] = 'http://'. $onapp_config["adress"];
+        }
+        
         $onapp_config[] = $onapp_config["adress"];
     } else
 //        return array( "error" => "Can't found active OnApp server #".addslashes($id)." in Data Base");
