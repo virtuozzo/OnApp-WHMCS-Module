@@ -26,14 +26,15 @@ $(document).ready(function(){
     function check_networks() {
         var secondary_network_id = $('select[name="sec_network_id"]').val()
         var primary_network_id   = $('select[name="packageconfigoption[6]"]').val()
+        var hvzone               = $('select[name="hvzones"]').val()
         
-        if ( !in_array( secondary_network_id, get_networks() ) ){
+        if ( !in_array( secondary_network_id, get_networks() ) && hvzone != '0' && hvzone != 'no_zone'   ){
             alert( LANG['onappyouhavetoselectactivenetwork'])
             $('select[name="sec_network_id"]').focus()
             return false;
         }
         
-        if ( !in_array( primary_network_id, get_networks() ) ){
+        if ( !in_array( primary_network_id, get_networks() ) && hvzone != '0' && hvzone != 'no_zone' ){
             alert( LANG['onappyouhavetoselectactivenetwork'])
             $('select[name="packageconfigoption[6]"]').focus()
             return false;
@@ -457,9 +458,9 @@ $(document).ready(function(){
     // sliders
         var ram_slider = create_slider_html(ram_html, 12288, 256, 4, 'packageconfigoption[3]');
         var cores_slider = create_slider_html(cores_html, 16, 1, 1, 'packageconfigoption[5]');
-        var priority_slider = create_slider_html(priority_html, 100, 1, 1, 'packageconfigoption[5]');
-        var disk_slider = create_slider_html(disk_html, 240, 0, 1, 'packageconfigoption[11]');
-        var swap_slider = create_slider_html(swap_html, 240, 0, 1, 'packageconfigoption[9]');
+        var priority_slider = create_slider_html(priority_html, 100, 1, 1, 'packageconfigoption[7]');
+        var disk_slider = create_slider_html(disk_html, 240, 5, 1, 'packageconfigoption[11]');
+        var swap_slider = create_slider_html(swap_html, 240, 1, 1, 'packageconfigoption[9]');
         var port_speed_slider = create_slider_html(port_speed_html, 1000, 0, 1, 'packageconfigoption[8]');
         var ip_address_slider = create_slider_html(ipbase_html, 20, 1, 1, 'packageconfigoption[18]');
         var sec_net_port_speed_slider = create_slider_html(sec_net_port_speed_html, 1000, 0, 1, 'sec_net_port_speed');
