@@ -402,7 +402,7 @@ function clientareaproducts() {
         FROM
             tblonappclients
             LEFT JOIN tblservers ON tblservers.id = server_id
-        WHERE client_id = '%s';",
+        WHERE client_id = '%s' AND tblservers.type = 'onapp' AND tblservers.disabled = '0';",
         $user_id
     );
 
