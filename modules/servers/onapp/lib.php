@@ -243,8 +243,6 @@ function get_service($service_id) {
         END as price,
         currencies.prefix,
         currencies.suffix,
-        tblupgrades.orderid as last_order_template_id,
-        tblorders.status as template_upgrade_status,
         optionssub.id,
         optionssub.optionname,
         tblproductconfigoptions.id as configid,
@@ -267,12 +265,6 @@ function get_service($service_id) {
             AND optionid = sub.id
         LEFT JOIN tblproductconfigoptionssub AS optionssub
             ON optionssub.configid = tblproductconfigoptions.id
-    
-        LEFT JOIN tblupgrades
-            ON tblupgrades.newvalue = options.optionid
-            AND tblupgrades.relid = $service_id
-        LEFT JOIN tblorders
-            ON tblorders.id = tblupgrades.orderid
         LEFT JOIN tblhosting as hosting 
             ON hosting.id = $service_id
         LEFT JOIN tblclients as clients
@@ -383,10 +375,6 @@ function get_service($service_id) {
                 'max'  => $row['max'],
                 'min'  => $row['min']
             );
-            if ( $row['last_order_template_id'] )
-                $service['last_order_template_id'] = $row['last_order_template_id'];
-            if ( $row['template_upgrade_status'] )
-                $service['template_upgrade_status'] = $row['template_upgrade_status'];
         }
     }
 
