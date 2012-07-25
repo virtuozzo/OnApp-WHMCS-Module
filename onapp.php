@@ -569,11 +569,7 @@ function rebuild(){
 
     _action_update_res();
     
-    if ( $_ONAPPVARS['service']['last_order_template_id'] &&
-         $_ONAPPVARS['service']['template_upgrade_status'] == 'Active')
-    {
-        $_ONAPPVARS['vm']->_template_id = isset($_ONAPPVARS['service']['os']) ? $_ONAPPVARS['service']['os'] : $_ONAPPVARS['service']['configoption2'];
-    }
+    $_ONAPPVARS['vm']->_template_id = isset($_ONAPPVARS['service']['os']) ? $_ONAPPVARS['service']['os'] : $_ONAPPVARS['service']['configoption2'];
 
     $_ONAPPVARS['vm']->_required_startup = '1';
     $_ONAPPVARS['vm']->build();
