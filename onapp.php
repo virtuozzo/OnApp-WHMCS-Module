@@ -215,7 +215,7 @@ function _firewallrule_apply( $vmid, $firewallrule ) {
     $firewallrule->update( $vmid );
 
     if ( $firewallrule->getErrorsAsArray() ){
-        setFlashError( $firewallrule->getErrorsAsString() );
+        setFlashError( $firewallrule->getErrorsAsString(', ') );
     }
     
     redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);
@@ -255,7 +255,7 @@ function _firewallrule_delete( $vmid, $ruleid, $firewallrule ) {
     $firewallrule->delete();
     
     if ( $firewallrule->getErrorsAsArray() ){
-        setFlashError( $firewallrule->getErrorsAsString() );
+        setFlashError( $firewallrule->getErrorsAsString(', ') );
     }
     
     redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
@@ -282,7 +282,7 @@ function _firewallrule_save( $vmid, $fr, $firewallrule ){
     $firewallrule->save();
     
     if ( $firewallrule->getErrorsAsArray() ){
-        setFlashError( $firewallrule->getErrorsAsString() );
+        setFlashError( $firewallrule->getErrorsAsString(', ') );
     }
     
     redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
@@ -550,9 +550,9 @@ function _actions_vm($action) {
     unset($_ONAPPVARS['action']);
 
     if ( isset($_ONAPPVARS['vm']) && ! is_null( $_ONAPPVARS['vm']->getErrorsAsArray() ) ){
-        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->getErrorsAsString();
+        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->getErrorsAsString(', ');
     } elseif ( isset($_ONAPPVARS['vm']) && ! is_null($_ONAPPVARS['vm']->_obj->getErrorsAsArray() ) ){
-        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->_obj->getErrorsAsString();
+        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->_obj->getErrorsAsString(', ');
     }
 
     if ( ! isset($_ONAPPVARS['error']) )
@@ -760,7 +760,7 @@ function showproduct() {
     $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
 
     if ( ! is_null($_ONAPPVARS['vm']->getErrorsAsArray() ) ) {
-        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->getErrorsAsString();
+        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->getErrorsAsString(', ');
 
         clientareaproducts();
     } elseif ( is_null($_ONAPPVARS['vm']->_id) ) {
@@ -1050,9 +1050,9 @@ function _action_change_disk_mode($server_id, $disk_id, $mode) {
     };
 
     if ( $disk->error )
-        return array("error" => $disk->getErrorsAsString() );
+        return array("error" => $disk->getErrorsAsString(', ') );
     elseif ( $disk->_obj->error )
-        return array("error" => $disk->_obj->getErrorsAsString() );
+        return array("error" => $disk->_obj->getErrorsAsString(', ') );
     else
         return $disk;
 }
@@ -1186,7 +1186,7 @@ function _action_backup_add( $id, $diskid ) {
 
     if ( ! is_null( $backup->_obj->getErrorsAsArray() ) ){
         return array(
-            'error' => $backup->_obj->getErrorsAsString(),
+            'error' => $backup->_obj->getErrorsAsString(', '),
         );
     } elseif ( is_null($backup->_obj->_id) ){
         return array('error' => "Can't create Backup");
@@ -1221,12 +1221,11 @@ function _action_backup_restore( $id, $backupid ) {
 
     if ( ! is_null( $backup->_obj->getErrorsAsArray() ) ){
         return array(
-            'error' => "Can't restore Backup<br/>\n " . $backup->_obj->getErrorsAsString(),
+            'error' => "Can't restore Backup: " . $backup->_obj->getErrorsAsString(', '),
         );
     } else {
         return true;
     }
-    
 }
 
 /**
@@ -1255,7 +1254,7 @@ function _action_backup_delete( $id, $backupid ) {
 
     if ( ! is_null( $backup->_obj->getErrorsAsArray() ) ){
         return array(
-            'error' => "Can't delete Backup<br/>\n " . $backup->_obj->getErrorsAsString(),
+            'error' => "Can't delete Backup: " . $backup->_obj->getErrorsAsString(', '),
         );
     } else {
         return true;
@@ -1276,7 +1275,7 @@ function productupgrade() {
     );
 
     if ( ! is_null($_ONAPPVARS['vm']->getErrorsAsArray() ) ) {
-        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->getErrorsAsString();
+        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->getErrorsAsString(', ');
 
         clientareaproducts();
     } elseif ( is_null($_ONAPPVARS['vm']->_id) ) {

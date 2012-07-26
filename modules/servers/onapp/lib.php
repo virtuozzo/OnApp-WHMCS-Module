@@ -458,10 +458,10 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
 
 ##TODO LOCALIZE
         if ( ! is_null($user->getErrorsAsArray()) ) {
-            return array('error' => $user->getErrorsAsString('<br>'));
+            return array('error' => $user->getErrorsAsString(', '));
         }
         if ( ! is_null($user->_obj->getErrorsAsArray()) )
-            return array('error' => $user->_obj->getErrorsAsString('<br>'));
+            return array('error' => $user->_obj->getErrorsAsString(', '));
         elseif ( is_null($user->_obj->_id) )
             return array( "error" => "Can't create OnApp User");
 
@@ -1114,10 +1114,10 @@ function _action_ip_delete($service_id, $ipid) {
 
     $ip_join->delete();
 
-    if ( ! is_null($ip_join->_obj->error) ) {
-        return array('error' => is_array($ip_join->_obj->error) ?
-            "Can't delete IP Address<br/>\n " . implode('.<br>', $ip_join->_obj->error) :
-            "Can't delete IP Address " . $ip_join->_obj->error);
+    if ( ! is_null( $ip_join->_obj->getErrorsAsArray() ) ) {
+        return array(
+            'error' => "Can't delete IP Address " . $ip_join->_obj->getErrorsAsString(', '),
+        );
     } else {
         update_service_ips($service_id);
         return true;

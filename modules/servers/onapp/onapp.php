@@ -767,9 +767,9 @@ function onapp_CreateAccount($params) {
     serviceStatus($params['serviceid'], $status);
     
     if ( ! is_null($vm->getErrorsAsArray() ) ) {
-        return $_LANG["onappcantcreatevm"] ."<br/>\n " . $vm->getErrorsAsString();
+        return $_LANG["onappcantcreatevm"] .": " . $vm->getErrorsAsString(', ');
     } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-        return $_LANG["onappcantcreatevm"] ."<br/>\n " . $vm->_obj->getErrorsAsString();       
+        return $_LANG["onappcantcreatevm"] .": " . $vm->_obj->getErrorsAsString(', ');       
     }    
 
     return 'success';
@@ -792,9 +792,9 @@ function onapp_TerminateAccount( $params ) {
         serviceStatus($params['serviceid'], $status);
 
         if ( ! is_null($vm->getErrorsAsArray() ) ) {
-            return $_LANG["onappcantdeletevm"] ."<br/>\n " . $vm->getErrorsAsString();
+            return $_LANG["onappcantdeletevm"] .": " . $vm->getErrorsAsString(', ');
         } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-            return $_LANG["onappcantdeletevm"] ."<br/>\n " . $vm->_obj->getErrorsAsString();       
+            return $_LANG["onappcantdeletevm"] .": " . $vm->_obj->getErrorsAsString(', ');       
         }
     }
 
@@ -818,9 +818,9 @@ function onapp_SuspendAccount($params) {
         $vm->_obj->suspend();
 
         if ( ! is_null($vm->getErrorsAsArray() ) ) {
-            return $_LANG["onappcantsuspendvm"] ."<br/>\n " . $vm->getErrorsAsString();
+            return $_LANG["onappcantsuspendvm"] .": " . $vm->getErrorsAsString(', ');
         } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-            return $_LANG["onappcantsuspendvm"] ."<br/>\n " . $vm->_obj->getErrorsAsString();       
+            return $_LANG["onappcantsuspendvm"] .": " . $vm->_obj->getErrorsAsString(', ');       
         }        
     }
     else {
@@ -850,9 +850,9 @@ function onapp_UnsuspendAccount($params) {
         $vm->_obj->suspend();
         
         if ( ! is_null($vm->getErrorsAsArray() ) ) {
-            return $_LANG["onappcantunsuspendvm"] ."<br/>\n " . $vm->getErrorsAsString();
+            return $_LANG["onappcantunsuspendvm"] .": " . $vm->getErrorsAsString(', ');
         } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-            return $_LANG["onappcantunsuspendvm"] ."<br/>\n " . $vm->_obj->getErrorsAsString();       
+            return $_LANG["onappcantunsuspendvm"] .": " . $vm->_obj->getErrorsAsString(', ');       
         } 
     }
     else {
@@ -995,7 +995,7 @@ function onapp_UsageUpdate($params) {
         
         if ( $onapp->getErrorsAsArray() ) {
 // Debug            
-            echo ('<b>Get OnApp Version Permission Error: </b>' . $onapp->getErrorsAsString() ) . '. Skipping' . PHP_EOL;
+            echo ('<b>Get OnApp Version Permission Error: </b>' . $onapp->getErrorsAsString(', ') ) . '. Skipping' . PHP_EOL;
             continue;
         }
         
@@ -1010,7 +1010,7 @@ function onapp_UsageUpdate($params) {
         
         if ( $network_interface->getErrorsAsArray() ) {
 // Debug            
-            echo ('<b>Network Interface Get List Error : </b>' . $network_interface->getErrorsAsString() ).'. Skipping'. PHP_EOL;
+            echo ('<b>Network Interface Get List Error : </b>' . $network_interface->getErrorsAsString(', ') ).'. Skipping'. PHP_EOL;
             continue;
         }        
 
