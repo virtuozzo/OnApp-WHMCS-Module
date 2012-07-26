@@ -252,8 +252,7 @@ function get_service($service_id) {
         tblproductconfigoptions.qtyminimum AS min,
         options.qty,
         optionssub.sortorder,
-        IF(options.optionid, options.optionid, 0) as active,
-        MAX( tblupgrades.id )
+        IF(options.optionid, options.optionid, 0) as active
     FROM
         tblproductconfiglinks
         LEFT JOIN tblproductconfigoptions
