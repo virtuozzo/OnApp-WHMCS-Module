@@ -765,15 +765,12 @@ function onapp_CreateAccount($params) {
     _ips_resolve_all( $params['accountid'] );
 
     serviceStatus($params['serviceid'], $status);
-
-    if ( ! is_null($vm->error) )
-        return is_array($vm->error) ?
-            $_LANG["onappcantcreatevm"] ."<br/>\n " . implode(', ', $vm->error) :
-            $_LANG["onappcantcreatevm"] . $vm->error;
-    elseif ( ! is_null($vm->_obj->error) )
-        return is_array($vm->_obj->error) ?
-            $_LANG["onappcantcreatevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
-            $_LANG["onappcantcreatevm"] . $vm->_obj->error;
+    
+    if ( ! is_null($vm->getErrorsAsArray() ) ) {
+        return $_LANG["onappcantcreatevm"] ."<br/>\n " . $vm->getErrorsAsString();
+    } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
+        return $_LANG["onappcantcreatevm"] ."<br/>\n " . $vm->_obj->getErrorsAsString();       
+    }    
 
     return 'success';
 }
@@ -794,15 +791,12 @@ function onapp_TerminateAccount( $params ) {
 
         serviceStatus($params['serviceid'], $status);
 
-        if ( ! is_null($vm->error) )
-            return is_array($vm->error) ?
-                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->error) :
-                $_LANG["onappcantdeletevm"] . $vm->error;
-        elseif ( ! is_null($vm->_obj->error) )
-            return is_array($vm->_obj->error) ?
-                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
-                $_LANG["onappcantdeletevm"] . $vm->_obj->error;
-    };
+        if ( ! is_null($vm->getErrorsAsArray() ) ) {
+            return $_LANG["onappcantdeletevm"] ."<br/>\n " . $vm->getErrorsAsString();
+        } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
+            return $_LANG["onappcantdeletevm"] ."<br/>\n " . $vm->_obj->getErrorsAsString();       
+        }
+    }
 
     return 'success';
 }
@@ -823,14 +817,11 @@ function onapp_SuspendAccount($params) {
         );
         $vm->_obj->suspend();
 
-        if ( ! is_null($vm->error) )
-            return is_array($vm->error) ?
-                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->error) :
-                $_LANG["onappcantdeletevm"] . $vm->error;
-        elseif ( ! is_null($vm->_obj->error) )
-            return is_array($vm->_obj->error) ?
-                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
-                $_LANG["onappcantdeletevm"] . $vm->_obj->error;
+        if ( ! is_null($vm->getErrorsAsArray() ) ) {
+            return $_LANG["onappcantsuspendvm"] ."<br/>\n " . $vm->getErrorsAsString();
+        } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
+            return $_LANG["onappcantsuspendvm"] ."<br/>\n " . $vm->_obj->getErrorsAsString();       
+        }        
     }
     else {
         return $_LANG['onappvmalreadysuspended'];
@@ -858,14 +849,11 @@ function onapp_UnsuspendAccount($params) {
         );
         $vm->_obj->suspend();
         
-        if ( ! is_null($vm->error) )
-            return is_array($vm->error) ?
-                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->error) :
-                $_LANG["onappcantdeletevm"] . $vm->error;
-        elseif ( ! is_null($vm->_obj->error) )
-            return is_array($vm->_obj->error) ?
-                $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
-                $_LANG["onappcantdeletevm"] . $vm->_obj->error;
+        if ( ! is_null($vm->getErrorsAsArray() ) ) {
+            return $_LANG["onappcantunsuspendvm"] ."<br/>\n " . $vm->getErrorsAsString();
+        } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
+            return $_LANG["onappcantunsuspendvm"] ."<br/>\n " . $vm->_obj->getErrorsAsString();       
+        } 
     }
     else {
         return $_LANG['onappvmalreadyactive'];
@@ -1007,7 +995,7 @@ function onapp_UsageUpdate($params) {
         
         if ( $onapp->getErrorsAsArray() ) {
 // Debug            
-            echo ('<b>Get OnApp Version Permission Error: </b>' . implode( PHP_EOL , $onapp->getErrorsAsArray() )) . '. Skipping' . PHP_EOL;
+            echo ('<b>Get OnApp Version Permission Error: </b>' . $onapp->getErrorsAsString() ) . '. Skipping' . PHP_EOL;
             continue;
         }
         
@@ -1022,7 +1010,7 @@ function onapp_UsageUpdate($params) {
         
         if ( $network_interface->getErrorsAsArray() ) {
 // Debug            
-            echo ('<b>Network Interface Get List Error : </b>' . implode( PHP_EOL , $network_interface->getErrorsAsArray() )).'. Skipping'. PHP_EOL;
+            echo ('<b>Network Interface Get List Error : </b>' . $network_interface->getErrorsAsString() ).'. Skipping'. PHP_EOL;
             continue;
         }        
 

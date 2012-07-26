@@ -215,7 +215,7 @@ function _firewallrule_apply( $vmid, $firewallrule ) {
     $firewallrule->update( $vmid );
 
     if ( $firewallrule->getErrorsAsArray() ){
-        setFlashError( $firewallrule->getErrorsAsArray() );
+        setFlashError( $firewallrule->getErrorsAsString() );
     }
     
     redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);
@@ -255,7 +255,7 @@ function _firewallrule_delete( $vmid, $ruleid, $firewallrule ) {
     $firewallrule->delete();
     
     if ( $firewallrule->getErrorsAsArray() ){
-        setFlashError( $firewallrule->getErrorsAsArray() );
+        setFlashError( $firewallrule->getErrorsAsString() );
     }
     
     redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
@@ -282,7 +282,7 @@ function _firewallrule_save( $vmid, $fr, $firewallrule ){
     $firewallrule->save();
     
     if ( $firewallrule->getErrorsAsArray() ){
-        setFlashError( $firewallrule->getErrorsAsArray() );
+        setFlashError( $firewallrule->getErrorsAsString() );
     }
     
     redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
@@ -549,14 +549,11 @@ function _actions_vm($action) {
 
     unset($_ONAPPVARS['action']);
 
-    if ( isset($_ONAPPVARS['vm']) && ! is_null($_ONAPPVARS['vm']->error) )
-        $_ONAPPVARS['error'] = is_array($_ONAPPVARS['vm']->error) ?
-            implode('.<br>', $_ONAPPVARS['vm']->error) :
-            $_ONAPPVARS['vm']->error;
-    elseif ( isset($_ONAPPVARS['vm']) && ! is_null($_ONAPPVARS['vm']->_obj->error) )
-        $_ONAPPVARS['error'] = is_array($_ONAPPVARS['vm']->_obj->error) ?
-            implode('.<br>', $_ONAPPVARS['vm']->_obj->error) :
-            $_ONAPPVARS['vm']->_obj->error;
+    if ( isset($_ONAPPVARS['vm']) && ! is_null( $_ONAPPVARS['vm']->getErrorsAsArray() ) ){
+        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->getErrorsAsString();
+    } elseif ( isset($_ONAPPVARS['vm']) && ! is_null($_ONAPPVARS['vm']->_obj->getErrorsAsArray() ) ){
+        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->_obj->getErrorsAsString();
+    }
 
     if ( ! isset($_ONAPPVARS['error']) )
         redirect( ONAPP_FILE_NAME . "?page=productdetails&id=".$_ONAPPVARS['id']);
@@ -762,10 +759,8 @@ function showproduct() {
 
     $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
 
-    if ( ! is_null($_ONAPPVARS['vm']->error) ) {
-        $_ONAPPVARS['error'] = is_array($_ONAPPVARS['vm']->error) ?
-            implode('.<br>', $_ONAPPVARS['vm']->error) :
-            $_ONAPPVARS['vm']->error;
+    if ( ! is_null($_ONAPPVARS['vm']->getErrorsAsArray() ) ) {
+        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->getErrorsAsString();
 
         clientareaproducts();
     } elseif ( is_null($_ONAPPVARS['vm']->_id) ) {
@@ -1189,14 +1184,14 @@ function _action_backup_add( $id, $diskid ) {
 
     $backup->save();
 
-    if ( ! is_null($backup->_obj->error) )
+    if ( ! is_null( $backup->_obj->getErrorsAsArray() ) ){
         return array(
-            'error' => is_array($backup->_obj->error) ?
-                implode('.<br>', $backup->_obj->error) :
-                $backup->_obj->error
+            'error' => $backup->_obj->getErrorsAsString(),
         );
-    elseif ( is_null($backup->_obj->_id) )
+    } elseif ( is_null($backup->_obj->_id) ){
         return array('error' => "Can't create Backup");
+    }
+       
     return true;
 }
 
@@ -1207,7 +1202,6 @@ function _action_backup_restore( $id, $backupid ) {
     if ( is_null($backupid) )
         return array('error' => 'Backup ID not set');
 
-    $vm           = get_vm($id);
     $service      = get_service($id);
     $onapp_config = get_onapp_config($service['serverid']);
 
@@ -1225,16 +1219,15 @@ function _action_backup_restore( $id, $backupid ) {
 
     $backup->restore();
 
-    if ( ! is_null($backup->_obj->error) )
+    if ( ! is_null( $backup->_obj->getErrorsAsArray() ) ){
         return array(
-            'error' => is_array($backup->_obj->error) ?
-                "Can't create Backup<br/>\n " . implode('.<br>', $backup->_obj->error) :
-                "Can't create Backup'" . $backup->_obj->error
+            'error' => "Can't restore Backup<br/>\n " . $backup->_obj->getErrorsAsString(),
         );
-    else
+    } else {
         return true;
+    }
+    
 }
-
 
 /**
  * Action delete backup
@@ -1243,7 +1236,6 @@ function _action_backup_delete( $id, $backupid ) {
     if ( is_null($backupid) )
         return array('error' => 'Backup ID not set');
 
-    $vm           = get_vm($id);
     $service      = get_service($id);
     $onapp_config = get_onapp_config($service['serverid']);
 
@@ -1261,13 +1253,14 @@ function _action_backup_delete( $id, $backupid ) {
 
     $backup->delete();
 
-    if ( ! is_null($backup->error) )
-        return array( 'error' => is_array($backup->error) ?
-                "Can't create Backup<br/>\n " . implode('.<br>', $backup->error) :
-                "Can't create Backup'" . $backup->error
-            );
-    else
+    if ( ! is_null( $backup->_obj->getErrorsAsArray() ) ){
+        return array(
+            'error' => "Can't delete Backup<br/>\n " . $backup->_obj->getErrorsAsString(),
+        );
+    } else {
         return true;
+    }
+    
 }
 
 function productupgrade() {
@@ -1282,10 +1275,8 @@ function productupgrade() {
         $service["configoption2"]
     );
 
-    if ( ! is_null($_ONAPPVARS['vm']->error) ) {
-        $_ONAPPVARS['error'] = is_array($_ONAPPVARS['vm']->error) ?
-            implode(', ', $_ONAPPVARS['vm']->error) :
-            $_ONAPPVARS['vm']->error;
+    if ( ! is_null($_ONAPPVARS['vm']->getErrorsAsArray() ) ) {
+        $_ONAPPVARS['error'] = $_ONAPPVARS['vm']->getErrorsAsString();
 
         clientareaproducts();
     } elseif ( is_null($_ONAPPVARS['vm']->_id) ) {
@@ -1293,8 +1284,8 @@ function productupgrade() {
             $_LANG["onappvmnotfoundonserver"],
             $_ONAPPVARS['service']['vmid'],
             $onapp_config["adress"]
-        );
-
+        );    
+    
         clientareaproducts();
     } else
         show_template(
