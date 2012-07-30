@@ -24,11 +24,12 @@ $(document).ready(function(){
     });
     
     function check_networks() {
+	var secondaty_netword_cofig_id = $('select[name="sec_net_configurable_option_id"]').val()
         var secondary_network_id = $('select[name="sec_network_id"]').val()
         var primary_network_id   = $('select[name="packageconfigoption[6]"]').val()
         var hvzone               = $('select[name="hvzones"]').val()
         
-        if ( !in_array( secondary_network_id, get_networks() ) && hvzone != '0' && hvzone != 'no_zone'   ){
+        if ( !in_array( secondary_network_id, get_networks() ) && hvzone != '0' && hvzone != 'no_zone' && secondaty_netword_cofig_id != '0' ){
             alert( LANG['onappyouhavetoselectactivenetwork'])
             $('select[name="sec_network_id"]').focus()
             return false;
