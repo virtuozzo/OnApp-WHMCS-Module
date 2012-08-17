@@ -8,6 +8,8 @@
  * @return
  */
 function updateSubscriptionServerId ( $vars ) {
+    $orderid = ( isset($vars[orderid]) )? $vars[orderid] : $vars[OrderID]; 
+    
     $query = "
         SELECT
             tblhosting.server as default_server_id,
@@ -20,7 +22,7 @@ function updateSubscriptionServerId ( $vars ) {
         LEFT JOIN
             tblproducts ON tblhosting.packageid = tblproducts.id
         WHERE
-            tblorders.id = $vars[orderid]
+            tblorders.id = $orderid
 	AND 
             tblproducts.servertype = 'onapp'		
     ";
@@ -427,55 +429,7 @@ function afterClientDelete ( $vars ) {
     full_query( $query );
 }
 
-/**
- * Set subscription server id in accordance with product server id if it differs
- * from default server id
- *
- * @param array $vars with orderid
- * @return
- */
-function updateSubscriptionServerIdClientArea ( $vars ) {
-    $query = "
-        SELECT
-            tblhosting.server as default_server_id,
-            tblproducts.configoption1 as product_server_id,
-            tblhosting.id as hosting_id
-        FROM
-            tblorders
-        LEFT JOIN
-            tblhosting ON tblorders.id = tblhosting.orderid
-        LEFT JOIN
-            tblproducts ON tblhosting.packageid = tblproducts.id
-        WHERE
-            tblorders.id = $vars[OrderID]
-	AND 
-            tblproducts.servertype = 'onapp'		
-    ";
-
-    $result = full_query( $query );
-
-    if ( ! $result || mysql_num_rows( $result )  < 1 ) {
-        return;
-    }
-
-    $row = mysql_fetch_assoc( $result );
-    
-    if ( $row['default_server_id'] != $row['product_server_id'] ) {
-        $query = "
-            UPDATE tblhosting SET
-                server = $row[product_server_id]
-            WHERE
-                id = $row[hosting_id]
-        ";
-
-        $result = full_query( $query );
-    }
-    
-    return;
-}
-
-
 //add_hook( "AfterConfigOptionsUpgrade", 1, 'afterConfigOptionsUpgrade' );
 add_hook( "AcceptOrder", 1, 'updateSubscriptionServerId' );
 add_hook( "ClientDelete", 1, 'afterClientDelete' );
-add_hook( "AfterShoppingCartCheckout", 1, 'updateSubscriptionServerIdClientArea' );
+add_hook( "AfterShoppingCartCheckout", 1, 'updateSubscriptionServerId' );
