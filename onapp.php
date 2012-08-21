@@ -745,7 +745,7 @@ function showproduct() {
         $onapp = new OnApp_Factory( $onapp_config["adress"], $user["email"], $user["password"] );
         
         $transaction = $onapp->factory( 'Transaction', true );
-        $_transaction = $transaction->load( $_GET[ 'transactionid' ] );
+        $_transaction = $transaction->load_with_output($_GET[ 'transactionid' ] );
         
         $transaction_js ['output'] = $_transaction->_log_output;
         
