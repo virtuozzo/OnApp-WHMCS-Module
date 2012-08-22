@@ -803,7 +803,18 @@ function showproduct() {
         $log_items = array_slice( $log_items, 0, 15, true);
 
 // End Getting Log Info //
-/////////////////////////        
+/////////////////////////
+
+// Update VM root password in WHMCS database
+        if ( $_ONAPPVARS['vm']->initial_root_password && $_ONAPPVARS['service']['id'] ){
+            full_query("UPDATE 
+                tblhosting 
+            SET password = '" 
+                . encrypt( $_ONAPPVARS['vm']->initial_root_password ) . "' 
+            WHERE 
+                id = " . $_ONAPPVARS['service']['id'] . " 
+            ");
+        }
         
         show_template(
             "onapp/clientareaoverview",
