@@ -10,7 +10,7 @@
 </div>
 <p>{$LANG.onappcpuusagetitle}</p>
 <br/>
-<script type="text/javascript" src="{$address}/javascripts/Highcharts-2.1.9/js/highcharts.js"></script>
+<script type="text/javascript" src="{$address}/assets/highcharts/highcharts.js"></script>
       <div id="chart7c402aad61"></div>
       {literal}
       <script type="text/javascript">
