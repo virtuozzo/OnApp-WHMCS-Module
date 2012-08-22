@@ -806,11 +806,11 @@ function showproduct() {
 /////////////////////////
 
 // Update VM root password in WHMCS database
-        if ( $_ONAPPVARS['vm']->initial_root_password && $_ONAPPVARS['service']['id'] ){
+        if ( $_ONAPPVARS['vm']->_obj->_initial_root_password && $_ONAPPVARS['service']['id'] ){
             full_query("UPDATE 
                 tblhosting 
             SET password = '" 
-                . encrypt( $_ONAPPVARS['vm']->initial_root_password ) . "' 
+                . encrypt( $_ONAPPVARS['vm']->_obj->_initial_root_password ) . "' 
             WHERE 
                 id = " . $_ONAPPVARS['service']['id'] . " 
             ");
