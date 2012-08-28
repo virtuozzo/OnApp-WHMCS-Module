@@ -573,7 +573,8 @@ function get_templates($serverid, $templatesid) {
  * @param integer $portspeed secondary network port speed
  * @return mixed network interface
  */
-function _add_sec_network_intetface( $vmid, $hvzoneid, $service, $networkid, $portspeed ){
+
+function _add_sec_network_intetface( $vmid, $id, $service, $networkid, $portspeed, $jointype ){
     $onapp_config = get_onapp_config( $service['serverid'] );
     
     $onapp = new OnApp_Factory( 
@@ -582,14 +583,35 @@ function _add_sec_network_intetface( $vmid, $hvzoneid, $service, $networkid, $po
         $onapp_config['password']
     );
     
-    $hvzone_network_join = $onapp->factory('HypervisorZone_NetworkJoin');
-    $network_join = $hvzone_network_join->getList( $hvzoneid );
-    
-// find network join id of phisical network    
-    foreach( $network_join as $join ) {
-        if ( $join->_network_id == $networkid ){
-            $network_join_id = $join->_id;
+    if( $jointype == 'hv_hvzone' ){
+        $interface = _add_sec_network_intetface($vmid, $id[0], $service, $networkid, $portspeed, 'hvzone' );
+        if ( $interface ){
+            return;
+        } else {
+            _add_sec_network_intetface($vmid, $id[1], $service, $networkid, $portspeed, 'hv' );
+            return;
         }
+    }
+    elseif ( $jointype == 'hvzone' ) {
+        $hvzone_network_join = $onapp->factory('HypervisorZone_NetworkJoin');
+        $network_join = $hvzone_network_join->getList( $id );
+
+    // find network join id of phisical network    
+        foreach( $network_join as $join ) {
+            if ( $join->_network_id == $networkid ){
+                $network_join_id = $join->_id;
+            }
+        } 
+    } elseif( $jointype == 'hv' ){ echo 'And here <br />';
+        $hv_network_join = $onapp->factory('Hypervisor_NetworkJoin', true );
+        $network_join = $hv_network_join->getList( $id );
+
+    // find network join id of phisical network    
+        foreach( $network_join as $join ) {
+            if ( $join->_network_id == $networkid ){
+                $network_join_id = $join->_id;
+            }
+        }         
     }
     
     $network_interface = $onapp->factory('VirtualMachine_NetworkInterface', true);    
@@ -600,6 +622,8 @@ function _add_sec_network_intetface( $vmid, $hvzoneid, $service, $networkid, $po
         $network_interface->_network_join_id    = $network_join_id;
         $network_interface->_virtual_machine_id = $vmid;
         $network_interface->save();
+    } else { 
+        return false;
     }
 
     return $network_interface;

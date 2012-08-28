@@ -24,22 +24,24 @@ $(document).ready(function(){
     });
     
     function check_networks() {
-	var secondaty_netword_cofig_id = $('select[name="sec_net_configurable_option_id"]').val()
         var secondary_network_id = $('select[name="sec_network_id"]').val()
         var primary_network_id   = $('select[name="packageconfigoption[6]"]').val()
         var hvzone               = $('select[name="hvzones"]').val()
+        var hv                   = $('select[name="packageconfigoption[4]"]').val()
+        var sec_net_enabled      = $('select[name="sec_net_configurable_option_id"]').val()
         
-        if ( !in_array( secondary_network_id, get_networks() ) && hvzone != '0' && hvzone != 'no_zone' && secondaty_netword_cofig_id != '0' ){
-            alert( LANG['onappyouhavetoselectactivenetwork'])
-            $('select[name="sec_network_id"]').focus()
-            return false;
-        }
-        
-        if ( !in_array( primary_network_id, get_networks() ) && hvzone != '0' && hvzone != 'no_zone' ){
+        if ( !in_array( primary_network_id, get_networks() ) && ! ( ( hv == '0' || typeof hv == 'undefined' ) && ( hvzone == '0' || hvzone == 'no_zone' ))  ){
             alert( LANG['onappyouhavetoselectactivenetwork'])
             $('select[name="packageconfigoption[6]"]').focus()
             return false;
-        }  
+        } 
+        
+        if ( sec_net_enabled != 0 && !in_array( secondary_network_id, get_networks() ) &&
+            ! ( ( hv == '0' || typeof hv == 'undefined' ) && ( hvzone == '0' || hvzone == 'no_zone' ))  ){
+                alert( LANG['onappyouhavetoselectactivenetwork'])
+                $('select[name="sec_network_id"]').focus()
+                return false;
+        }        
         
         return true;
     }
@@ -68,7 +70,7 @@ $(document).ready(function(){
 // if ( hv_id , hv_zone ) in database
     var hvZoneId = ( hvAndZoneSelected ) ? hvAndZoneSelected[1] : hvZonesArray[hvSelect.val()]
 
-    hvSelected = hvSelect.val();
+    hvSelected =  ( hvAndZoneSelected ) ? hvAndZoneSelected[0] : hvSelect.val();
 
     selectHTML = '';
     for ( option in hvOptions ) {
@@ -891,13 +893,13 @@ function add_build_options() {
 }
 
 function add_hv_zone() {
-      if ( hvSelect.val() == 0 && hvZonesSelect.val() != 'no_zone' ) {
+      //if ( hvSelect.val() == 0 && hvZonesSelect.val() != 'no_zone' ) {
           var html =
               '<input type="hidden" value="'+hvSelect.val()+','+hvZonesSelect.val()+'" name="packageconfigoption[4]"/>'
           var parent = hvSelect.parent()
           hvSelect.attr('name', 'renamed');
           parent.append(html)
-      }
+      //}
 }
 
 function add_ds_zone( checkresult ) {
@@ -977,7 +979,7 @@ function add_secondary_network_info () {
     if ( f.sec_net_configurable_option_id == 0 ) {
         html = "<input type='hidden' value='' name='packageconfigoption[23]'/>"
     } else {
-        if( ! if_hypervisor_zone_set() ) {
+        if( ! if_hv_or_hv_zone_set() ) {
             alert( LANG['onappsecondarynetworkhvzonenotseterror'] )
             $('select[name="hvzones"]').focus()
             return false
@@ -1004,18 +1006,24 @@ function add_secondary_network_info () {
     return true
 }
 
-function if_hypervisor_zone_set() {
+function if_hv_or_hv_zone_set() {
     var hvzoneid = $('select[name="hvzones"]').val() 
-    if ( hvzoneid != 'no_zone' && hvzoneid != '0' ) {
-        return true
+    var hvid     = $('select[name="packageconfigoption[4]"]').val()
+    
+    if ( ( hvzoneid == 'no_zone' || hvzoneid == '0' ) && ( hvid == '0' || typeof hvid == 'undefined' ) ) {
+        return false
     }
     
-    return false
+    return true
 }
 
 function get_networks() {
     var hv_zone_id = $('select[name="hvzones"]').val()
-    var hv_id = $('select[name="packageconfigoption[4]"]').val()    
+    var hv_id = $('select[name="packageconfigoption[4]"]').val()
+    
+    if ( typeof hv_id == 'undefined' ) {
+        hv_id = $('select[name="renamed"]').val()
+    }
     
     if ( typeof networksByHypervisorZone[hv_zone_id] == 'undefined' ) {
         networksByHypervisorZone[hv_zone_id] = []
@@ -1030,10 +1038,11 @@ function get_networks() {
 function deal_networks ( ) {
     var $nets   = get_networks()
     var hv_zone_id = $('select[name="hvzones"]').val()
+    var hv_id = $('select[name="packageconfigoption[4]"]').val()
     
     var options = $('select[name="sec_network_id"] option, select[name="packageconfigoption[6]"] option') 
     
-    if ( hv_zone_id == 'no_zone' || hv_zone_id == '0'){
+    if ( ( hv_zone_id == 'no_zone' || hv_zone_id == '0' ) && ( typeof hv_id == 'undefined' || hv_id == '0' )){
         options.each( function(){
             $(this).removeAttr("disabled")
         })
@@ -1046,8 +1055,6 @@ function deal_networks ( ) {
             }
         })        
     }
-    
-    
 }
 
 $(function() { 

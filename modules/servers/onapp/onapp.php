@@ -753,28 +753,39 @@ function onapp_CreateAccount($params) {
         isset($service['os']) ? $service['os'] : $params['configoption2']
     );
     
-// create secondary network interface if needed    
-    if ( $options = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) ) ) {
-        $hvzoneid = array_pop( explode( ',', $service['configoption4'] ) );
+// create secondary network interface if needed 
+    $options = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) );
+    $hv_info = explode( ',', $service['configoption4']  );
+    
+    if ( $options && count( $hv_info ) > 1 ) {
+        $hvzoneid = $hv_info[1];
+        $hvid     = $hv_info[0];
         
-        if ( $hvzoneid && is_numeric( $hvzoneid ) ){
-            _add_sec_network_intetface( $vm->_obj->_id, $hvzoneid, $service, $options['sec_network_id'], $options['sec_net_port_speed'] );
+        if( ( $hvzoneid && is_numeric( $hvzoneid ) ) && ( $hvid && is_numeric( $hvid ) ) ){
+            _add_sec_network_intetface( $vm->_obj->_id, array( $hvzoneid, $hvid ), $service, $options['sec_network_id'], $options['sec_net_port_speed'], 'hv_hvzone' );
+        }
+        elseif ( $hvzoneid && is_numeric( $hvzoneid ) ){
+            _add_sec_network_intetface( $vm->_obj->_id, $hvzoneid, $service, $options['sec_network_id'], $options['sec_net_port_speed'], 'hvzone' );
+        } elseif ( $hvid && is_numeric( $hvid ) ){
+            _add_sec_network_intetface( $vm->_obj->_id, $hvid, $service, $options['sec_network_id'], $options['sec_net_port_speed'], 'hv' );
         }
     }
     
     _ips_resolve_all( $params['accountid'] );
 
     serviceStatus($params['serviceid'], $status);
-    
-    if ( ! is_null($vm->getErrorsAsArray() ) ) {
-        return $_LANG["onappcantcreatevm"] .": " . $vm->getErrorsAsString(', ');
-    } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-        return $_LANG["onappcantcreatevm"] .": " . $vm->_obj->getErrorsAsString(', ');       
-    }    
+
+    if ( ! is_null($vm->error) )
+        return is_array($vm->error) ?
+            $_LANG["onappcantcreatevm"] ."<br/>\n " . implode(', ', $vm->error) :
+            $_LANG["onappcantcreatevm"] . $vm->error;
+    elseif ( ! is_null($vm->_obj->error) )
+        return is_array($vm->_obj->error) ?
+            $_LANG["onappcantcreatevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
+            $_LANG["onappcantcreatevm"] . $vm->_obj->error;
 
     return 'success';
 }
-
 function onapp_TerminateAccount( $params ) {
     global $_LANG;
 
