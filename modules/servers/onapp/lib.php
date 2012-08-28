@@ -1313,21 +1313,30 @@ function delete_vm( $service_id ) {
         return $vm;
     }
    
-    $sql_delete_service = sprintf(
-        "DELETE FROM tblonappservices WHERE service_id = '%s'",
-        $service_id
-    );
-
-    if ( ! full_query($sql_delete_service) ) {
-        $vm->setErrors( "Can't delete data from tblonappservices" );
-        return $vm;
-    };
+    $delete_onapp_service = delete_onapp_service( $service_id );
+    
+    if( $delete_onapp_service != 'success' ){
+        $vm->setErrors( $delete_onapp_service );
+    }
 
     _ips_unassign_all($service_id);
 
     sendmessage('Virtual Machine Deleted', $service_id );
 
     return $vm;
+}
+
+/**
+ * Delete mapping info from tblonappservices 
+ * 
+ */
+function delete_onapp_service( $service_id ){
+    $result = full_query("DELETE FROM tblonappservices WHERE service_id = $service_id");
+    if( $result ){
+        return 'success';
+    } 
+        
+    return 'Can\'t delete data from tblonappservices - ' . mysql_error();
 }
 
 /**

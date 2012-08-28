@@ -344,7 +344,7 @@ $js_serverOptions
         };
     };
   // END Load Hypervisors   //
-  ////////////////////////////
+  ///////////////////////////
 
   ////////////////////////////
   // BEGIN Primary networks //
@@ -753,6 +753,12 @@ function onapp_CreateAccount($params) {
         isset($service['os']) ? $service['os'] : $params['configoption2']
     );
     
+    if (!is_null($vm->getErrorsAsArray())) {
+        return $_LANG["onappcantcreatevm"] . "<br/>\n " . $vm->getErrorsAsString();
+    } elseif (!is_null($vm->_obj->getErrorsAsArray())) {
+        return $_LANG["onappcantcreatevm"] . "<br/>\n " . $vm->_obj->getErrorsAsString();
+    }
+
 // create secondary network interface if needed 
     $options = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) );
     $hv_info = explode( ',', $service['configoption4']  );
@@ -775,14 +781,11 @@ function onapp_CreateAccount($params) {
 
     serviceStatus($params['serviceid'], $status);
 
-    if ( ! is_null($vm->error) )
-        return is_array($vm->error) ?
-            $_LANG["onappcantcreatevm"] ."<br/>\n " . implode(', ', $vm->error) :
-            $_LANG["onappcantcreatevm"] . $vm->error;
-    elseif ( ! is_null($vm->_obj->error) )
-        return is_array($vm->_obj->error) ?
-            $_LANG["onappcantcreatevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
-            $_LANG["onappcantcreatevm"] . $vm->_obj->error;
+    if (!is_null($vm->getErrorsAsArray())) {
+        return $_LANG["onappcantcreatevm"] . "<br/>\n " . $vm->getErrorsAsString();
+    } elseif (!is_null($vm->_obj->getErrorsAsArray())) {
+        return $_LANG["onappcantcreatevm"] . "<br/>\n " . $vm->_obj->getErrorsAsString();
+    }
 
     return 'success';
 }
@@ -806,6 +809,11 @@ function onapp_TerminateAccount( $params ) {
             return $_LANG["onappcantdeletevm"] .": " . $vm->getErrorsAsString(', ');
         } elseif ( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
             return $_LANG["onappcantdeletevm"] .": " . $vm->_obj->getErrorsAsString(', ');       
+        }
+    } else{
+        $delete_onapp_user = delete_onapp_service( $params['serviceid'] );
+        if ( $delete_onapp_user != 'success' ){
+            return $delete_onapp_user;
         }
     }
 
