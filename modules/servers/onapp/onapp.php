@@ -751,7 +751,16 @@ function onapp_CreateAccount($params) {
         $params['domain'],
         isset($service['os']) ? $service['os'] : $params['configoption2']
     );
-    
+   
+    if ( ! is_null($vm->error) )
+        return is_array($vm->error) ?
+            $_LANG["onappcantcreatevm"] ."<br/>\n " . implode(', ', $vm->error) :
+            $_LANG["onappcantcreatevm"] . $vm->error;
+    elseif ( ! is_null($vm->_obj->error) )
+        return is_array($vm->_obj->error) ?
+            $_LANG["onappcantcreatevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
+            $_LANG["onappcantcreatevm"] . $vm->_obj->error;
+	 
 // create secondary network interface if needed 
     $options = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) );
     $hv_info = explode( ',', $service['configoption4']  );
