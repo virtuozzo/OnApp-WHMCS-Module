@@ -921,6 +921,10 @@ function _action_ip_add($service_id, $isbase, $secondary = false ) {
 
     if ( ! isset($ipaddressjoin->_ip_address_id) )
         return array('error' => "Can't save IP address");
+    
+    if( $ipaddressjoin->getErrorsAsArray() ){
+        return array( 'error' => $ipaddressjoin->getErrorsAsString() );
+    }
 
     if ( $isbase == 1 )
         $return = _action_ip_setbase($service_id, $ipaddressjoin->_ip_address_id);
