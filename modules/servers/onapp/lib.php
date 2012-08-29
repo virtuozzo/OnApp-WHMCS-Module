@@ -204,6 +204,7 @@ function get_service($service_id) {
         tblproducts.configoption21,
         tblproducts.configoption22,
         tblproducts.configoption23,
+        tblproducts.overagesenabled,
         0 as additionalram,
         0 as additionalcpus,
         0 as additionalcpushares,

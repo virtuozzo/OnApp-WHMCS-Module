@@ -825,6 +825,7 @@ function showproduct() {
                 'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
                 'rate_limit'           => $network->_rate_limit,
                 'vm_logs'              => $log_items,
+                'overagesenabled'      => $_ONAPPVARS['service']['overagesenabled'],
             )
         );
     }

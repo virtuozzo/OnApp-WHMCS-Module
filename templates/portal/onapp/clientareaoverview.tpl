@@ -120,6 +120,9 @@ function show_logs( id, logid, date, action, status, type ) {
   </tbody>
 </table>
 <h2 class="heading2">{$LANG.onappvmsettings}</h2>
+<form id="product_details_form" method="post" action="clientarea.php?action=productdetails">
+        <input type="hidden" name="id" value={$id}]">
+</form>
 <table cellspacing="0" cellpadding="10" border="0" align="center" width="100%">
   <tbody>
     <tr>
@@ -165,9 +168,9 @@ function show_logs( id, logid, date, action, status, type ) {
         </script>
 
 {/literal}
-<!--
+{*
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=unlock">Unlock Virtual Machine</a>
--->
+*}
         <p align="center"><b>{$LANG.onappvmlocked}</b></p>
       </td>
     </tr>
@@ -187,7 +190,9 @@ function show_logs( id, logid, date, action, status, type ) {
     </tr>
   </tbody>
 </table>
+    
     {elseif $virtualmachine->_booted eq true}
+    
 <table cellspacing="10" cellpadding="10" border="0" width="100%">
   <tbody>
     <tr>
@@ -219,6 +224,11 @@ function show_logs( id, logid, date, action, status, type ) {
       <td>
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=rebuild_network">{$LANG.onappvmrebuildnetwork}</a>
       </td>
+      {if $overagesenabled != 0}
+      <td>
+        <a href="#" onclick="$('form#product_details_form').submit(); return false;"> {$LANG.onappbwusage}</a>
+      </td>
+      {/if}     
     </tr>
   </tbody>
 </table>
@@ -246,6 +256,11 @@ function show_logs( id, logid, date, action, status, type ) {
       <td>
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=reset_pass">{$LANG.onappvmresetpassword}</a>
       </td>
+      {if $overagesenabled != 0}
+      <td>
+        <a href="#" onclick="$('form#product_details_form').submit(); return false;"> {$LANG.onappbwusage} </a>
+      </td>
+      {/if}
     </tr>
   </tbody>
 </table>
