@@ -817,12 +817,12 @@ function _action_ip_setadditional($service_id, $ipid) {
  * @param boolean $isbase whether base ip
  * @param boolean $secondary whether secondary network
  * @return boolean result 
+ * will not work correctly if #5709 isn't fixed https://onapp.codebasehq.com/projects/onapp/tickets/5709
  */
 function _action_ip_add($service_id, $isbase, $secondary = false ) { 
     $service = get_service($service_id);
     $vm      = get_vm($service_id);
     $ips     = get_vm_ips($service_id);
-
     $user    = get_onapp_client( $service_id );
     
     if (  $secondary ){
@@ -868,7 +868,7 @@ function _action_ip_add($service_id, $isbase, $secondary = false ) {
     
     if ($ips)
         foreach( $ips as $ip)
-            if( $ip->_free == true && ! isset($free_ip)  )
+            if( $ip->_free == true && ( is_null( $ip->user_id ) || $ip->user_id == $vm->_obj->_user_id ) && ! isset($free_ip)  )
                 $free_ip = $ip;
             
     if ( ! isset($free_ip) || is_null($free_ip) )
@@ -916,7 +916,7 @@ function _action_ip_add($service_id, $isbase, $secondary = false ) {
         $onapp_config['username'],
         $onapp_config['password']
     );
-
+    
     $ipaddressjoin->save();
 
     if ( ! isset($ipaddressjoin->_ip_address_id) )
