@@ -744,10 +744,8 @@ function create_template_filter_html(){
 
 function create_available_tpl_otions(){ 
     selectHTML = '';
-    for (var os in templateOptions){
-       var os_arr = templateOptions[os];
-       for ( var option in os_arr)
-            selectHTML += '<option class="'+os+'" value="'+option+'">'+os_arr[option]+'</option>';
+    for (var option in templateOptions['k']){
+            selectHTML += '<option class="'+OSByTemplateId[templateOptions['k'][option]]+'" value="'+templateOptions['k'][option]+'">'+templateOptions['v'][option]+'</option>';
     }
 
     return selectHTML;
@@ -755,8 +753,8 @@ function create_available_tpl_otions(){
 
 function create_filter_tpl_otions() {
     selectHTML = '<option value="all">All</option>';
-    for (var os in templateOptions){
-       selectHTML += '<option value="'+os+'">'+os.replace('_', ' - ')+'</option>';
+    for (var os in OSlist){
+       selectHTML += '<option value="'+OSlist[os]+'">'+OSlist[os].replace('_', ' - ')+'</option>';
     }
 
     return selectHTML;

@@ -234,11 +234,17 @@ $js_serverOptions
                 '_' . $_template->_operating_system_distro;
             if (!in_array($os, $created_os)){
                 array_push($created_os, $os);
-                $js_templateOptions .= "    templateOptions['$os'] = new Array();\n";
             }
-            $js_templateOptions .= "    templateOptions['$os'][$_template->_id] = '". htmlspecialchars( addslashes( preg_replace('/\r\n|\n|\r/', " ", $_template->_label ) ) )."';\n";
-        };
-    };
+            
+            $oses[$_template->_id] = $os; 
+            $js_templateOptions[$_template->_id] = htmlspecialchars( addslashes( preg_replace('/\r\n|\n|\r/', " ", $_template->_label ) ) );
+        }
+// sorting templates and wrapper workout for Google Chrome and IE
+        asort($js_templateOptions);
+        $templatesWrapper = array();        
+        $templatesWrapper['k'] = array_keys($js_templateOptions); 
+        $templatesWrapper['v'] = array_values($js_templateOptions);        
+    }
   // END Load Templates     //
   ////////////////////////////
 
@@ -548,8 +554,9 @@ $js_serverOptions
 
     var serverOptions = new Array();
 $js_serverOptions
-    var templateOptions = {};
-$js_templateOptions
+    var templateOptions = ". json_encode( $templatesWrapper ) ."
+    var OSByTemplateId  = " . json_encode( $oses ) . "
+    var OSlist          = " . json_encode( array_unique( $oses ) ) ." 
     var hvOptions = new Array();
 $js_hvOptions
     var networkOptions = new Array();
