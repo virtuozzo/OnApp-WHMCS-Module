@@ -680,12 +680,23 @@ function get_vm_ips($service_id) {
         $sec_network_id = $options['sec_network_id'];
         
         if ( ! sec_net_interface_exists( $vm->_id, $service['serverid'] ) ) {
-            _add_sec_network_intetface( 
-                    $vm->_id, 
-                    array_pop( explode( ',', $service['configoption4'] ) ), 
-                    $service, $options['sec_network_id'], 
-                    $options['sec_net_port_speed'] );
-        }        
+            
+            $hv_info = explode( ',', $service['configoption4']  );
+    
+            if ( $options && count( $hv_info ) > 1 ) {
+                $hvzoneid = $hv_info[1];
+                $hvid     = $hv_info[0];
+
+                if( ( $hvzoneid && is_numeric( $hvzoneid ) ) && ( $hvid && is_numeric( $hvid ) ) ){
+                    _add_sec_network_intetface( $vm->_obj->_id, array( $hvzoneid, $hvid ), $service, $sec_network_id, $options['sec_net_port_speed'], 'hv_hvzone' );
+                }
+                elseif ( $hvzoneid && is_numeric( $hvzoneid ) ){
+                    _add_sec_network_intetface( $vm->_obj->_id, $hvzoneid, $service, $sec_network_id, $options['sec_net_port_speed'], 'hvzone' );
+                } elseif ( $hvid && is_numeric( $hvid ) ){
+                    _add_sec_network_intetface( $vm->_obj->_id, $hvid, $service, $sec_network_id, $options['sec_net_port_speed'], 'hv' );
+                }            
+            }        
+        }
     }    
 
     if (is_array($vm->_obj->_ip_addresses) )
