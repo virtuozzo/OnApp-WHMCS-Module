@@ -761,9 +761,9 @@ function onapp_CreateAccount($params) {
     );
     
     if (!is_null($vm->getErrorsAsArray())) {
-        return $_LANG["onappcantcreatevm"] . "<br/>\n " . $vm->getErrorsAsString();
+        return $_LANG["onappcantcreatevm"] . ":" . $vm->getErrorsAsString(' ');
     } elseif (!is_null($vm->_obj->getErrorsAsArray())) {
-        return $_LANG["onappcantcreatevm"] . "<br/>\n " . $vm->_obj->getErrorsAsString();
+        return $_LANG["onappcantcreatevm"] . ":" . $vm->_obj->getErrorsAsString(' ');
     }
 
 // create secondary network interface if needed 
@@ -789,9 +789,9 @@ function onapp_CreateAccount($params) {
     serviceStatus($params['serviceid'], $status);
 
     if (!is_null($vm->getErrorsAsArray())) {
-        return $_LANG["onappcantcreatevm"] . "<br/>\n " . $vm->getErrorsAsString();
+        return $_LANG["onappcantcreatevm"] . ":" . $vm->getErrorsAsString(' ');
     } elseif (!is_null($vm->_obj->getErrorsAsArray())) {
-        return $_LANG["onappcantcreatevm"] . "<br/>\n " . $vm->_obj->getErrorsAsString();
+        return $_LANG["onappcantcreatevm"] . ":" . $vm->_obj->getErrorsAsString(' ');
     }
 
     return 'success';
