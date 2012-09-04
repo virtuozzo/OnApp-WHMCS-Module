@@ -1211,14 +1211,16 @@ function create_vm( $service_id, $hostname, $template_id) {
     if ( ! $instance->_is_auth ) 
         return $instance;
 
-    $vm  = $instance->factory('VirtualMachine');
+    $vm  = $instance->factory('VirtualMachine', true);
     $tpl = $instance->factory('Template');
    
     $option = explode(",", $service['configoption4']);
-    if ( count($option) > 1 )
+    if ( count($option) > 1 ){
         $vm->_hypervisor_group_id = $option[1];
-    else
         $vm->_hypervisor_id = $option[0];
+    } else {
+        $vm->_hypervisor_id = $option[0];
+    }
 
     $option = explode(",", $service['configoption11']);
     if ( count($option) > 1 )
@@ -1261,7 +1263,7 @@ function create_vm( $service_id, $hostname, $template_id) {
         $vm->_swap_disk_size = NULL;
 
     $vm->save();
-
+    
     if ( ! is_null($vm->_obj->error) ) {
         $vm->error = $vm->_obj->error;
         return $vm;
