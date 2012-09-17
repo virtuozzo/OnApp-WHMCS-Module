@@ -17,11 +17,11 @@ require_once dirname(__FILE__).'/modules/servers/onapp/lib.php';
 define( "CLIENTAREA", true );
 
 if (isset($_POST['language'])) {
-  $_SESSION['Language'] = $_POST['language']; 
+  $_SESSION['Language'] = $_POST['language'];
 } else {
   if ( isset( $GLOBALS['CONFIG']['Language'] ) ) {
     $_SESSION['Language'] = ucfirst( $GLOBALS['CONFIG']['Language']);
-  }  
+  }
 }
 
 load_language();
@@ -120,28 +120,28 @@ if ( isset($_ONAPPVARS['page']) && $_ONAPPVARS['service'] && $_ONAPPVARS['servic
 
 /**
  * Manage firewall rules tab
- * 
+ *
  * @global mixed $_ONAPPVARS
- * @global mixed $_LANG 
- */    
+ * @global mixed $_LANG
+ */
 function firewallrules() {
     global $_ONAPPVARS, $_LANG;
-    
+
     $user = get_onapp_client( $_ONAPPVARS['id'] );
     $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
 
     $onapp = new OnApp_Factory( $onapp_config["adress"], $user["email"], $user["password"] );
     $firewallrule = $onapp->factory('VirtualMachine_FirewallRule', true );
 
-    
+
     $fr = isset( $_POST['fr'] ) ? $_POST['fr'] : NULL;
-    
+
     $action = $_ONAPPVARS['action'];
-    
+
     $network_interfaces = isset( $_POST['network_interfaces'] ) ? $_POST['network_interfaces'] : NULL;
     $ruleid = get_value('ruleid');
     $position = get_value('position');
-    
+
     if( ! is_null($action) && $action != "" )
         switch ( $action ) {
             case 'save':
@@ -168,34 +168,34 @@ function firewallrules() {
                 $return = _firewallrule_set_default( $_ONAPPVARS['service']['vmid'], $network_interfaces, $firewallrule );
                 break;
             case 'apply':
-                
+
                 $return = _firewallrule_apply( $_ONAPPVARS['service']['vmid'], $firewallrule );
-                
+
             default:
                 $_ONAPPVARS['error'] = sprintf($_LANG["onappactionnotfound"], $action);
                 break;
-        }    
-    
+        }
+
     $networkinterface = $onapp->factory('VirtualMachine_NetworkInterface', true );
-    
-    $firewallrules = $firewallrule->getList( $_ONAPPVARS['service']['vmid'] ); 
+
+    $firewallrules = $firewallrule->getList( $_ONAPPVARS['service']['vmid'] );
     $networkinterfaces = $networkinterface->getList( $_ONAPPVARS['service']['vmid'] );
-    
+
     $error = isset($_ONAPPVARS['error']) ? $_ONAPPVARS['error'] : getFlashError();
-    
+
     $_networkinterfaces = array();
-    
+
     foreach ( $networkinterfaces as $interface ) {
         $_networkinterfaces[ $interface->_id ] = $interface;
     }
-    
+
     if ( ! is_null( $firewallrules )) {
         foreach ($firewallrules as $firewall)
             $firewall_by_network[$firewall->_network_interface_id][] = $firewall;
     }
-    else 
-        $firewall_by_network = NULL;  
-    
+    else
+        $firewall_by_network = NULL;
+
     show_template(
         "onapp/clientareafirewallrules",
         array(
@@ -206,96 +206,96 @@ function firewallrules() {
             'configoptionsupgrade' => $_ONAPPVARS['service']['configoptionsupgrade'],
             'error'                => $error,
         )
-    );    
+    );
 }
 
 function _firewallrule_apply( $vmid, $firewallrule ) {
     global $_ONAPPVARS;
-    
+
     $firewallrule->update( $vmid );
 
     if ( $firewallrule->getErrorsAsArray() ){
         setFlashError( $firewallrule->getErrorsAsString(', ') );
     }
-    
+
     redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);
 }
 
 /**
  * Set default commands for network interfaces
- * 
+ *
  * @global mixed $_ONAPPVARS
  * @param integer $vmid
  * @param mixed $network_interfaces
- * @param mixed $firewallrule 
+ * @param mixed $firewallrule
  */
 function _firewallrule_set_default( $vmid, $network_interfaces, $firewallrule ) {
     global $_ONAPPVARS;
-    
+
     $firewallrule->updateDefaults( $vmid, $network_interfaces );
 
-    //todo add error verification Ticket #4885 codebase 
-    
-    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
+    //todo add error verification Ticket #4885 codebase
+
+    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);
 }
 
 /**
  * Delete firewall rule
- * 
+ *
  * @global mixed $_ONAPPVARS
  * @param integer $vmid
  * @param integer $ruleid
- * @param mixed $firewallrule 
+ * @param mixed $firewallrule
  */
 function _firewallrule_delete( $vmid, $ruleid, $firewallrule ) {
     global $_ONAPPVARS;
-    
+
     $firewallrule->_id = $ruleid;
     $firewallrule->_virtual_machine_id = $vmid;
     $firewallrule->delete();
-    
+
     if ( $firewallrule->getErrorsAsArray() ){
         setFlashError( $firewallrule->getErrorsAsString(', ') );
     }
-    
-    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
+
+    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);
 }
 
 /**
  * Create a new firewall rule
- * 
+ *
  * @global mixed $_ONAPPVARS
  * @param integer $vmid
  * @param mixed $fr
- * @param mixed $firewallrule 
+ * @param mixed $firewallrule
  */
 function _firewallrule_save( $vmid, $fr, $firewallrule ){
     global $_ONAPPVARS;
-    
+
     foreach( $fr as $field => $value ){
         $_field = '_'.$field;
         $firewallrule->$_field = $value;
     }
-    
+
     $firewallrule->_virtual_machine_id = $vmid;
-    
+
     $firewallrule->save();
-    
+
     if ( $firewallrule->getErrorsAsArray() ){
         setFlashError( $firewallrule->getErrorsAsString(', ') );
     }
-    
-    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);    
+
+    redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);
 }
 
 /**
  * Move firewall rule
- * 
+ *
  * @global mixed $_ONAPPVARS
  * @param integer $vmid
  * @param integer $ruleid
  * @param integer $position
- * @param mixed $firewallrule 
+ * @param mixed $firewallrule
  */
 function _firewallrule_move( $vmid, $ruleid, $position, $firewallrule ) {
     global $_ONAPPVARS;
@@ -303,9 +303,9 @@ function _firewallrule_move( $vmid, $ruleid, $position, $firewallrule ) {
     $firewallrule->_virtual_machine_id = $vmid;
     $firewallrule->_id = $ruleid;
     $firewallrule->move( $position );
-    
-    //todo add error verification Ticket #2358 codebase 
-    
+
+    //todo add error verification Ticket #2358 codebase
+
     redirect( ONAPP_FILE_NAME . "?page=firewallrules&id=" . $_ONAPPVARS['id']);
 }
 
@@ -351,7 +351,7 @@ function get_value($name) {
  * @param array $values smarty values
  */
 function show_template($templatefile, $values) {
-    
+
     global $_LANG, $breadcrumbnav, $smartyvalues, $CONFIG;
 
     $pagetitle = $_LANG["clientareatitle"];
@@ -368,7 +368,7 @@ function show_template($templatefile, $values) {
         $smartyvalues['systemurl'] = $CONFIG['SystemURL'] . '/';
 
     if ( isset($_SESSION['onapp_flash']['error']) )
-        unset( $_SESSION['onapp_flash']['error'] ); 
+        unset( $_SESSION['onapp_flash']['error'] );
     outputClientArea($templatefile);
 }
 
@@ -387,7 +387,7 @@ function clientareaproducts() {
                 'error'            => $_LANG['onapponmaintenance'],
             )
         );
-        
+
         return;
     }
 
@@ -410,14 +410,14 @@ function clientareaproducts() {
 
     while ($onapp_user = mysql_fetch_assoc( $onapp_users_query ) ) {
 	if( ! $onapp_user['ipaddress'] && ! $onapp_user['hostname'] ) continue;
-        $vm = new ONAPP_VirtualMachine();
+        $vm = new OnApp_VirtualMachine();
 
         $url = ( $onapp_user['hostname'] ) ? $onapp_user['hostname'] : $onapp_user['ipaddress'];
-         
+
         if ( strpos( $url, 'http' ) === false ) {
             $url = 'http://'. $url;
-        } 
-        
+        }
+
         $vm->auth(
             $url,
             $onapp_user["email"],
@@ -565,7 +565,7 @@ function rebuild(){
     global $_ONAPPVARS, $_LANG;
 
     _action_update_res();
-    
+
     $_ONAPPVARS['vm']->_template_id = isset($_ONAPPVARS['service']['os']) ? $_ONAPPVARS['service']['os'] : $_ONAPPVARS['service']['configoption2'];
 
     $_ONAPPVARS['vm']->_required_startup = '1';
@@ -576,10 +576,10 @@ function rebuild(){
  * Action create virtual machine
  */
 function _action_vm_create() {
-    global $_ONAPPVARS, $_LANG;  
+    global $_ONAPPVARS, $_LANG;
 
     foreach ( array('templateid', 'hostname' ) as $val )
-        $_ONAPPVARS[$val] = get_value($val);                  
+        $_ONAPPVARS[$val] = get_value($val);
 
     if( isset($_ONAPPVARS['vm']->_id) )
         $_ONAPPVARS['error'] =  $_LANG["onappvmexist"];
@@ -618,7 +618,7 @@ function _action_update_res() {
     $cpu_shares        = $service['configoption7']  + $service['additionalcpushares'];
     $primary_disk_size = $service['configoption11'] + $service['additionaldisksize'];
     $rate_limit        = $service['configoption8']  + $service['additionalportspead'];
-    
+
     if ( $option = (array)( json_decode( htmlspecialchars_decode ( $service['configoption23'] ) ) ) ) {
         $sec_net_port_speed = $option['sec_net_port_speed'];
         $sec_network_id     = $option['sec_network_id'];
@@ -638,7 +638,7 @@ function _action_update_res() {
     };
 
     // Change Disk size
-    $disks = new ONAPP_Disk();
+    $disks = new OnApp_Disk();
 
     $disks->auth(
         $onapp_config["adress"],
@@ -666,13 +666,13 @@ function _action_update_res() {
 
 // Update Primary Network Port Speed
     $network = get_vm_interface( $_ONAPPVARS['id'] );
-    
+
     if ( $network && $rate_limit != $network->_rate_limit ) {
       $network->_rate_limit = $rate_limit;
       $network->save();
     }
-    
-    
+
+
 // Update Secondary Network Port Speed if exists and needed
     if ( $sec_network_id ){
         $sec_network = get_sec_networkinterface( $service['vmid'], $service['serverid'] );
@@ -681,8 +681,8 @@ function _action_update_res() {
             $sec_network->_rate_limit = $sec_net_port_speed;
             $sec_network->save();
         }
-    } 
-     
+    }
+
     // resolve all IPs
     _ips_resolve_all($_ONAPPVARS['id']);
 
@@ -691,15 +691,15 @@ function _action_update_res() {
 
 /**
  * Get secondary network interface
- * 
+ *
  * @param type $vmid
  * @param type $serverid
- * @return type 
+ * @return type
  */
 function get_sec_networkinterface( $vmid, $serverid ) {
     $result = false;
-    $network = new ONAPP_VirtualMachine_NetworkInterface();
-  
+    $network = new OnApp_VirtualMachine_NetworkInterface();
+
     $onapp_config = get_onapp_config( $serverid );
 
     $network->auth(
@@ -711,17 +711,17 @@ function get_sec_networkinterface( $vmid, $serverid ) {
     $network->_virtual_machine_id = $vmid;
 
     $networks = $network->getList();
-  
+
     foreach( $networks as $net )
         if($net->_primary != true)
             $result = $net;
 
-    if( $result ){    
+    if( $result ){
         $result->auth(
             $onapp_config["adress"],
             $onapp_config['username'],
             $onapp_config['password']
-        );    
+        );
     }
 
     return $result;
@@ -734,28 +734,28 @@ function showproduct() {
     global $_ONAPPVARS, $_LANG;
 
 // Geting transaction by Ajax request //
-///////////////////////////////////////    
+///////////////////////////////////////
     if( isset( $_GET[ 'transactionid' ] ) ) {
         if ( $_GET['type'] != 'Transaction' ) {
             exit();
         }
-        
+
         $user = get_onapp_client( $_ONAPPVARS['id'] );
         $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
         $onapp = new OnApp_Factory( $onapp_config["adress"], $user["email"], $user["password"] );
-        
+
         $transaction = $onapp->factory( 'Transaction', true );
         $_transaction = $transaction->load_with_output($_GET[ 'transactionid' ] );
-        
+
         $transaction_js ['output'] = $_transaction->_log_output;
-        
+
         $transaction_js = json_encode(  $transaction_js  );
-        
+
 	    ob_end_clean();
 	    exit( $transaction_js );
     }
 // End Geting transaction by Ajax request //
-///////////////////////////////////////////     
+///////////////////////////////////////////
 
     $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
 
@@ -774,23 +774,23 @@ function showproduct() {
     } else {
 
         $network = get_vm_interface( $_ONAPPVARS['id'] );
-        
+
 // Getting log info //
 /////////////////////
-        
+
         $user = get_onapp_client( $_ONAPPVARS['id'] );
         $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
-        
+
         $onapp = new OnApp_Factory( $onapp_config["adress"], $user["email"], $user["password"] );
-        
+
         $log         = $onapp->factory( 'Log', true );
 
         $url_args = array(
             'q' => $_ONAPPVARS['vm']->_obj->_identifier,
         );
 
-        $logs = $log->getList( $url_args ); 
-        
+        $logs = $log->getList( $url_args );
+
         foreach ( $logs as $item ) {
             $log_items[ $item->_id ]['target_type'] = $item->_target_type;
             $log_items[ $item->_id ]['target_id']   = $item->_target_id;
@@ -799,7 +799,7 @@ function showproduct() {
             $log_items[ $item->_id ]['status']      = $item->_status;
             $log_items[ $item->_id ]['action']      = $item->_action;
         }
-        
+
         $log_items = array_slice( $log_items, 0, 15, true);
 
 // End Getting Log Info //
@@ -807,15 +807,15 @@ function showproduct() {
 
 // Update VM root password in WHMCS database
         if ( $_ONAPPVARS['vm']->_obj->_initial_root_password && $_ONAPPVARS['service']['id'] ){
-            full_query("UPDATE 
-                tblhosting 
-            SET password = '" 
-                . encrypt( $_ONAPPVARS['vm']->_obj->_initial_root_password ) . "' 
-            WHERE 
-                id = " . $_ONAPPVARS['service']['id'] . " 
+            full_query("UPDATE
+                tblhosting
+            SET password = '"
+                . encrypt( $_ONAPPVARS['vm']->_obj->_initial_root_password ) . "'
+            WHERE
+                id = " . $_ONAPPVARS['service']['id'] . "
             ");
         }
-        
+
         show_template(
             "onapp/clientareaoverview",
             array(
@@ -836,10 +836,10 @@ function showproduct() {
  */
 function showcreateproduct() {
     global $_ONAPPVARS;
-    
+
     $service_server_id = $_ONAPPVARS['service']['serverid'];
     $product_server_id = $_ONAPPVARS['service']['productserverid'];
-    
+
     if ( $service_server_id != $product_server_id ) {
         $service_server_id = $product_server_id;
     }
@@ -852,7 +852,7 @@ function showcreateproduct() {
             $os => $templates[$os]
         );
     };
-    
+
     $_ONAPPVARS['service']['configoption9'] = round( $_ONAPPVARS['service']['configoption9'] );
     $_ONAPPVARS['service']['configoption11'] = round( $_ONAPPVARS['service']['configoption11'] );
 
@@ -870,11 +870,11 @@ function showcreateproduct() {
  * Show Virtual machine CPU usage
  */
 function productcpuusage() {
-    global $_ONAPPVARS, $_LANG; 
+    global $_ONAPPVARS, $_LANG;
 
     $onapp_config = get_onapp_config( $_ONAPPVARS['service']['serverid'] );
 
-    $cpuusage = new ONAPP_VirtualMachine_CpuUsage();
+    $cpuusage = new OnApp_VirtualMachine_CpuUsage();
 
     $cpuusage->_virtual_machine_id = $_ONAPPVARS['vm']->_id;
 
@@ -887,22 +887,22 @@ function productcpuusage() {
     );
 
     $list = $cpuusage->getList();
-    
+
     $hourly_stat = array();
-    
+
     foreach ( $list as $key => $stat ) {
         $hourly_stat[$key]['date']  = strtotime( $stat->_created_at ) * 1000;
         $hourly_stat[$key]['usage'] = number_format( $stat->_cpu_time / 360 / 100, 2 );
     }
-    
+
     $content = '';
-    
+
     foreach ( $hourly_stat as $stat ) {
         $content .= '['.$stat[date].', '.$stat[usage].'],';
     }
-    
+
     $data = "[{data: [ " . $content . "], name: '".$_LANG[onappcpuusage]."'";
-    
+
     $data = str_replace( '],]', ']]', $data );
 
     show_template(
@@ -940,13 +940,13 @@ function productipaddresses() {
                 break;
             case 'sec_net_assignbase':
                 $return = _action_ip_add($_ONAPPVARS['id'], 1, 1);
-                break;            
+                break;
             case 'assignadditional':
                 $return = _action_ip_add($_ONAPPVARS['id'], 0);
                 break;
             case 'sec_net_assignadditional':
                 $return = _action_ip_add($_ONAPPVARS['id'], 0, 1);
-                break;            
+                break;
             case 'resolveall':
                 $return = _ips_resolve_all($_ONAPPVARS['id']);
                 break;
@@ -974,10 +974,10 @@ function clientareaipaddresses() {
     global $_ONAPPVARS;
 
     $service = $_ONAPPVARS['service'];
-    
+
     if ( $option = (array)( json_decode( htmlspecialchars_decode ( $service['configoption23'] ) ) ) ) {
         $sec_net_ips        = $option['sec_net_ips'];
-    }    
+    }
 
     $ips = get_vm_ips($_ONAPPVARS['id']);
 
@@ -1074,7 +1074,7 @@ function clientareadisks() {
 
     $onapp_config = get_onapp_config($_ONAPPVARS['service']['serverid']);
 
-    $disks = new ONAPP_Disk();
+    $disks = new OnApp_Disk();
 
     $user = get_onapp_client( $_ONAPPVARS['id'] );
 
@@ -1084,7 +1084,7 @@ function clientareadisks() {
         $user["password"]
     );
 
-    $vms = new ONAPP_VirtualMachine();
+    $vms = new OnApp_VirtualMachine();
 
     $vms->auth(
         $onapp_config["adress"],
@@ -1147,7 +1147,7 @@ function clientareabackups() {
 
     $onapp_config = get_onapp_config($_ONAPPVARS['service']['serverid']);
 
-    $backups = new ONAPP_VirtualMachine_Backup();
+    $backups = new OnApp_VirtualMachine_Backup();
 
     $backups->_virtual_machine_id = $_ONAPPVARS['vm']->_id;
 
@@ -1181,7 +1181,7 @@ function _action_backup_add( $id, $diskid ) {
     $service      = get_service($id);
     $onapp_config = get_onapp_config($service['serverid']);
 
-    $backup = new ONAPP_VirtualMachine_Backup();
+    $backup = new OnApp_VirtualMachine_Backup();
 
     $backup->_virtual_machine_id = $vm->_id;
     $backup->_disk_id            = $diskid;
@@ -1203,7 +1203,7 @@ function _action_backup_add( $id, $diskid ) {
     } elseif ( is_null($backup->_obj->_id) ){
         return array('error' => "Can't create Backup");
     }
-       
+
     return true;
 }
 
@@ -1217,7 +1217,7 @@ function _action_backup_restore( $id, $backupid ) {
     $service      = get_service($id);
     $onapp_config = get_onapp_config($service['serverid']);
 
-    $backup = new ONAPP_VirtualMachine_Backup();
+    $backup = new OnApp_VirtualMachine_Backup();
 
     $backup->_id = $backupid;
 
@@ -1250,7 +1250,7 @@ function _action_backup_delete( $id, $backupid ) {
     $service      = get_service($id);
     $onapp_config = get_onapp_config($service['serverid']);
 
-    $backup = new ONAPP_VirtualMachine_Backup();
+    $backup = new OnApp_VirtualMachine_Backup();
 
     $backup->_id = $backupid;
 
@@ -1271,7 +1271,7 @@ function _action_backup_delete( $id, $backupid ) {
     } else {
         return true;
     }
-    
+
 }
 
 function productupgrade() {
@@ -1295,8 +1295,8 @@ function productupgrade() {
             $_LANG["onappvmnotfoundonserver"],
             $_ONAPPVARS['service']['vmid'],
             $onapp_config["adress"]
-        );    
-    
+        );
+
         clientareaproducts();
     } else
         show_template(
@@ -1470,7 +1470,7 @@ function storagedisksizes() {
     };
 
     foreach ($servers as $key => $server) {
-        $limit = new ONAPP_ResourceLimit();
+        $limit = new OnApp_ResourceLimit();
         $limit->auth(
             $server['adress'],
             $server['username'],
@@ -1480,7 +1480,7 @@ function storagedisksizes() {
 
         $servers[$key]['storage_disk_size'] = $limit->_obj->_storage_disk_size ? $limit->_obj->_storage_disk_size : 0;
 
-        $vms = new ONAPP_VirtualMachine();
+        $vms = new OnApp_VirtualMachine();
         $vms->auth(
             $server['adress'],
             $server['username'],
@@ -1490,7 +1490,7 @@ function storagedisksizes() {
         $backups_size = 0;
 
         foreach ( $vms->getList($server['onapp_user_id']) as $vm ) {
-            $backups = new ONAPP_VirtualMachine_Backup();
+            $backups = new OnApp_VirtualMachine_Backup();
             $backups->_virtual_machine_id = $vm->_id;
 
             $backups->auth(
