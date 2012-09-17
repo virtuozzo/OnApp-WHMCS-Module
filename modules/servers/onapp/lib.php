@@ -24,11 +24,11 @@ function onapp_Config( $id ) {
         $onapp_config["adress"] = $onapp_config["ipaddress"] != "" ?
             $onapp_config["ipaddress"] :
             $onapp_config["hostname"];
-        
+
         if ( strpos( $onapp_config["adress"], 'http' ) === false ) {
             $onapp_config["adress"] = 'http://'. $onapp_config["adress"];
         }
-        
+
         $onapp_config[] = $onapp_config["adress"];
    } else
         return array(
@@ -87,13 +87,13 @@ function load_language() {
     }
 
     closedir ($dh);
-   
+
     $language = 'English';
-    
+
     if ( isset( $GLOBALS['CONFIG']['Language'] ) ) {
         $_SESSION['Language'] = ucfirst( $GLOBALS['CONFIG']['Language']);
-    }    
-    
+    }
+
     if ( isset( $_SESSION['Language']) ){
         $language = $_SESSION['Language'];
     }
@@ -101,7 +101,7 @@ function load_language() {
     if( ! in_array ($language, $arrayoflanguagefiles) ) {
         $language =  "English";
     }
-    
+
     if( file_exists( dirname(__FILE__) . "/lang/$language.txt" ) ) {
         ob_start ();
         include dirname(__FILE__) . "/lang/$language.txt";
@@ -147,7 +147,7 @@ function get_onapp_config($id){
         if ( strpos( $onapp_config["adress"], 'http' ) === false ) {
             $onapp_config["adress"] = 'http://'. $onapp_config["adress"];
         }
-        
+
         $onapp_config[] = $onapp_config["adress"];
     } else
 //        return array( "error" => "Can't found active OnApp server #".addslashes($id)." in Data Base");
@@ -232,7 +232,7 @@ function get_service($service_id) {
 
     $select_config = "
     SELECT
-        CASE LCASE(hosting.billingcycle) 
+        CASE LCASE(hosting.billingcycle)
             WHEN 'monthly'      THEN tblpricing.monthly
             WHEN 'quarterly'    THEN tblpricing.quarterly
             WHEN 'semiannually' THEN tblpricing.semiannually
@@ -265,27 +265,27 @@ function get_service($service_id) {
             AND optionid = sub.id
         LEFT JOIN tblproductconfigoptionssub AS optionssub
             ON optionssub.configid = tblproductconfigoptions.id
-        LEFT JOIN tblhosting as hosting 
+        LEFT JOIN tblhosting as hosting
             ON hosting.id = $service_id
         LEFT JOIN tblclients as clients
             ON clients.id = hosting.userid
         LEFT JOIN tblpricing
             ON tblpricing.relid = optionssub.id
             AND tblpricing.currency = clients.currency
-            AND tblpricing.type = 'configoptions'		
+            AND tblpricing.type = 'configoptions'
         LEFT JOIN tblcurrencies as currencies
             ON currencies.id = clients.currency
     WHERE
         tblproductconfiglinks.pid = $productid
-    GROUP BY 
+    GROUP BY
         optionssub.id
     ORDER BY optionssub.id ASC";
-    
+
     $config_rows = full_query($select_config);
 
     if ( ! $config_rows )
         return false;
-   
+
     $onappconfigoptions = array(
         $service["configoption12"], // additional ram
         $service["configoption13"], // additional cpus
@@ -296,15 +296,15 @@ function get_service($service_id) {
         $service["configoption20"], // port spead
         $service["configoption22"], // bandwidth
     );
-    
+
     if ( $option = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) ) ) {
         $sec_net_ips                       = $option['sec_net_ips'];
         $sec_net_configurable_option_id    = $option['sec_net_configurable_option_id'];
         array_push( $onappconfigoptions, $sec_net_configurable_option_id  );
     }
-    
+
     $service["configoptions"] = array();
-    
+
     while ( $row = mysql_fetch_assoc($config_rows) ) {
         if ( in_array($row["configid"], $onappconfigoptions ) ) {
             switch ( $row['optiontype'] ) {
@@ -365,7 +365,7 @@ function get_service($service_id) {
                     $service["sec_net_additionalips"] = $row["order"];
                     $service["configoptions"][$row['configid']]['order'] = $sec_net_ips;
                }
-         
+
                 $service["configoptions"][$row['configid']]['value'] = $row['qty'];
             }
 
@@ -387,13 +387,13 @@ function get_service($service_id) {
  */
 function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEFAULT_BILLING_PLAN = 1 ) {
     global $_LANG;
-    
+
     $service = get_service($service_id);
-    
+
     if ( $service['serverid'] != $service['productserverid']) {
         $service['serverid'] = $service['productserverid'];
-    }    
-    
+    }
+
     $sql_select = sprintf(
         "SELECT
             onapp_user_id,
@@ -409,7 +409,7 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
 
     $user = mysql_fetch_array( full_query($sql_select) );
 
-    if ( $user ) 
+    if ( $user )
         $user["password"] = decrypt( $user["password"] );
     else {
         $user = new OnApp_User();
@@ -438,8 +438,8 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
         if ( strlen( $password ) > 40 ) {
             $password = substr( $password, 0, 20 );
         }
-        
-        if ( $option = (array)( json_decode( htmlspecialchars_decode ( $service['configoption21'] ) ) ) ) { 
+
+        if ( $option = (array)( json_decode( htmlspecialchars_decode ( $service['configoption21'] ) ) ) ) {
             $user->_role_ids        = $option['role_ids'];
             $user->_user_group_id   = $option['user_group'];
             $user->_time_zone       = $option['time_zone'];
@@ -489,11 +489,11 @@ function get_onapp_client( $service_id, $ONAPP_DEFAULT_USER_ROLE = 2, $ONAPP_DEF
 /**
  * Get vitual machine data
  *
- * return object ONAPP_VirtualMachine
+ * return object OnApp_VirtualMachine
  */
 function get_vm( $service_id ) {
     $user = get_onapp_client( $service_id );
-    $vm   = new ONAPP_VirtualMachine();
+    $vm   = new OnApp_VirtualMachine();
 
     if ( isset($user['error']) ) {
         $vm->setErrors( $user['error'] );
@@ -542,7 +542,7 @@ function get_vm( $service_id ) {
 function get_templates($serverid, $templatesid) {
     $onapp_config = get_onapp_config( $serverid );
 
-    $template = new ONAPP_Template();
+    $template = new OnApp_Template();
 
     $template->auth(
         $onapp_config["adress"],
@@ -564,26 +564,26 @@ function get_templates($serverid, $templatesid) {
 
 /**
  * Add secondary network interface just after VM creation
- * 
+ *
  * @todo add error verifications
- * 
+ *
  * @param integer $vmid VM ID
  * @param integer $hvzoneid hypervisor zone ID
- * @param mixed $service 
- * @param mixed $networkid phisical network ID 
+ * @param mixed $service
+ * @param mixed $networkid phisical network ID
  * @param integer $portspeed secondary network port speed
  * @return mixed network interface
  */
 
 function _add_sec_network_intetface( $vmid, $id, $service, $networkid, $portspeed, $jointype ){
     $onapp_config = get_onapp_config( $service['serverid'] );
-    
-    $onapp = new OnApp_Factory( 
+
+    $onapp = new OnApp_Factory(
         $onapp_config["adress"],
         $onapp_config['username'],
         $onapp_config['password']
     );
-    
+
     if( $jointype == 'hv_hvzone' ){
         $interface = _add_sec_network_intetface($vmid, $id[0], $service, $networkid, $portspeed, 'hvzone' );
         if ( $interface ){
@@ -597,33 +597,33 @@ function _add_sec_network_intetface( $vmid, $id, $service, $networkid, $portspee
         $hvzone_network_join = $onapp->factory('HypervisorZone_NetworkJoin');
         $network_join = $hvzone_network_join->getList( $id );
 
-    // find network join id of phisical network    
+    // find network join id of phisical network
         foreach( $network_join as $join ) {
             if ( $join->_network_id == $networkid ){
                 $network_join_id = $join->_id;
             }
-        } 
+        }
     } elseif( $jointype == 'hv' ){ echo 'And here <br />';
         $hv_network_join = $onapp->factory('Hypervisor_NetworkJoin', true );
         $network_join = $hv_network_join->getList( $id );
 
-    // find network join id of phisical network    
+    // find network join id of phisical network
         foreach( $network_join as $join ) {
             if ( $join->_network_id == $networkid ){
                 $network_join_id = $join->_id;
             }
-        }         
+        }
     }
-    
-    $network_interface = $onapp->factory('VirtualMachine_NetworkInterface', true);    
-    
+
+    $network_interface = $onapp->factory('VirtualMachine_NetworkInterface', true);
+
     if ( isset( $network_join_id ) ) {
         $network_interface->_label              = 'eth1';
         $network_interface->_rate_limit         = $portspeed;
         $network_interface->_network_join_id    = $network_join_id;
         $network_interface->_virtual_machine_id = $vmid;
         $network_interface->save();
-    } else { 
+    } else {
         return false;
     }
 
@@ -632,27 +632,27 @@ function _add_sec_network_intetface( $vmid, $id, $service, $networkid, $portspee
 
 /**
  * Verify if secondary network interface exists
- * 
+ *
  * @param type $vmid
- * @return type 
+ * @return type
  */
 function sec_net_interface_exists( $vmid, $serverid ){
     $onapp_config = get_onapp_config( $serverid );
-    
-    $onapp = new OnApp_Factory( 
+
+    $onapp = new OnApp_Factory(
         $onapp_config["adress"],
         $onapp_config['username'],
         $onapp_config['password']
     );
-    
+
     $networkinterface = $onapp->factory('VirtualMachine_NetworkInterface');
-    
+
     return count( $networkinterface->getList( $vmid )  ) > 1;
 }
 
 /**
  * Get VM IPs
- * 
+ *
  * @param integer $service_id
  * @return mixed ips
  */
@@ -672,18 +672,18 @@ function get_vm_ips($service_id) {
             'base'        => $base_ips,
             'additional'  => $additional_ips,
         );
-    
+
     $options = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) );
-    
+
     if( ! $options ) {
         $sec_network_id = 0;
     } else {
         $sec_network_id = $options['sec_network_id'];
-        
+
         if ( ! sec_net_interface_exists( $vm->_id, $service['serverid'] ) ) {
-            
+
             $hv_info = explode( ',', $service['configoption4']  );
-    
+
             if ( $options && count( $hv_info ) > 1 ) {
                 $hvzoneid = $hv_info[1];
                 $hvid     = $hv_info[0];
@@ -695,15 +695,15 @@ function get_vm_ips($service_id) {
                     _add_sec_network_intetface( $vm->_obj->_id, $hvzoneid, $service, $sec_network_id, $options['sec_net_port_speed'], 'hvzone' );
                 } elseif ( $hvid && is_numeric( $hvid ) ){
                     _add_sec_network_intetface( $vm->_obj->_id, $hvid, $service, $sec_network_id, $options['sec_net_port_speed'], 'hv' );
-                }            
-            }        
+                }
+            }
         }
-    }    
+    }
 
     if (is_array($vm->_obj->_ip_addresses) )
         foreach( $vm->_obj->_ip_addresses as $ip )
             $ips[$ip->_id] = $ip;
-    
+
     $select_ips = sprintf("
         SELECT
             serviceid,
@@ -736,9 +736,9 @@ function get_vm_ips($service_id) {
             } elseif( $row['isbase'] != 1 && $sec_network_id == $ips[$row['ipid']]->_network_id ) {
                 $sec_net_additional_ips[$row['ipid']] = $ips[$row['ipid']];
                 unset($ips[$row['ipid']]);
-            }          
+            }
         }
-        
+
     return array(
         'notresolved' => $ips,
         'base'        => $base_ips,
@@ -753,14 +753,14 @@ function get_vm_ips($service_id) {
  */
 function _action_ip_setbase($service_id, $ipid) {
     $service = get_service($service_id);
-    
+
     $option = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ));
     if ( ! $option ) {
         $sec_net_ips_number = 0;
     } else {
         $sec_net_ips_number = $option['sec_net_ips'];
     }
-    
+
     $ips = get_vm_ips($service_id);
 
     if( $ipid == "" || ! isset($ips['notresolved'][$ipid]) )
@@ -772,7 +772,7 @@ function _action_ip_setbase($service_id, $ipid) {
         return array(
             'error' => "Can't found not not assigned base IPs ",
         );
-    
+
 
     $sql_insert_ip = "REPLACE tblonappips SET
         serviceid  = '$service_id' ,
@@ -789,14 +789,14 @@ function _action_ip_setbase($service_id, $ipid) {
 
 /**
  * Action resolve IP set additional
- * 
+ *
  * @param integer $service_id
  * @param integer $ipid
- * @return mixed result 
+ * @return mixed result
  */
 function _action_ip_setadditional($service_id, $ipid) {
     $service = get_service($service_id);
-    
+
     $ips = get_vm_ips($service_id);
 
     if( $ipid == "" || ! isset($ips['notresolved'][$ipid]) )
@@ -824,28 +824,28 @@ function _action_ip_setadditional($service_id, $ipid) {
 
 /**
  * Add ip address to VM
- * 
+ *
  * @param integet $service_id
  * @param boolean $isbase whether base ip
  * @param boolean $secondary whether secondary network
- * @return boolean result 
+ * @return boolean result
  * will not work correctly if #5709 isn't fixed https://onapp.codebasehq.com/projects/onapp/tickets/5709
  */
-function _action_ip_add($service_id, $isbase, $secondary = false ) { 
+function _action_ip_add($service_id, $isbase, $secondary = false ) {
     $service = get_service($service_id);
     $vm      = get_vm($service_id);
     $ips     = get_vm_ips($service_id);
     $user    = get_onapp_client( $service_id );
-    
+
     if (  $secondary ){
        $option = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ));
-       
+
        $base_ips_number                 = $option['sec_net_ips'];
        $additional_ips_number           = $service['sec_net_additionalips'];
        $network_id                      = $option['sec_network_id'];
        $current_base_ips_number         = $ips['sec_net_base'];
        $current_additional_ips_number   = $ips['sec_net_additional'];
-       
+
     } else {
        $base_ips_number                 = $service['configoption18'];
        $additional_ips_number           = $service['additionalips'];
@@ -853,7 +853,7 @@ function _action_ip_add($service_id, $isbase, $secondary = false ) {
        $current_base_ips_number         = $ips['base'];
        $current_additional_ips_number   = $ips['additional'];
     }
-    
+
     if (is_null($vm->_id) )
         return array('error' => "Can't save IP address");
 
@@ -868,26 +868,26 @@ function _action_ip_add($service_id, $isbase, $secondary = false ) {
 
     $onapp_config = get_onapp_config($service['serverid']);
 
-    $ipaddress = new ONAPP_IpAddress();
+    $ipaddress = new OnApp_IpAddress();
 
     $ipaddress->auth(
         $onapp_config["adress"],
         $onapp_config['username'],
         $onapp_config['password']
     );
-    
+
     $ips = $ipaddress->getList( $network_id );
-    
+
     if ($ips)
         foreach( $ips as $ip)
             if( $ip->_free == true && ( is_null( $ip->user_id ) || $ip->user_id == $vm->_obj->_user_id ) && ! isset($free_ip)  )
                 $free_ip = $ip;
-            
+
     if ( ! isset($free_ip) || is_null($free_ip) )
         return array('error' => "Can't found free IP");
     else {
 
-        $networkinterface = new ONAPP_VirtualMachine_NetworkInterface();
+        $networkinterface = new OnApp_VirtualMachine_NetworkInterface();
 
         $networkinterface->_virtual_machine_id = $vm->_id;
 
@@ -902,13 +902,13 @@ function _action_ip_add($service_id, $isbase, $secondary = false ) {
                 if( $interface->_primary != true ){
                     $firstnetworkinterface = $interface;
                 }
-            } 
+            }
         } else {
             foreach( $networkinterface->getList() as $interface ){
                 if( $interface->_primary == true ){
                     $firstnetworkinterface = $interface;
                 }
-            }             
+            }
         }
     }
 
@@ -917,7 +917,7 @@ function _action_ip_add($service_id, $isbase, $secondary = false ) {
             'error' => "Can't found Virtual Machine network interface"
         );
 
-    $ipaddressjoin = new ONAPP_VirtualMachine_IpAddressJoin();
+    $ipaddressjoin = new OnApp_VirtualMachine_IpAddressJoin();
 
     $ipaddressjoin->_virtual_machine_id   = $vm->_id;
     $ipaddressjoin->_network_interface_id = $firstnetworkinterface->_id;
@@ -928,12 +928,12 @@ function _action_ip_add($service_id, $isbase, $secondary = false ) {
         $onapp_config['username'],
         $onapp_config['password']
     );
-    
+
     $ipaddressjoin->save();
 
     if ( ! isset($ipaddressjoin->_ip_address_id) )
         return array('error' => "Can't save IP address");
-    
+
     if( $ipaddressjoin->getErrorsAsArray() ){
         return array( 'error' => $ipaddressjoin->getErrorsAsString() );
     }
@@ -950,11 +950,11 @@ function _action_ip_add($service_id, $isbase, $secondary = false ) {
 
 /**
  * Resolve Ip addresses
- * 
- * @param integer $service_id 
+ *
+ * @param integer $service_id
  */
 function _ips_resolve_all($service_id) {
-    
+
     $service = get_service($service_id);
     $ips     = get_vm_ips($service_id);
 
@@ -1017,16 +1017,16 @@ function _ips_resolve_all($service_id) {
         full_query($sql_delete_ips_base);
         $ips = get_vm_ips($service_id);
     }
-    
- 
-// Resolve secondary network ips if needed    
-    if ( $option = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) ) ) {  
-        
+
+
+// Resolve secondary network ips if needed
+    if ( $option = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) ) ) {
+
 // resolve secondary network base ips after upgrade
         $ips_count = $option['sec_net_ips'] - count($ips['sec_net_base']);
-        
+
         for ( $i=0; $i < $ips_count; $i++ ) {
-            if (count($ips['notresolved']) > 0) { 
+            if (count($ips['notresolved']) > 0) {
                 $notresolvedip = array_shift($ips['notresolved']);
                 _action_ip_setbase($service_id, $notresolvedip->_id);
             } else {
@@ -1034,8 +1034,8 @@ function _ips_resolve_all($service_id) {
             };
 
             $ips = get_vm_ips($service_id);
-        } 
-        
+        }
+
 // resolve secondary network base ips after downgrade
         if ( count( $ips['sec_net_base'] ) > $option['sec_net_ips'] ) {
             $ips_count = count( $ips['sec_net_base'] ) - $option['sec_net_ips'];
@@ -1052,10 +1052,10 @@ function _ips_resolve_all($service_id) {
             full_query($sql_delete_ips_base);
             $ips = get_vm_ips($service_id);
         }
-        
+
 // resolve secondary network additional ips after upgrade
         $ips_count = $service['sec_net_additionalips'] - count($ips['sec_net_additional']);
-        
+
         for ( $i=0; $i < $ips_count; $i++ ) {
             if (count($ips['notresolved']) > 0) {
                 $notresolvedip = array_shift($ips['notresolved']);
@@ -1066,8 +1066,8 @@ function _ips_resolve_all($service_id) {
 
             $ips = get_vm_ips($service_id);
         }
-        
-        
+
+
 // resolve additional ips after downgrade
         if ( count($ips['sec_net_additional'] ) > $service['sec_net_additionalips'] ){
             $ips_count = count($ips['sec_net_additional']) - $service['sec_net_additionalips'];
@@ -1083,10 +1083,10 @@ function _ips_resolve_all($service_id) {
 
             full_query($sql_delete_ips_base);
             $ips = get_vm_ips($service_id);
-        }        
-        
+        }
+
     }
-    
+
 // remove not resolved IPs
     foreach($ips['notresolved'] as $ip) {
         _action_ip_delete($service_id, $ip->_id);
@@ -1097,9 +1097,9 @@ function _ips_resolve_all($service_id) {
 
 /**
  * Unassign all ips
- * 
+ *
  * @param integer $service_id
- * @return mixed result 
+ * @return mixed result
  */
 function _ips_unassign_all($service_id) {
     $delete_ips = "DELETE FROM tblonappips WHERE
@@ -1115,10 +1115,10 @@ function _ips_unassign_all($service_id) {
 
 /**
  * Unassign Ip address.
- * 
+ *
  * @param integer $service_id
  * @param integer $ipid
- * @return boolean  
+ * @return boolean
  */
 function _action_ip_delete($service_id, $ipid) {
     $service      = get_service($service_id);
@@ -1129,7 +1129,7 @@ function _action_ip_delete($service_id, $ipid) {
     if ( ! isset( $ips['notresolved'][$ipid] ) )
         return array('error' => "IP adress #$ipid is resolved or does not exist");
 
-    $ipaddressjoin = new ONAPP_VirtualMachine_IpAddressJoin();
+    $ipaddressjoin = new OnApp_VirtualMachine_IpAddressJoin();
 
     $ipaddressjoin->auth(
         $onapp_config["adress"],
@@ -1165,9 +1165,9 @@ function _action_ip_delete($service_id, $ipid) {
 
 /**
  * Updates service ips in WHMCS database
- * 
+ *
  * @param integer $service_id
- * @return boolean db query result 
+ * @return boolean db query result
  */
 function update_service_ips($service_id) {
     $vm = get_vm($service_id);
@@ -1184,11 +1184,11 @@ function update_service_ips($service_id) {
 
 /**
  * Create VM in OnApp and map to the WHMCS service
- * 
+ *
  * @param integer $service_id
  * @param string $hostname
  * @param integer $template_id
- * @return \OnApp_VirtualMachine|\OnApp_Factory 
+ * @return \OnApp_VirtualMachine|\OnApp_Factory
  */
 function create_vm( $service_id, $hostname, $template_id) {
     $service = get_service($service_id);
@@ -1208,12 +1208,12 @@ function create_vm( $service_id, $hostname, $template_id) {
     }
 
     $instance = new OnApp_Factory($onapp_config["adress"], $user["email"], $user["password"]);
-    if ( ! $instance->_is_auth ) 
+    if ( ! $instance->_is_auth )
         return $instance;
 
     $vm  = $instance->factory('VirtualMachine', true);
     $tpl = $instance->factory('Template');
-   
+
     $option = explode(",", $service['configoption4']);
     if ( count($option) > 1 ){
         $vm->_hypervisor_group_id = $option[1];
@@ -1263,7 +1263,7 @@ function create_vm( $service_id, $hostname, $template_id) {
         $vm->_swap_disk_size = NULL;
 
     $vm->save();
-    
+
     if ( ! is_null($vm->_obj->error) ) {
         $vm->error = $vm->_obj->error;
         return $vm;
@@ -1314,7 +1314,7 @@ function create_vm( $service_id, $hostname, $template_id) {
 /**
  * Delete VM
  * @param integer $service_id
- * @return \OnApp_VirtualMachine 
+ * @return \OnApp_VirtualMachine
  */
 function delete_vm( $service_id ) {
 
@@ -1326,13 +1326,13 @@ function delete_vm( $service_id ) {
     }
 
     $vm->delete();
-    
+
     if( count( $vm->getErrorsAsArray() ) > 0 ){
         return $vm;
     }
-   
+
     $delete_onapp_service = delete_onapp_service( $service_id );
-    
+
     if( $delete_onapp_service != 'success' ){
         $vm->setErrors( $delete_onapp_service );
     }
@@ -1345,24 +1345,24 @@ function delete_vm( $service_id ) {
 }
 
 /**
- * Delete mapping info from tblonappservices 
- * 
+ * Delete mapping info from tblonappservices
+ *
  */
 function delete_onapp_service( $service_id ){
     $result = full_query("DELETE FROM tblonappservices WHERE service_id = $service_id");
     if( $result ){
         return 'success';
-    } 
-        
+    }
+
     return 'Can\'t delete data from tblonappservices - ' . mysql_error();
 }
 
 /**
  * Get primary network interface
- * 
+ *
  * @param integer $service_id
  * @todo rename function
- * @return \OnApp_VirtualMachine_NetworkInterface 
+ * @return \OnApp_VirtualMachine_NetworkInterface
  */
 function get_vm_interface( $service_id ) {
 
@@ -1370,7 +1370,7 @@ function get_vm_interface( $service_id ) {
     $service = get_service($service_id);
 
 
-    $network = new ONAPP_VirtualMachine_NetworkInterface();
+    $network = new OnApp_VirtualMachine_NetworkInterface();
 
     $onapp_config = get_onapp_config($service['serverid']);
 
@@ -1399,9 +1399,9 @@ function get_vm_interface( $service_id ) {
 
 /**
  * Update User Limit
- * 
+ *
  * @param integer $server_id
- * @param integer $client_id 
+ * @param integer $client_id
  */
 function update_user_limits( $server_id, $client_id ) {
 
@@ -1468,7 +1468,7 @@ function update_user_limits( $server_id, $client_id ) {
             $storage_disk_size_limit += $row['value'];
 
     if ( ! is_null( $user ) ) {
-        $limits = new ONAPP_ResourceLimit();
+        $limits = new OnApp_ResourceLimit();
 
         $limits->auth(
             $user["hostname"],
@@ -1486,9 +1486,9 @@ function update_user_limits( $server_id, $client_id ) {
 
 /**
  * Update Storage Disksize
- * 
+ *
  * @param mixed $params
- * @param string $action 
+ * @param string $action
  */
 function update_user_storagedisksize( $params, $action = 'Active' ) {
     $serviceid = $params["serviceid"];
@@ -1582,20 +1582,20 @@ function is_private_ip( $ip ){
 
 /**
  * Set flash error
- * 
- * @param mixed $error_message 
+ *
+ * @param mixed $error_message
  */
 function setFlashError( $error_message ) {
-    if ( is_array( $error_message ) ) 
-        $_SESSION['onapp_flash']['error'] = implode(  PHP_EOL, $error_message  ); 
+    if ( is_array( $error_message ) )
+        $_SESSION['onapp_flash']['error'] = implode(  PHP_EOL, $error_message  );
     else
-        $_SESSION['onapp_flash']['error'] = $error_message; 
+        $_SESSION['onapp_flash']['error'] = $error_message;
 }
 
 /**
  * Get flash error
- * 
- * @return string error message 
+ *
+ * @return string error message
  */
 function getFlashError() {
     return $_SESSION['onapp_flash']['error'];

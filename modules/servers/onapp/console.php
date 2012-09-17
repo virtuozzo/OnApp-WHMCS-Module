@@ -10,18 +10,18 @@ function getSQLResult($sql) {
     require_once dirname(__FILE__).'/../../../includes/functions.php';
     require_once dirname(__FILE__).'/lib.php';
 
-    session_start(); 
+    session_start();
     $user_id = $_SESSION["uid"];
     $vm_id   = $_GET["id"];
 
 // Check VM access
-    $sql = sprintf("SELECT 
-        service_id 
-    FROM 
-        tblonappservices 
-        LEFT JOIN tblhosting ON tblhosting.id = service_id 
-    WHERE 
-        userid = '%s' 
+    $sql = sprintf("SELECT
+        service_id
+    FROM
+        tblonappservices
+        LEFT JOIN tblhosting ON tblhosting.id = service_id
+    WHERE
+        userid = '%s'
         AND vm_id = '%s';",
         stripcslashes($user_id),
         stripcslashes($vm_id));
@@ -30,7 +30,7 @@ function getSQLResult($sql) {
 
     if (! isset($sql_result["service_id"]) )
         die("Access denied to this Console");
-    else 
+    else
         $service_id = $sql_result["service_id"];
 
     unset($sql);
@@ -48,7 +48,7 @@ function getSQLResult($sql) {
 // Load VM
 
     $vm = new OnApp_VirtualMachine();
-    
+
     $vm->auth(
         $onapp_config["adress"],
         $user["email"],
@@ -61,7 +61,7 @@ function getSQLResult($sql) {
 
 // Load console
 
-    $console = new ONAPP_Console();
+    $console = new OnApp_Console();
 
     $console->auth(
         $onapp_config["adress"],
@@ -69,7 +69,7 @@ function getSQLResult($sql) {
         $user["password"]
     );
 
-    $console->load($vm_id); 
+    $console->load($vm_id);
 
     $url = ( ($onapp_config["hostname"]) ? $onapp_config["hostname"] : $onapp_config["adress"]  ). "/console_remote/".$console->_obj->_remote_key;
 
