@@ -51,9 +51,8 @@ foreach( array( 'id', 'page', 'action' ) as $val ) {
 }
 
 /**
- * Set base noavigation bar
+ * Set base navigation bar
  */
-
 $breadcrumbnav = ' <a href="index.php">' . $_LANG[ 'globalsystemname' ] . '</a>';
 $breadcrumbnav .= ' &gt; <a href="clientarea.php">' . $_LANG[ 'clientareatitle' ] . '</a>';
 $breadcrumbnav .= ' &gt; <a href="' . ONAPP_FILE_NAME . '">' . $_LANG[ 'onappmyvms' ] . '</a>';
