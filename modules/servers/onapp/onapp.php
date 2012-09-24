@@ -273,33 +273,6 @@ $js_serverOptions
   // END Load Data Store Zones //
   ////////////////////////////
 
- ////////////////////////////
-  // BEGIN Load Hypervisor Zones //
-    
-    $hv_zone = $onapp->factory('HypervisorZone'); 
-    $net_join = $onapp->factory('HypervisorZone_NetworkJoin');
-
-    $hv_zones = $hv_zone->getList();
-
-    if ( ! empty( $hv_zones ) ) {
-        $js_hvZoneOptions = "    hvZoneOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
-
-        foreach ( $hv_zones as $_hv_zone ) {
-            $nets_join = $net_join->getList( $_hv_zone->_id );
-
-            if( is_array( $nets_join ) ){
-                foreach( $nets_join as $net ){
-                    $nets_by_hvzone[ $_hv_zone->_id ][] = $net->_network_id; 
-                }
-            }
-            
-            $js_hvZoneOptions .=
-                "      hvZoneOptions[ $_hv_zone->_id ] = '".addslashes( $_hv_zone->_label )."';\n";
-        }
-    }
-  // END Load Hypervisor Zones //
-  ////////////////////////////
-  
   ////////////////////////////
   // BEGIN Load Hypervisors //
     $option = explode( ",", $packageconfigoption[4] );
@@ -320,10 +293,14 @@ $js_serverOptions
 
     $js_hvOptions = "    hvOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
     $js_hvZonesArray = '';
+    $hvs_in_hvzones = array();
 
     if (!empty($hvs)) {
         foreach ($hvs as $_hv) {
             if ( $_hv->_online == "true" && $_hv->_hypervisor_group_id ) {
+                
+                $hvs_in_hvzones[$_hv->_hypervisor_group_id][] = $_hv->_id;  
+                
 // get networks by hypervisor                
                 $nets_join = $net_join->getList( $_hv->_id );
 
@@ -344,6 +321,43 @@ $js_serverOptions
     };
   // END Load Hypervisors   //
   ////////////////////////////
+
+       ////////////////////////////
+  // BEGIN Load Hypervisor Zones //
+    
+    $hv_zone = $onapp->factory('HypervisorZone'); 
+    $net_join = $onapp->factory('HypervisorZone_NetworkJoin');
+
+    $hv_zones = $hv_zone->getList();
+
+    if ( ! empty( $hv_zones ) ) {
+        
+        
+        $js_hvZoneOptions = "    hvZoneOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
+        $nets_by_hvzone = array();
+        foreach ( $hv_zones as $_hv_zone ) {
+            $nets_join = $net_join->getList( $_hv_zone->_id );
+            
+// Include not only nets joined directly to hvzone but and to it's ( hvzone's ) hypervisors             
+            foreach( $hvs_in_hvzones[ $_hv_zone->_id ] as $hvs_ids ){
+                foreach ( $nets_by_hv[ $hvs_ids ] as $_net_ ){
+                    $nets_by_hvzone[ $_hv_zone->_id ][] = $_net_;
+                }
+            }
+
+            if( is_array( $nets_join ) ){
+                foreach( $nets_join as $net ){
+                    $nets_by_hvzone[ $_hv_zone->_id ][] = $net->_network_id; 
+                }
+            } 
+            
+            $js_hvZoneOptions .=
+                "      hvZoneOptions[ $_hv_zone->_id ] = '".addslashes( $_hv_zone->_label )."';\n";
+        }
+    }
+  
+  // END Load Hypervisor Zones //
+  ////////////////////////////    
 
   ////////////////////////////
   // BEGIN Primary networks //
