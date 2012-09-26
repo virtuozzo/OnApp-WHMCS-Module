@@ -256,11 +256,13 @@ function show_logs( id, logid, date, action, status, type ) {
       <td>
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=reset_pass">{$LANG.onappvmresetpassword}</a>
       </td>
+    </tr>
+    <tr> 
       {if $overagesenabled != 0}
       <td>
         <a href="#" onclick="$('form#product_details_form').submit(); return false;"> {$LANG.onappbwusage} </a>
       </td>
-      {/if}
+      {/if} 
     </tr>
   </tbody>
 </table>
