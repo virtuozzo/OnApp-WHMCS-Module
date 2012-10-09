@@ -697,7 +697,7 @@ function get_vm_ips($service_id) {
     
             if ( $options && count( $hv_info ) > 1 ) {
                 $hvzoneid = $hv_info[1];
-                $hvid     = $hv_info[0];
+                $hvid     = $hvid     = $hv_info[0] ? $hv_info[0] : $vm->_obj->_hypervisor_id;
 
                 if( ( $hvzoneid && is_numeric( $hvzoneid ) ) && ( $hvid && is_numeric( $hvid ) ) ){
                     _add_sec_network_intetface( $vm->_obj->_id, array( $hvzoneid, $hvid ), $service, $sec_network_id, $options['sec_net_port_speed'], 'hv_hvzone' );
