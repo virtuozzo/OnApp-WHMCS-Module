@@ -6,7 +6,7 @@ if( ! defined( 'ONAPP_FILE_NAME' ) ) {
 }
 
 if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( dirname( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) ) ) ) . '/includes/wrapper/OnAppInit.php' );
+	define( 'ONAPP_WRAPPER_INIT', ROOTDIR . '/includes/wrapper/OnAppInit.php' );
 }
 
 if( file_exists( ONAPP_WRAPPER_INIT ) ) {
@@ -20,8 +20,8 @@ load_language();
 function onapp_createTables() {
 	global $_LANG, $whmcsmysql;
 
-	define ( "CREATE_TABLE_CLIENTS",
-	"CREATE TABLE IF NOT EXISTS `tblonappclients` (
+	define ( 'CREATE_TABLE_CLIENTS',
+	'CREATE TABLE IF NOT EXISTS `tblonappclients` (
   `server_id` int(11) NOT NULL,
   `client_id` int(11) NOT NULL,
   `onapp_user_id` int(11) NOT NULL,
@@ -29,10 +29,10 @@ function onapp_createTables() {
   `email` text NOT NULL,
   PRIMARY KEY (`server_id`, `client_id`),
   KEY `client_id` (`client_id`)
-) ENGINE=InnoDB;" );
+) ENGINE=InnoDB;' );
 
-	define ( "CREATE_TABLE_SERVICES",
-	"CREATE TABLE IF NOT EXISTS `tblonappservices` (
+	define ( 'CREATE_TABLE_SERVICES',
+	'CREATE TABLE IF NOT EXISTS `tblonappservices` (
   `service_id` int(11) NOT NULL,
   `vm_id` int(11) NOT NULL,
   `memory`int(11) DEFAULT 0 NOT NULL,
@@ -41,50 +41,50 @@ function onapp_createTables() {
   `disk_size` int(11) DEFAULT 0 NOT NULL,
   PRIMARY KEY (`service_id`),
   KEY `service_id` (`service_id`)
-) ENGINE=InnoDB;" );
+) ENGINE=InnoDB;' );
 
-	define( "CREATE_TABLE_IPS",
-	"CREATE TABLE IF NOT EXISTS `tblonappips` (
+	define( 'CREATE_TABLE_IPS',
+	'CREATE TABLE IF NOT EXISTS `tblonappips` (
   `serviceid` int(11) NOT NULL,
   `ipid` int(11) NOT NULL,
   `isbase` TINYINT(1) DEFAULT 0 NOT NULL,
   PRIMARY KEY (`serviceid`, `ipid`),
   KEY `id` (`serviceid`, `ipid`)
-) ENGINE=InnoDB;" );
+) ENGINE=InnoDB;' );
 
-	define( "CREATE_TABLE_CRON_DATES",
-	"CREATE TABLE IF NOT EXISTS `tblonappcronhostingdates` (
+	define( 'CREATE_TABLE_CRON_DATES',
+	'CREATE TABLE IF NOT EXISTS `tblonappcronhostingdates` (
   `hosting_id` int(11) NOT NULL,
   `account_date` DATETIME NOT NULL,
   UNIQUE (
 `hosting_id`
 ))
- ENGINE=InnoDB;" );
+ ENGINE=InnoDB;' );
 
 	if( ! full_query( CREATE_TABLE_CLIENTS, $whmcsmysql ) ) {
 		return array(
-			"error" => sprintf( $_LANG[ "onapperrtablecreate" ], 'onappclients' )
+			'error' => sprintf( $_LANG[ 'onapperrtablecreate' ], 'onappclients' )
 		);
 	}
 	else {
 		if( ! full_query( CREATE_TABLE_SERVICES, $whmcsmysql ) ) {
 			return array(
-				"error" => sprintf( $_LANG[ "onapperrtablecreate" ], 'onappservices' )
+				'error' => sprintf( $_LANG[ 'onapperrtablecreate' ], 'onappservices' )
 			);
 		}
 		else {
 			if( ! full_query( CREATE_TABLE_IPS, $whmcsmysql ) ) {
 				return array(
-					"error" => sprintf(
-						$_LANG[ "onapperrtablecreate" ],
+					'error' => sprintf(
+						$_LANG[ 'onapperrtablecreate' ],
 						'tblonappips' )
 				);
 			}
 			else {
 				if( ! full_query( CREATE_TABLE_CRON_DATES, $whmcsmysql ) ) {
 					return array(
-						"error" => sprintf(
-							$_LANG[ "onapperrtablecreate" ],
+						'error' => sprintf(
+							$_LANG[ 'onapperrtablecreate' ],
 							'tblonappcronhostingdates' )
 					);
 				}
@@ -95,31 +95,31 @@ function onapp_createTables() {
 
 // Add VM creation template in to DB
 
-	define( "SELECT_VM_CREATE_TEMPLATE",
-	"SELECT * FROM tblemailtemplates WHERE type='product' AND name='Virtual Machine Created';"
+	define( 'SELECT_VM_CREATE_TEMPLATE',
+	'SELECT * FROM tblemailtemplates WHERE type="product" AND name="Virtual Machine Created";'
 	);
 
-	define( "INSERT_VM_CREATE_TEMPLATE",
-	"INSERT INTO tblemailtemplates ( type, name, subject, message, plaintext)
-          VALUES ('product', 'Virtual Machine Created', 'Virtual machine has been created', 'Dear {\$client_name},<br/><br/>This is a notice that an virtual machine has been created.', 0 );" );
+	define( 'INSERT_VM_CREATE_TEMPLATE',
+	'INSERT INTO tblemailtemplates ( type, name, subject, message, plaintext)
+          VALUES ("product", "Virtual Machine Created", "Virtual machine has been created", "Dear {\$client_name},<br/><br/>This is a notice that an virtual machine has been created., 0 );' );
 
 	if( ! mysql_fetch_assoc( full_query( SELECT_VM_CREATE_TEMPLATE ) ) ) {
 		if( ! full_query( INSERT_VM_CREATE_TEMPLATE ) ) {
-			return array( "error" => sprintf( $_LANG[ "onapperrtemplatecreate" ], 'virtual machine create' ) );
+			return array( 'error' => sprintf( $_LANG[ 'onapperrtemplatecreate' ], 'virtual machine create' ) );
 		}
 	}
 
-	define( "SELECT_VM_DELETE_TEMPLATE",
-	"SELECT * FROM tblemailtemplates WHERE type='product' AND name='Virtual Machine Deleted';"
+	define( 'SELECT_VM_DELETE_TEMPLATE',
+	'SELECT * FROM tblemailtemplates WHERE type="product" AND name="Virtual Machine Deleted";'
 	);
 
-	define( "INSERT_VM_DELETE_TEMPLATE",
-	"INSERT INTO tblemailtemplates ( type, name, subject, message, plaintext)
-          VALUES ('product', 'Virtual Machine Deleted', 'Virtual machine has been deleted', 'Dear {\$client_name},<br/><br/>This is a notice that an virtual machine has been deleted.', 0 );" );
+	define( 'INSERT_VM_DELETE_TEMPLATE',
+	'INSERT INTO tblemailtemplates ( type, name, subject, message, plaintext)
+          VALUES ("product", "Virtual Machine Deleted", "Virtual machine has been deleted", "Dear {\$client_name},<br/><br/>This is a notice that an virtual machine has been deleted.", 0 );' );
 
 	if( ! mysql_fetch_assoc( full_query( SELECT_VM_DELETE_TEMPLATE ) ) ) {
 		if( ! full_query( INSERT_VM_DELETE_TEMPLATE ) ) {
-			return array( "error" => sprintf( $_LANG[ "onapperrtemplatecreate" ], 'virtual machine delete' ) );
+			return array( 'error' => sprintf( $_LANG[ 'onapperrtemplatecreate' ], 'virtual machine delete' ) );
 		}
 	}
 
@@ -129,7 +129,7 @@ function onapp_createTables() {
 function onapp_ConfigOptions() {
 	global $packageconfigoption, $_GET, $_POST, $_LANG;
 
-	$serviceid = $_GET[ "id" ] ? $_GET[ "id" ] : $_POST[ "id" ];
+	$serviceid = $_GET[ 'id' ] ? $_GET[ 'id' ] : $_POST[ 'id' ];
 	$serviceid = addslashes( $serviceid );
 
 	$configarray = array();
@@ -137,7 +137,7 @@ function onapp_ConfigOptions() {
 	if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
 		return array(
 			sprintf(
-				"%s " . realpath( dirname( __FILE__ ) . '/../../../' ) . "/includes ( %s )",
+				'%s ' . dirname( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) ) . '/includes ( %s )',
 				$_LANG[ 'onappwrappernotfound' ], $_LANG[ 'onappmakesuredirectoryisaccessible' ]
 			) => array()
 		);
@@ -145,11 +145,11 @@ function onapp_ConfigOptions() {
 
 	$table_result = onapp_createTables();
 
-	if( $table_result[ "error" ] ) {
+	if( $table_result[ 'error' ] ) {
 		return array(
 			sprintf(
 				"<font color='red'><b>%s</b></font>",
-				$table_result[ "error" ]
+				$table_result[ 'error' ]
 			) => array()
 		);
 	}
@@ -158,7 +158,7 @@ function onapp_ConfigOptions() {
 	// BEGIN Load Servers     //
 
 	$sql_servers_result = full_query(
-		"SELECT id, name FROM tblservers WHERE type = 'onapp'"
+		'SELECT id, name FROM tblservers WHERE type = "onapp"'
 	);
 
 	$onapp_servers = array();
@@ -171,13 +171,13 @@ function onapp_ConfigOptions() {
 	// Error if not found onapp server
 	if( ! $onapp_servers ) {
 		return array(
-			"<font color='red'><b>" . $_LANG[ "onapperrcantfoundactiveserver" ] . "</b></font>" => array()
+			'<font color="red"><b>' . $_LANG[ 'onapperrcantfoundactiveserver' ] . '</b></font>' => array()
 		);
 	}
 
-	$onapp_server_id = $packageconfigoption[ 1 ] != "" ? $packageconfigoption[ 1 ] : array_shift( array_keys( $onapp_servers ) );
+	$onapp_server_id = $packageconfigoption[ 1 ] != '' ? $packageconfigoption[ 1 ] : array_shift( array_keys( $onapp_servers ) );
 
-	$js_serverOptions = "";
+	$js_serverOptions = '';
 	foreach( array_keys( $onapp_servers ) as $id_server ) {
 		$js_serverOptions .= "    serverOptions[$id_server] = '" . addslashes( $onapp_servers[ $id_server ] ) . "';\n";
 	}
@@ -187,14 +187,14 @@ function onapp_ConfigOptions() {
 // GET OnApp Instance //
 ///////////////////////
 	$onapp = new OnApp_Factory(
-		$onapp_config[ "adress" ],
+		$onapp_config[ 'adress' ],
 		$onapp_config[ 'username' ],
 		$onapp_config[ 'password' ]
 	);
 // END Get OnApp Instance //
 ///////////////////////////
 
-	if( isset( $onapp_config[ "error" ] ) ) {
+	if( isset( $onapp_config[ 'error' ] ) ) {
 
 // Error JS Begin
 		$javascript = "
@@ -219,15 +219,14 @@ $js_serverOptions
 </script>";
 
 		return array(
-			"Server"                                                                         => array(
-				"Type"        => "dropdown",
-				"Options"     => implode( ',', array_keys( $onapp_servers ) ),
-				"Description" => "",
+			'Server'                                                                         => array(
+				'Type'        => 'dropdown',
+				'Options'     => implode( ',', array_keys( $onapp_servers ) ),
+				'Description' => '',
 			),
-			"<font color='red'><b>" . $onapp_config[ 'error' ] . "</b></font>" . $javascript => array()
+			'<font color="red"><b>' . $onapp_config[ 'error' ] . '</b></font>' . $javascript => array()
 		);
 	}
-	;
 
 	// END Load Servers       //
 	////////////////////////////
@@ -239,7 +238,7 @@ $js_serverOptions
 	$templates = $template->getList();
 
 	$template_ids       = array();
-	$js_templateOptions = "";
+	$js_templateOptions = '';
 	$created_os         = array();
 
 	if( ! empty( $templates ) ) {
@@ -257,7 +256,7 @@ $js_serverOptions
 			}
 
 			$oses[ $_template->_id ]               = $os;
-			$js_templateOptions[ $_template->_id ] = htmlspecialchars( addslashes( preg_replace( '/\r\n|\n|\r/', " ", $_template->_label ) ) );
+			$js_templateOptions[ $_template->_id ] = htmlspecialchars( addslashes( preg_replace( '/\r\n|\n|\r/', ' ', $_template->_label ) ) );
 		}
 // sorting templates and wrapper workout for Google Chrome and IE
 		asort( $js_templateOptions );
@@ -270,7 +269,7 @@ $js_serverOptions
 
 	//////////////////////////////
 	// BEGIN Load Data Store Zones //
-	$option = explode( ",", $packageconfigoption[ 11 ] );
+	$option = explode( ',', $packageconfigoption[ 11 ] );
 
 	if( count( $option ) > 1 ) {
 		$ds_zone_primary_selected = $option[ 1 ];
@@ -279,7 +278,7 @@ $js_serverOptions
 		$ds_zone_primary_selected = 0;
 	}
 
-	$option = explode( ",", $packageconfigoption[ 9 ] );
+	$option = explode( ',', $packageconfigoption[ 9 ] );
 
 	if( count( $option ) > 1 ) {
 		$ds_zone_swap_selected = $option[ 1 ];
@@ -292,7 +291,7 @@ $js_serverOptions
 
 	$dstore_zones = $dstore_zone->getList();
 
-	$js_dsOptions = "    dsOptions[0] = '" . $_LANG[ "onappautoselect" ] . "';\n";
+	$js_dsOptions = "    dsOptions[0] = '" . $_LANG[ 'onappautoselect' ] . "';\n";
 
 	if( ! empty ( $dstore_zones ) ) {
 		foreach( $dstore_zones as $_ds ) {
@@ -314,7 +313,7 @@ $js_serverOptions
 	$hv_zones = $hv_zone->getList();
 
 	if( ! empty( $hv_zones ) ) {
-		$js_hvZoneOptions = "    hvZoneOptions[0] = '" . $_LANG[ "onappautoselect" ] . "';\n";
+		$js_hvZoneOptions = "    hvZoneOptions[0] = '" . $_LANG[ 'onappautoselect' ] . "';\n";
 
 		foreach( $hv_zones as $_hv_zone ) {
 			$nets_join = $net_join->getList( $_hv_zone->_id );
@@ -351,7 +350,7 @@ $js_serverOptions
 
 	$hv_ids = array();
 
-	$js_hvOptions    = "    hvOptions[0] = '" . $_LANG[ "onappautoselect" ] . "';\n";
+	$js_hvOptions    = "    hvOptions[0] = '" . $_LANG[ 'onappautoselect' ] . "';\n";
 	$js_hvZonesArray = '';
 
 	if( ! empty( $hvs ) ) {
@@ -508,7 +507,7 @@ $js_serverOptions
             AND configlinks.pid = $serviceid"
 	);
 
-	$js_ConfigOptions    = "    configOptions[0] = '" . $_LANG[ "onappselconfoption" ] . "';\n";
+	$js_ConfigOptions    = "    configOptions[0] = '" . $_LANG[ 'onappselconfoption' ] . "';\n";
 	$js_ConfigOptionsSub = "";
 	$configoptions       = array();
 	$options             = array();
@@ -541,15 +540,15 @@ $js_serverOptions
 	$js_error = "    var error_msg = ";
 
 	if( count( $hv_ids ) == 0 ) {
-		$js_error .= "'<b><font color=\'red\'>" . $_LANG[ "onapphvnotfound" ] . "</font></b>'";
+		$js_error .= "'<b><font color=\'red\'>" . $_LANG[ 'onapphvnotfound' ] . "</font></b>'";
 	}
 	else {
 		if( count( $template_ids ) == 0 ) {
-			$js_error .= "'<b><font color=\'red\'>" . $_LANG[ "onapposnotfound" ] . "</font></b>'";
+			$js_error .= "'<b><font color=\'red\'>" . $_LANG[ 'onapposnotfound' ] . "</font></b>'";
 		}
 		else {
 			if( count( $network_ids ) == 0 ) {
-				$js_error .= "'<b><font color=\'red\'>" . $_LANG[ "onappnetnotfound" ] . "</font></b>'";
+				$js_error .= "'<b><font color=\'red\'>" . $_LANG[ 'onappnetnotfound' ] . "</font></b>'";
 			}
 			else {
 				$js_error .= "''";
@@ -663,111 +662,111 @@ $js_localization_string
 ";
 
 	$configarray = array(
-		$_LANG[ "onappiservers" ]               => array(
+		$_LANG[ 'onappiservers' ]               => array(
 			"Type"        => "dropdown",
 			"Options"     => implode( ',', array_keys( $onapp_servers ) ),
 			"Description" => "",
 		),
-		$_LANG[ "onapptemlates" ]               => array(
+		$_LANG[ 'onapptemlates' ]               => array(
 			"Type"        => "text",
 			"Size"        => "5",
 			"Description" => count( $template_ids ) != 0 ?
 				"" :
-				$_LANG[ "onappnotfoundred" ],
+				$_LANG[ 'onappnotfoundred' ],
 		),
-		$_LANG[ "onappram" ]                    => array(
+		$_LANG[ 'onappram' ]                    => array(
 			"Type"        => "text",
 			"Size"        => "5",
 			"Description" => "MB",
 		),
-		$_LANG[ "onapphv" ]                     => array(
+		$_LANG[ 'onapphv' ]                     => array(
 			"Type"        => count( $hv_ids ) != 0 ? "dropdown" : null,
 			"Options"     => count( $hv_ids ) != 0 ?
 				"0," . implode( ',', array_keys( $hv_ids ) ) :
 				null,
 			"Description" => count( $hv_ids ) != 0 ?
 				"" :
-				$_LANG[ "onappnotfoundred" ],
+				$_LANG[ 'onappnotfoundred' ],
 		),
-		$_LANG[ "onappcpucores" ]               => array(
+		$_LANG[ 'onappcpucores' ]               => array(
 			"Type"        => "text",
 			"Size"        => "5",
 			"Description" => "",
 		),
-		$_LANG[ "onappprimarynet" ]             => array(
+		$_LANG[ 'onappprimarynet' ]             => array(
 			"Type"        => count( $network_ids ) != 0 ? "dropdown" : null,
 			"Options"     => count( $network_ids ) != 0 ?
 				implode( ',', array_keys( $network_ids ) ) :
 				null,
 			"Description" => count( $network_ids ) != 0 ?
 				"" :
-				$_LANG[ "onappnotfoundred" ],
+				$_LANG[ 'onappnotfoundred' ],
 		),
-		$_LANG[ "onappcpuprior" ]               => array(
+		$_LANG[ 'onappcpuprior' ]               => array(
 			"Type"        => "text",
 			"Size"        => "5",
 			"Description" => "%",
 		),
-		$_LANG[ "onappportspeed" ]              => array(
+		$_LANG[ 'onappportspeed' ]              => array(
 			"Type"        => "text",
 			"Size"        => "5",
 			"Description" => "Mbps ( Unlimited if not set )",
 		),
-		$_LANG[ "onappswapsize" ]               => array(
+		$_LANG[ 'onappswapsize' ]               => array(
 			"Type"        => "text",
 			"Size"        => "5",
 			"Description" => "GB",
 		),
-		$_LANG[ "onappbuildauto" ]              => array(
+		$_LANG[ 'onappbuildauto' ]              => array(
 			"Type"        => "yesno",
-			"Description" => $_LANG[ "onappticktobuildauto" ]
+			"Description" => $_LANG[ 'onappticktobuildauto' ]
 		),
-		$_LANG[ "onappprivarydisksize" ]        => array(
+		$_LANG[ 'onappprivarydisksize' ]        => array(
 			"Type"        => "text",
 			"Size"        => "5",
 			"Description" => "GB",
 		),
-		$_LANG[ "onappadditionalram" ]          => array(
+		$_LANG[ 'onappadditionalram' ]          => array(
 			"Type"        => "dropdown",
 			"Options"     => "0," . implode( ',', $configoptions ),
 			"Description" => "",
 		),
-		$_LANG[ "onappadditionallcores" ]       => array(
+		$_LANG[ 'onappadditionallcores' ]       => array(
 			"Type"        => "dropdown",
 			"Options"     => "0," . implode( ',', $configoptions ),
 			"Description" => "",
 		),
-		$_LANG[ "onappadditionallcpupriority" ] => array(
+		$_LANG[ 'onappadditionallcpupriority' ] => array(
 			"Type"        => "dropdown",
 			"Options"     => "0," . implode( ',', $configoptions ),
 			"Description" => "",
 		),
-		$_LANG[ "onappadditionalldisksize" ]    => array(
+		$_LANG[ 'onappadditionalldisksize' ]    => array(
 			"Type"        => "dropdown",
 			"Options"     => "0," . implode( ',', $configoptions ),
 			"Description" => "",
 		),
-		$_LANG[ "onappipaddress" ]              => array(
+		$_LANG[ 'onappipaddress' ]              => array(
 			"Type"        => "dropdown",
 			"Options"     => "0," . implode( ',', $configoptions ),
 			"Description" => "",
 		),
-		$_LANG[ "onappbackup" ]                 => array(
+		$_LANG[ 'onappbackup' ]                 => array(
 			"Type"        => "dropdown",
 			"Options"     => "0," . implode( ',', $configoptions ),
 			"Description" => "",
 		),
-		$_LANG[ "onappincludedips" ]            => array(
+		$_LANG[ 'onappincludedips' ]            => array(
 			"Type"        => "text",
 			"Size"        => "5",
 			"Description" => "",
 		),
-		$_LANG[ "onappaddonresource" ]          => array(
+		$_LANG[ 'onappaddonresource' ]          => array(
 			"Type"        => "dropdown",
 			"Options"     => "0," . implode( ',', $configoptions ),
 			"Description" => "",
 		),
-		$_LANG[ "onappadditionallportspeed" ]   => array(
+		$_LANG[ 'onappadditionallportspeed' ]   => array(
 			"Type"        => "dropdown",
 			"Options"     => "0," . implode( ',', $configoptions ),
 			"Description" => "",
@@ -798,13 +797,13 @@ function onapp_CreateAccount( $params ) {
 	serviceStatus( $params[ 'serviceid' ], $status );
 
 	if( isset( $getvm->_id ) ) {
-		return $_LANG[ "onappvmexist" ];
+		return $_LANG[ 'onappvmexist' ];
 	}
 	elseif( $params[ 'domain' ] == "" ) {
-		return $_LANG[ "onapphostnamenotfound" ];
+		return $_LANG[ 'onapphostnamenotfound' ];
 	}
 	elseif( ( $params[ 'configoption2' ] == "" || count( explode( ',', $params[ 'configoption2' ] ) ) != 1 ) && ! isset( $service[ 'os' ] ) ) {
-		return $_LANG[ "onapptemplatenotone" ];
+		return $_LANG[ 'onapptemplatenotone' ];
 	}
 
 	serviceStatus( $params[ 'serviceid' ], 'Active' );
@@ -816,10 +815,10 @@ function onapp_CreateAccount( $params ) {
 	);
 
 	if( ! is_null( $vm->getErrorsAsArray() ) ) {
-		return $_LANG[ "onappcantcreatevm" ] . ":" . $vm->getErrorsAsString( ' ' );
+		return $_LANG[ 'onappcantcreatevm' ] . ":" . $vm->getErrorsAsString( ' ' );
 	}
 	elseif( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-		return $_LANG[ "onappcantcreatevm" ] . ":" . $vm->_obj->getErrorsAsString( ' ' );
+		return $_LANG[ 'onappcantcreatevm' ] . ":" . $vm->_obj->getErrorsAsString( ' ' );
 	}
 
 // create secondary network interface if needed
@@ -849,10 +848,10 @@ function onapp_CreateAccount( $params ) {
 	serviceStatus( $params[ 'serviceid' ], $status );
 
 	if( ! is_null( $vm->getErrorsAsArray() ) ) {
-		return $_LANG[ "onappcantcreatevm" ] . ":" . $vm->getErrorsAsString( ' ' );
+		return $_LANG[ 'onappcantcreatevm' ] . ":" . $vm->getErrorsAsString( ' ' );
 	}
 	elseif( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-		return $_LANG[ "onappcantcreatevm" ] . ":" . $vm->_obj->getErrorsAsString( ' ' );
+		return $_LANG[ 'onappcantcreatevm' ] . ":" . $vm->_obj->getErrorsAsString( ' ' );
 	}
 
 	return 'success';
@@ -876,10 +875,10 @@ function onapp_TerminateAccount( $params ) {
 		serviceStatus( $params[ 'serviceid' ], $status );
 
 		if( ! is_null( $vm->getErrorsAsArray() ) ) {
-			return $_LANG[ "onappcantdeletevm" ] . ": " . $vm->getErrorsAsString( ', ' );
+			return $_LANG[ 'onappcantdeletevm' ] . ": " . $vm->getErrorsAsString( ', ' );
 		}
 		elseif( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-			return $_LANG[ "onappcantdeletevm" ] . ": " . $vm->_obj->getErrorsAsString( ', ' );
+			return $_LANG[ 'onappcantdeletevm' ] . ": " . $vm->_obj->getErrorsAsString( ', ' );
 		}
 	}
 	else {
@@ -910,10 +909,10 @@ function onapp_SuspendAccount( $params ) {
 		$vm->_obj->suspend();
 
 		if( ! is_null( $vm->getErrorsAsArray() ) ) {
-			return $_LANG[ "onappcantsuspendvm" ] . ": " . $vm->getErrorsAsString( ', ' );
+			return $_LANG[ 'onappcantsuspendvm' ] . ": " . $vm->getErrorsAsString( ', ' );
 		}
 		elseif( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-			return $_LANG[ "onappcantsuspendvm" ] . ": " . $vm->_obj->getErrorsAsString( ', ' );
+			return $_LANG[ 'onappcantsuspendvm' ] . ": " . $vm->_obj->getErrorsAsString( ', ' );
 		}
 	}
 	else {
@@ -944,10 +943,10 @@ function onapp_UnsuspendAccount( $params ) {
 		$vm->_obj->suspend();
 
 		if( ! is_null( $vm->getErrorsAsArray() ) ) {
-			return $_LANG[ "onappcantunsuspendvm" ] . ": " . $vm->getErrorsAsString( ', ' );
+			return $_LANG[ 'onappcantunsuspendvm' ] . ": " . $vm->getErrorsAsString( ', ' );
 		}
 		elseif( ! is_null( $vm->_obj->getErrorsAsArray() ) ) {
-			return $_LANG[ "onappcantunsuspendvm" ] . ": " . $vm->_obj->getErrorsAsString( ', ' );
+			return $_LANG[ 'onappcantunsuspendvm' ] . ": " . $vm->_obj->getErrorsAsString( ', ' );
 		}
 	}
 	else {
@@ -972,11 +971,11 @@ function onapp_ClientArea( $params ) {
 
 	$service = get_service( $params[ 'serviceid' ] );
 
-	if( ! is_null( $service[ "vmid" ] ) ) {
-		return '<a href="' . ONAPP_FILE_NAME . '?page=productdetails&id=' . $params[ 'serviceid' ] . '">' . $_LANG[ "onappvmsettings" ] . '</a>';
+	if( ! is_null( $service[ 'vmid' ] ) ) {
+		return '<a href="' . ONAPP_FILE_NAME . '?page=productdetails&id=' . $params[ 'serviceid' ] . '">' . $_LANG[ 'onappvmsettings' ] . '</a>';
 	}
 	else {
-		return '<a href="' . ONAPP_FILE_NAME . '?page=productdetails&id=' . $params[ 'serviceid' ] . '">' . $_LANG[ "onappvmcreate" ] . '</a>';
+		return '<a href="' . ONAPP_FILE_NAME . '?page=productdetails&id=' . $params[ 'serviceid' ] . '">' . $_LANG[ 'onappvmcreate' ] . '</a>';
 	}
 }
 

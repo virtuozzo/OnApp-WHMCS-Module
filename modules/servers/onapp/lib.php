@@ -1234,7 +1234,6 @@ function _action_ip_delete( $service_id, $ipid ) {
 			break;
 		}
 	}
-	;
 
 	$ip_join->_virtual_machine_id = $vm->_id;
 
@@ -1306,9 +1305,9 @@ function create_vm( $service_id, $hostname, $template_id ) {
 	}
 
 	$instance = new OnApp_Factory( $onapp_config[ 'adress' ], $user[ 'email' ], $user[ 'password' ] );
-	if( ! $instance->_is_auth ) {
-		return $instance;
-	}
+//	if( ! $instance->_is_auth ) {
+//		return $instance;
+//	}
 
 	$vm  = $instance->factory( 'VirtualMachine', true );
 	$tpl = $instance->factory( 'Template' );

@@ -122,7 +122,6 @@ if( isset( $_ONAPPVARS[ 'page' ] ) && $_ONAPPVARS[ 'service' ] && $_ONAPPVARS[ '
 				$_ONAPPVARS[ 'error' ] = sprintf( $_LANG[ 'onapppagenotfound' ], $_ONAPPVARS[ 'page' ] );
 				productdetails();
 			}
-			;
 			break;
 		default:
 			$_ONAPPVARS[ 'error' ] = sprintf( $_LANG[ 'onapppagenotfound' ], $_ONAPPVARS[ 'page' ] );
@@ -136,7 +135,6 @@ elseif( isset( $_ONAPPVARS[ 'page' ] ) && $_ONAPPVARS[ 'page' ] == "storagedisks
 else {
 	clientareaproducts();
 }
-;
 
 /**
  * Manage firewall rules tab
@@ -594,7 +592,6 @@ function _actions_vm( $action ) {
 				break;
 		}
 	}
-	;
 
 	unset( $_ONAPPVARS[ 'action' ] );
 
