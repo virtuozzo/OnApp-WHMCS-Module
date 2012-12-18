@@ -156,7 +156,13 @@ function onapp_ConfigOptions() {
             "<font color='red'><b>" . $_LANG["onapperrcantfoundactiveserver"] . "</b></font>" => array()
         );
 
-    $onapp_server_id = $packageconfigoption[1] != "" ? $packageconfigoption[1] : array_shift(array_keys($onapp_servers));
+	if( $packageconfigoption[ 1 ] != "" ) {
+		$onapp_server_id = $packageconfigoption[ 1 ];
+	}
+	else {
+		$tmp = array_keys( $onapp_servers );
+		$onapp_server_id = array_shift( $tmp );
+	}
 
     $js_serverOptions = "";
     foreach ( array_keys($onapp_servers) as $id_server )
@@ -166,15 +172,15 @@ function onapp_ConfigOptions() {
 
 // GET OnApp Instance //
 ///////////////////////
-    $onapp = new OnApp_Factory( 
+    $onapp = new OnApp_Factory(
         $onapp_config["adress"],
         $onapp_config['username'],
         $onapp_config['password']
-    );    
+    );
 // END Get OnApp Instance //
-///////////////////////////    
-    
-    
+///////////////////////////
+
+
     if ( isset($onapp_config["error"]) ) {
 
 // Error JS Begin
@@ -260,7 +266,7 @@ $js_serverOptions
 
     $dstore_zone = $onapp->factory('DataStoreZone');
 
-    $dstore_zones = $dstore_zone->getList(); 
+    $dstore_zones = $dstore_zone->getList();
 
     $js_dsOptions = "    dsOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
 
@@ -269,14 +275,14 @@ $js_serverOptions
             $js_dsOptions .= "    dsOptions[$_ds->_id] = '".addslashes($_ds->_label)."';\n";
         };
     };
-    
+
   // END Load Data Store Zones //
   ////////////////////////////
 
   ////////////////////////////
   // BEGIN Load Hypervisors //
     $option = explode( ",", $packageconfigoption[4] );
-    
+
     if ( count($option) > 1 ) {
         $hv_and_zone_selected = $option;
     }
@@ -288,7 +294,7 @@ $js_serverOptions
     $net_join = $onapp->factory('Hypervisor_NetworkJoin');
 
     $hvs = $hv->getList();
-    
+
     $hv_ids = array();
 
     $js_hvOptions = "    hvOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
@@ -298,18 +304,18 @@ $js_serverOptions
     if (!empty($hvs)) {
         foreach ($hvs as $_hv) {
             if ( $_hv->_online == "true" && $_hv->_hypervisor_group_id ) {
-                
-                $hvs_in_hvzones[$_hv->_hypervisor_group_id][] = $_hv->_id;  
-                
-// get networks by hypervisor                
+
+                $hvs_in_hvzones[$_hv->_hypervisor_group_id][] = $_hv->_id;
+
+// get networks by hypervisor
                 $nets_join = $net_join->getList( $_hv->_id );
 
                 if( is_array( $nets_join ) ){
                     foreach( $nets_join as $net ){
-                        $nets_by_hv[ $_hv->_id ][] = $net->_network_id; 
+                        $nets_by_hv[ $_hv->_id ][] = $net->_network_id;
                     }
-                }                
-                
+                }
+
                 $hv_ids[$_hv->_id] = array(
                     'label' => $_hv->_label
                 );
@@ -324,21 +330,21 @@ $js_serverOptions
 
        ////////////////////////////
   // BEGIN Load Hypervisor Zones //
-    
-    $hv_zone = $onapp->factory('HypervisorZone'); 
+
+    $hv_zone = $onapp->factory('HypervisorZone');
     $net_join = $onapp->factory('HypervisorZone_NetworkJoin');
 
     $hv_zones = $hv_zone->getList();
 
     if ( ! empty( $hv_zones ) ) {
-        
-        
+
+
         $js_hvZoneOptions = "    hvZoneOptions[0] = '" . $_LANG["onappautoselect"] . "';\n";
         $nets_by_hvzone = array();
         foreach ( $hv_zones as $_hv_zone ) {
             $nets_join = $net_join->getList( $_hv_zone->_id );
-            
-// Include not only nets joined directly to hvzone but and to it's ( hvzone's ) hypervisors             
+
+// Include not only nets joined directly to hvzone but and to it's ( hvzone's ) hypervisors
             foreach( $hvs_in_hvzones[ $_hv_zone->_id ] as $hvs_ids ){
                 foreach ( $nets_by_hv[ $hvs_ids ] as $_net_ ){
                     $nets_by_hvzone[ $_hv_zone->_id ][] = $_net_;
@@ -347,17 +353,17 @@ $js_serverOptions
 
             if( is_array( $nets_join ) ){
                 foreach( $nets_join as $net ){
-                    $nets_by_hvzone[ $_hv_zone->_id ][] = $net->_network_id; 
+                    $nets_by_hvzone[ $_hv_zone->_id ][] = $net->_network_id;
                 }
-            } 
-            
+            }
+
             $js_hvZoneOptions .=
                 "      hvZoneOptions[ $_hv_zone->_id ] = '".addslashes( $_hv_zone->_label )."';\n";
         }
     }
-  
+
   // END Load Hypervisor Zones //
-  ////////////////////////////    
+  ////////////////////////////
 
   ////////////////////////////
   // BEGIN Primary networks //
@@ -409,7 +415,7 @@ $js_serverOptions
     };
   // END Load Roles     //
   ////////////////////////////
-    
+
  // BEGIG get Secondary Network Params //
  ///////////////////////////////////////
     if ( $option = (array)json_decode( htmlspecialchars_decode ( $packageconfigoption[23] ) ) ) {
@@ -423,9 +429,9 @@ $js_serverOptions
         $js_SecNetPortSpeedSelected = 0;
         $js_addSecNetIpsSelected    = 0;
     }
-    
+
  // END get Secondary Network Params //
-//////////////////////////////////////  
+//////////////////////////////////////
 
    ////////////////////////////
   // BEGIN Load User Groups //
@@ -584,7 +590,7 @@ $js_ugroupOptions
     var bplanOptions = new Array();
 $js_bplanOptions
     var productAddons = new Array();
-        
+
 var hvAndZoneSelected   = ". json_encode( $hv_and_zone_selected ) ."
 var dsPrimarySelected   = $ds_zone_primary_selected
 var dsSwapSelected      = $ds_zone_swap_selected
@@ -595,14 +601,14 @@ var billingPlanSelected = $js_billingPlanSelected
 var requireAutoBuild    = '$js_requireAutoBuild'
 var requireAutoBackups  = '$js_requireAutoBackups'
 var addBwSelected       = '$js_addBandwidthSelected'
-            
+
 var addSecNetworkIPSelected      = '$js_addSecNetIpsSelected'
 var SecNetworkIps                = '$js_SecNetIps'
 var SecNetworkIdSelected         = '$js_SecNetIdSelected'
 var SecNetworkPortSpeedSelected  = '$js_SecNetPortSpeedSelected'
-            
+
 var networksByHypervisorZone     =  ". ( isset( $nets_by_hvzone ) ? json_encode( $nets_by_hvzone ) : '[]' )."
-var networksByHypervisor         =  ". ( isset( $nets_by_hv )     ? json_encode( $nets_by_hv )     : '[]' )."            
+var networksByHypervisor         =  ". ( isset( $nets_by_hv )     ? json_encode( $nets_by_hv )     : '[]' )."
 
 $js_error;
 
@@ -741,7 +747,7 @@ function onapp_CreateAccount($params) {
 
     if ( wrapper_check() )
         return wrapper_check();
-    
+
     $status = serviceStatus($params['serviceid']);
     serviceStatus($params['serviceid'], 'Active');
 
@@ -750,7 +756,7 @@ function onapp_CreateAccount($params) {
     $getvm = get_vm($params['serviceid']);
 
     serviceStatus($params['serviceid'], $status);
-    
+
     if( isset($getvm->_id) ){
         return $_LANG["onappvmexist"];}
     elseif ( $params['domain'] == "" )
@@ -759,13 +765,13 @@ function onapp_CreateAccount($params) {
         return $_LANG["onapptemplatenotone"];
 
     serviceStatus($params['serviceid'], 'Active');
-    
+
     $vm = create_vm(
         $params['accountid'],
         $params['domain'],
         isset($service['os']) ? $service['os'] : $params['configoption2']
     );
-   
+
     if ( ! is_null($vm->error) )
         return is_array($vm->error) ?
             $_LANG["onappcantcreatevm"] ."<br/>\n " . implode(', ', $vm->error) :
@@ -774,15 +780,15 @@ function onapp_CreateAccount($params) {
         return is_array($vm->_obj->error) ?
             $_LANG["onappcantcreatevm"] . "<br/>\n " . implode(', ', $vm->_obj->error) :
             $_LANG["onappcantcreatevm"] . $vm->_obj->error;
-	 
-// create secondary network interface if needed 
+
+// create secondary network interface if needed
     $options = (array)json_decode( htmlspecialchars_decode ( $service['configoption23'] ) );
     $hv_info = explode( ',', $service['configoption4']  );
-    
+
     if ( $options && count( $hv_info ) > 1 ) {
         $hvzoneid = $hv_info[1];
         $hvid     = $hvid     = $hv_info[0] ? $hv_info[0] : $vm->_obj->_hypervisor_id;
-        
+
         if( ( $hvzoneid && is_numeric( $hvzoneid ) ) && ( $hvid && is_numeric( $hvid ) ) ){
             _add_sec_network_intetface( $vm->_obj->_id, array( $hvzoneid, $hvid ), $service, $options['sec_network_id'], $options['sec_net_port_speed'], 'hv_hvzone' );
         }
@@ -792,7 +798,7 @@ function onapp_CreateAccount($params) {
             _add_sec_network_intetface( $vm->_obj->_id, $hvid, $service, $options['sec_network_id'], $options['sec_net_port_speed'], 'hv' );
         }
     }
-    
+
     _ips_resolve_all( $params['accountid'] );
 
     serviceStatus($params['serviceid'], $status);
@@ -878,7 +884,7 @@ function onapp_UnsuspendAccount($params) {
 
     $status = serviceStatus($params['serviceid']);
     serviceStatus($params['serviceid'], 'Active');
-    
+
     $vm = get_vm($params['serviceid']);
 
     if ( $vm->_obj->_id && $vm->_obj->_suspended ) {
@@ -888,7 +894,7 @@ function onapp_UnsuspendAccount($params) {
             $params['serverpassword']
         );
         $vm->_obj->suspend();
-        
+
         if ( ! is_null($vm->error) )
             return is_array($vm->error) ?
                 $_LANG["onappcantdeletevm"] . "<br/>\n " . implode(', ', $vm->error) :
@@ -909,7 +915,7 @@ function onapp_UnsuspendAccount($params) {
 
 function onapp_ClientArea($params) {
     global $_LANG;
-    
+
     if ( ! file_exists( ONAPP_WRAPPER_INIT ) )
         return
             sprintf(
@@ -971,7 +977,7 @@ function onapp_UsageUpdate($params) {
             tblonappcronhostingdates.account_date
         FROM
             tblservers
-    
+
         LEFT JOIN
             tblhosting ON tblhosting.server = tblservers.id
         LEFT JOIN
@@ -986,7 +992,7 @@ function onapp_UsageUpdate($params) {
             tblproductconfigoptionssub
             ON
             tblhostingconfigoptions.optionid = tblproductconfigoptionssub.id
-        LEFT JOIN 
+        LEFT JOIN
             tblclients ON tblhosting.userid = tblclients.id
         LEFT JOIN
             tblcurrencies ON tblcurrencies.id = tblclients.currency
@@ -1025,37 +1031,37 @@ function onapp_UsageUpdate($params) {
         }
 
         $url = ( $products['hostname'] ) ? $products['hostname'] : $products['ipaddress'];
-         
+
         if ( strpos( $url, 'http' ) === false ) {
             $url = 'http://'. $url;
-        }        
-        
+        }
+
         $onapp = new OnApp_Factory(
             $url,
             $products['username'],
             decrypt( $products['password'])
         );
-        
+
         if ( $onapp->getErrorsAsArray() ) {
-// Debug            
+// Debug
             echo ('<b>Get OnApp Version Permission Error: </b>' . implode( PHP_EOL , $onapp->getErrorsAsArray() )) . '. Skipping' . PHP_EOL;
             continue;
         }
-        
+
         $network_interface  = $onapp->factory('VirtualMachine_NetworkInterface');
-        
+
         if ( ! $products['vm_id'] ) {
 // Debug
-            echo 'virtual_machine_id is empty. Skipping' . PHP_EOL;  
+            echo 'virtual_machine_id is empty. Skipping' . PHP_EOL;
             continue;
         }
         $network_interfaces = $network_interface->getList( $products['vm_id']);
-        
+
         if ( $network_interface->getErrorsAsArray() ) {
-// Debug            
+// Debug
             echo ('<b>Network Interface Get List Error : </b>' . implode( PHP_EOL , $network_interface->getErrorsAsArray() )).'. Skipping'. PHP_EOL;
             continue;
-        }        
+        }
 
         $usage = $onapp->factory('VirtualMachine_NetworkInterface_Usage', true );
 
@@ -1082,7 +1088,7 @@ function onapp_UsageUpdate($params) {
 
 // Count bandwidth limit + upgrades if needed
         $bandwidth_limit = (
-            $products['optionid'] && $products['additional_bandwidth'] 
+            $products['optionid'] && $products['additional_bandwidth']
         )
         ? $products['bwlimit'] + $products['additional_bandwidth']
         : $products['bwlimit'];
@@ -1090,7 +1096,7 @@ function onapp_UsageUpdate($params) {
         if ( date('Y-m-d') == $invoicedate ) {
 // debug
             echo 'Payment Day' . PHP_EOL;
-            
+
             if ( $traffic > $bandwidth_limit && ! $params['extracall'] ){
 // debug
                 echo 'Called by the main cron' . PHP_EOL;
@@ -1114,15 +1120,15 @@ function onapp_UsageUpdate($params) {
 
 // debug
                 echo 'Generating Invoice' . PHP_EOL;
-                
+
                 $sql = 'SELECT username FROM tbladmins LIMIT 1';
 
                 $res = full_query( $sql );
-                
+
                 $admin = mysql_fetch_assoc( $res );
 
                 $taxed = empty( $products[ 'taxexempt' ] ) && $CONFIG['TaxEnabled'] ;
-                
+
                 if( $taxed ) {
 // debug
                     echo 'taxed invoice' . PHP_EOL;
@@ -1153,7 +1159,7 @@ function onapp_UsageUpdate($params) {
                     'itemtaxed1'       => $taxed
                  );
 
-// debug          
+// debug
                 print('<pre>'); print_r($data); echo PHP_EOL;
 
                 $result = localAPI( 'CreateInvoice', $data, $admin );
@@ -1162,12 +1168,12 @@ function onapp_UsageUpdate($params) {
 // debug
                    echo 'Following error occurred: ' . $result[ 'result' ] . PHP_EOL;
                 }
-                 
+
 // Generating Invoice End //
 ///////////////////////////
-// debug                
+// debug
                 echo 'Reset bwusage to 0' . PHP_EOL;
-                $traffic = 0;                 
+                $traffic = 0;
             }
             elseif ( ! $params['extracall'] &&  $traffic <= $bandwidth_limit ) {
 // debug
@@ -1176,24 +1182,24 @@ function onapp_UsageUpdate($params) {
                 echo 'Update cron dates' . PHP_EOL;
                 echo 'Reset bwusage to 0 no invoice needed' . PHP_EOL;
                 $traffic = 0;
-                
+
                 $query = "REPLACE INTO
                               tblonappcronhostingdates
                               ( hosting_id, account_date )
                           VALUES ( $products[hosting_id], '" . $enddate . "'  )
-                ";  
-                
+                ";
+
                 $result = full_query( $query );
-                
+
                 if ( ! $result ) {
 // debug
                     echo 'cron date REPLACE error ' . mysql_error() . PHP_EOL;
-                }                
+                }
             } else {
-// debug            
-                echo 'Called not by the main cron, but by 
-                    bandwidth statistics cron: then neither updates account 
-                    dates nor creates invoices, only collects bandwidth statistics' . PHP_EOL;    
+// debug
+                echo 'Called not by the main cron, but by
+                    bandwidth statistics cron: then neither updates account
+                    dates nor creates invoices, only collects bandwidth statistics' . PHP_EOL;
             }
         }
 
@@ -1206,7 +1212,7 @@ function onapp_UsageUpdate($params) {
 
 /// Debug block ///
 //////////////////
-        
+
         print('<pre>'); print_r($products); echo PHP_EOL;
         echo 'today  => ' . $today  . PHP_EOL;
         echo 'regdate  => ' . $products['regdate']  . PHP_EOL;
