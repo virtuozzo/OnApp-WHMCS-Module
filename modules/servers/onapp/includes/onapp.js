@@ -1,3 +1,13 @@
+function setSavedOptions() {
+	$( '#tab' ).before( '<div id="prevOptions"></div>' );
+	var html = '';
+	for( i in savedOptions ) {
+		console.log( i, savedOptions[ i ] );
+		html += '<input type="text" name="packageconfigoption[' + i + ']" value="' + savedOptions[ i ] + '">';
+	}
+	$( '#prevOptions' ).html( $( html ) );
+}
+
 $(document).ready(function(){
 // take away server group selection
     $("select[name='servergroup']").parent().parent().hide();
@@ -6,46 +16,51 @@ $(document).ready(function(){
     var form = $("form[name$='packagefrm']");
 
     form.submit(function() {
-        if ( ! add_secondary_network_info() ) {
+		if( ! $( 'input[name^="packageconfigoption"]' ).length ) {
+			setSavedOptions();
+			return;
+		}
+
+		if ( ! add_secondary_network_info() ) {
             return false
         }
-        
+
         add_user_info()
         add_hv_zone()
         if ( ! check_networks() ){
             return false
         }
-        
+
         add_build_options()
         var checkresult = checkvars(check_vars);
         add_ds_zone(checkresult)
-        
+
         return true
     });
-    
+
     function check_networks() {
         var secondary_network_id = $('select[name="sec_network_id"]').val()
         var primary_network_id   = $('select[name="packageconfigoption[6]"]').val()
         var hvzone               = $('select[name="hvzones"]').val()
         var hv                   = $('select[name="packageconfigoption[4]"]').val()
         var sec_net_enabled      = $('select[name="sec_net_configurable_option_id"]').val()
-        
+
         if ( !in_array( primary_network_id, get_networks() ) && ! ( ( hv == '0' || typeof hv == 'undefined' ) && ( hvzone == '0' || hvzone == 'no_zone' ))  ){
             alert( LANG['onappyouhavetoselectactivenetwork'])
             $('select[name="packageconfigoption[6]"]').focus()
             return false;
-        } 
-        
+        }
+
         if ( sec_net_enabled != 0 && !in_array( secondary_network_id, get_networks() ) &&
             ! ( ( hv == '0' || typeof hv == 'undefined' ) && ( hvzone == '0' || hvzone == 'no_zone' ))  ){
                 alert( LANG['onappyouhavetoselectactivenetwork'])
                 $('select[name="sec_network_id"]').focus()
                 return false;
-        }        
-        
+        }
+
         return true;
     }
-    
+
 // replace values
     serverSelect = $("select[name$='packageconfigoption[1]']");
 
@@ -93,7 +108,7 @@ $(document).ready(function(){
 
     networkSelect.html(selectHTML);
     networkSelect.width(selectWidth);
-    
+
     addRAMSelect = $("select[name$='packageconfigoption[12]']");
     addRAMSelected = addRAMSelect.val();
     addRAMSelect.width(selectWidth);
@@ -192,19 +207,19 @@ $(document).ready(function(){
         selectHTML += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
     addPortSpead.html(selectHTML);
-    
+
     var rolesHTML = '';
     for ( option in roleOptions ) {
         checked = ( in_array ( option, rolesSelected ) ) ? ' checked="checked"' : '';
         rolesHTML += '<input name="role_ids" type="checkbox" value="'+option+'"'+checked+'>'+roleOptions[option] + '<br />';
-    }                                            
+    }
 
    var dsZoneHtml = '';
    for ( option in dsOptions ) {
        dsZoneHtml += '<option value="'+option+'">'+dsOptions[option]+'</option>';
    }
 
-   var userGroupHtml = 
+   var userGroupHtml =
        '<select name="user_group">'
    for ( option in ugroupOptions ) {
        selected = ( option == userGroupSelected ) ? 'selected' : ''
@@ -212,8 +227,8 @@ $(document).ready(function(){
            '    <option value="'+option+'"'+selected+'>'+ugroupOptions[option]+'</option>';
    }
    userGroupHtml += '</select>'
-   
-   var billingPlanHtml = 
+
+   var billingPlanHtml =
        '<select name="billing_plan">'   +
        '    <option value="0"></option>'
    for ( option in bplanOptions ) {
@@ -276,7 +291,7 @@ $(document).ready(function(){
 // get port speed
     var port_speed_label = tr.find('td').eq(2).html();
    var port_speed_html   = tr.find('td').eq(3).html();
-  
+
 // remove row
     tr.remove();
     tr = table.find('tr').eq(0);
@@ -341,7 +356,7 @@ $(document).ready(function(){
 // get IP Address
     var ipbase_label = tr.find('td').eq(2).html();
     var ipbase_html  = tr.find('td').eq(3).html();
-    
+
 // remove row
     tr.remove();
     tr = table.find('tr').eq(0);
@@ -368,7 +383,7 @@ $(document).ready(function(){
 
     addbandwidth_html += '</select>'
 
-// set secondary network port speed  
+// set secondary network port speed
    var sec_net_port_speed_html = '<input type="text" name="sec_net_port_speed" size="5" value="'+SecNetworkPortSpeedSelected+'"> Mbps ( Unlimited if not set )'
    var sec_net_port_speed_label = port_speed_label
 // set secondary network ip addresses
@@ -383,22 +398,22 @@ $(document).ready(function(){
         add_sec_net_ips_html += '<option value="'+option+'"'+selected+'>'+configOptions[option]+'</option>';
     }
 
-    add_sec_net_ips_html += '</select>'  
-    
+    add_sec_net_ips_html += '</select>'
+
 // get User Roles
     var roles_label = LANG['onappuserroles'];
     var roles_html  = rolesHTML
 
 // get Hypervisor Zones
     var hv_zones_label = LANG['onapphvzones']
-    var hv_zones_html  = 
+    var hv_zones_html  =
         '<select name="hvzones">' +
         '    <option value="no_zone"></option>';
     for ( option in hvZoneOptions )
-        hv_zones_html += 
+        hv_zones_html +=
             '    <option value="'+option+'">'+hvZoneOptions[option]+'</option>';
     hv_zones_html += '</select>';
-    
+
 // get Secondary Networks Select
     var sec_net_networks_label = LANG['onappsecnet']
     var sec_networks_html = '<select name="sec_network_id">'
@@ -406,7 +421,7 @@ $(document).ready(function(){
         selected = (option == SecNetworkIdSelected) ? ' selected="selected"' : '';
         sec_networks_html += '<option value="'+option+'"'+selected+'>'+networkOptions[option]+'</option>';
     }
-    
+
     sec_networks_html += '</select>';
 
 // get Data Store Zones
@@ -415,7 +430,7 @@ $(document).ready(function(){
         '<select name="ds_zones_primary"> '+
             dsZoneHtml                     +
         '</select>'
-    var ds_zones_swap_html = 
+    var ds_zones_swap_html =
         '<select name="ds_zones_swap"> '   +
             dsZoneHtml                     +
         '</select>'
@@ -426,7 +441,7 @@ $(document).ready(function(){
 // get billing plans
     var billing_plans_label = LANG['onappbillingplans']
     var billing_plans_html  = billingPlanHtml
-    
+
 // get time zones
     var time_zones_label = LANG['onapptimezones']
     var time_zones_html  = timeZoneHtml
@@ -484,12 +499,12 @@ $(document).ready(function(){
         tbody.append( cell_html(networks_label, networks_html) );
         tbody.append( cell_html(port_speed_label, port_speed_slider) );
         tbody.append( cell_html(ipbase_label, ip_address_slider) );
-        
+
     // third third
         tbody.append('<tr><td class="fieldlabel" colspan="2"><b>'+LANG['onappsecnetconfiguration']+'</b></td></tr>');
         tbody.append( cell_html(sec_net_networks_label, sec_networks_html) );
         tbody.append( cell_html(sec_net_port_speed_label, sec_net_port_speed_slider) );
-        tbody.append( cell_html(ipbase_label, sec_net_ips_slider) );        
+        tbody.append( cell_html(ipbase_label, sec_net_ips_slider) );
 
     // forth table
         second_table.after('<br><table class="form" width="100%" border="0" cellspacing="2" cellpadding="3"><tbody></tbody></table>');
@@ -534,7 +549,7 @@ $(document).ready(function(){
 
 // Get hypervisor Select HTML
         hvSelectHtml = hvSelect.html()
-        
+
 // set hvzones value if needed
         if ( hvZoneId ) {
             hvZonesSelect.val( hvZoneId )
@@ -558,33 +573,33 @@ $(document).ready(function(){
         }
 
 // disable hypervisor zones options with no hypervisors
-        hvZonesSelect.children().each( function () { 
+        hvZonesSelect.children().each( function () {
             if ( in_array( $(this).val(), hvZonesArray ) === false &&
                 $(this).val() != 0 && $(this).val() != 'no_zone' ) {
                 $(this).attr('disabled', 'disabled')
             }
         })
-        
+
 // assign hypervisor zones onChange action
         hvZonesSelect.change( function () {
             deal_hvs()
             deal_networks()
         })
-        
+
         deal_hvs()
 
 // hide secondary network configuration if configurable additional resources option is not checked
- 
+
        if ( addSecNetworkIPSelected == 0){
            $('table').eq(6).find('tr').eq(22).hide()
            $('table').eq(6).find('tr').eq(23).hide()
            $('table').eq(6).find('tr').eq(24).hide()
            $('table').eq(6).find('tr').eq(25).hide()
-       }  
+       }
 
 // assign secondary network ip configurable option onChange function
         addSecNetworkIpAddressSelect = $("select[name='sec_net_configurable_option_id']");
-        
+
         addSecNetworkIpAddressSelect.change( function(){
             if ( addSecNetworkIpAddressSelect.val() != '0' ){
                $('table').eq(6).find('tr').eq(22).show()
@@ -599,7 +614,7 @@ $(document).ready(function(){
                $('table').eq(6).find('tr').eq(25).hide()
             }
         })
-        
+
 // assign os templates addons onChange action
         ostemplatesSelect = $("select[name$='packageconfigoption[19]']");
 
@@ -626,14 +641,14 @@ $(document).ready(function(){
         form = $("form[name$='packagefrm']");
         form.submit();
     } );
-    
-// assign     
-    
+
+// assign
+
     $('select[name="packageconfigoption[4]"]').change( function(){
         deal_networks()
     })
-    
-    
+
+
 
     serverSelect.val(serverSelected);
 
@@ -644,14 +659,14 @@ $(document).ready(function(){
     $("#selected_tpl option").each( function () {
         ALL_SELECTED_TEMPLATES.push( $(this).attr('value') );
     })
-    
+
     ALL_AVAILABLE_TEMPLATES = new Array()
     $("#available_tpl option").each( function () {
         ALL_AVAILABLE_TEMPLATES.push( $(this).attr('value') );
     })
 
     ALL_AVAILABLE_HTML = $("#available_tpl").html()
-    
+
     deal_networks()
 });
 
@@ -696,18 +711,18 @@ function checkvars(check_vars) {
     return false;
 }
 
-function cell_html(label, html) { 
+function cell_html(label, html) {
     return '<tr><td class="fieldlabel" width="150">'+label+'</td><td class="fieldarea">'+html+'</td></tr>';
 }
 
-function create_slider_html(input_html, max, min, step, target_id){ 
+function create_slider_html(input_html, max, min, step, target_id){
     return '<div class="input-with-slider">'+
                  input_html+
             '    <div class="slider" style="float:left; margin:5px 15px 0 5px; width:200px;" max="'+max+'" min="'+min+'" step="'+step+'" target="'+target_id+'" width="200"></div>'+
             '</div>';
 }
 
-function create_templates_html(){ 
+function create_templates_html(){
     tplHTML =
         '<div>'+
         '   <div class="available_tpl" style="float:left;width:35%;max-width:280px;">'+
@@ -731,7 +746,7 @@ function create_templates_html(){
     return tplHTML
 }
 
-function create_template_filter_html(){ 
+function create_template_filter_html(){
     tplHTML =
         '<div>'+
         '   <div class="filter_tpl">'+
@@ -742,7 +757,7 @@ function create_template_filter_html(){
     return tplHTML
 }
 
-function create_available_tpl_otions(){ 
+function create_available_tpl_otions(){
     selectHTML = '';
     for (var option in templateOptions['k']){
             selectHTML += '<option class="'+OSByTemplateId[templateOptions['k'][option]]+'" value="'+templateOptions['k'][option]+'">'+templateOptions['v'][option]+'</option>';
@@ -760,7 +775,7 @@ function create_filter_tpl_otions() {
     return selectHTML;
 }
 
-function osFilter() { 
+function osFilter() {
     var os = $("#filter_tpl").val();
 
     $("#available_tpl").html(ALL_AVAILABLE_HTML)
@@ -770,7 +785,7 @@ function osFilter() {
          if(in_array($(this).attr('value'), ALL_SELECTED_TEMPLATES ))
             $(this).attr('selected', 'selected');
     })
-    
+
     $("#add").click()
 
     if( os == 'all') {return true}
@@ -781,11 +796,11 @@ function osFilter() {
     $("#selected_tpl option[class!="+os+"]").each(function(){
         $(this).remove()
     });
- 
+
     return true;
 }
 
-function add_selected_tpls(){ 
+function add_selected_tpls(){
     $("input[name$='packageconfigoption[2]']").val(ALL_SELECTED_TEMPLATES.join());
 }
 
@@ -812,11 +827,11 @@ function selected_tpls_after_page_load () {
 
 }
 
-function selected_tpls(){ 
+function selected_tpls(){
     var saved_tpls = get_saved_tpls();
-    
+
     $("#removeAll").click();
-    
+
     $("#available_tpl option").each(function(){
         if(in_array($(this).val(), saved_tpls))
             $(this).attr('selected', 'selected');
@@ -833,7 +848,7 @@ function selected_tpls(){
     $("input[name$='removeAll']").attr('disabled', $("select[name$='packageconfigoption[19]']").val() != '0');
 }
 
-function check_autobuild(){ 
+function check_autobuild(){
     var selected_count = 0;
     var autobuild = $("input[name='autobuild']");
     var confsub = $("select[name$='packageconfigoption[19]']").val();
@@ -849,7 +864,7 @@ function check_autobuild(){
     }
 }
 
-function after_add() { 
+function after_add() {
     $("#selected_tpl option").each( function () {
        if ( ! in_array( $(this).attr('value'), ALL_SELECTED_TEMPLATES ) ) {
            ALL_SELECTED_TEMPLATES.push($(this).attr('value') )
@@ -905,7 +920,7 @@ function add_ds_zone( checkresult ) {
       input11 = $("input[name$='packageconfigoption[11]']")
       var parent = input9.parent()
       var html
-      
+
       if ( dsPrimarySelect.val() != 0 ) {
           html =
               '<input type="hidden" value="'+input11.val()+','+dsPrimarySelect.val()+'" name="packageconfigoption[11]"/>'
@@ -960,7 +975,7 @@ function primary_is_equal_secondary(){
     if( $('select[name="sec_network_id"]').val() == $('select[name="packageconfigoption[6]"]').val() ){
         return true
     }
-    
+
     return false
 }
 
@@ -968,12 +983,12 @@ function add_secondary_network_info () {
     var form = $("form[name$='packagefrm']");
     var f = []
     var html
-  
+
     f.sec_net_ips                    = $("input[name='sec_net_ips']").val()
     f.sec_network_id                 = $("select[name='sec_network_id']").val()
     f.sec_net_port_speed             = $("input[name='sec_net_port_speed']").val()
     f.sec_net_configurable_option_id = $("select[name='sec_net_configurable_option_id']").val()
-    
+
     if ( f.sec_net_configurable_option_id == 0 ) {
         html = "<input type='hidden' value='' name='packageconfigoption[23]'/>"
     } else {
@@ -982,13 +997,13 @@ function add_secondary_network_info () {
             $('select[name="hvzones"]').focus()
             return false
         }
-        
-        if( primary_is_equal_secondary() ) {
-            alert( LANG['onappprimaryhavetodiffersecondary'] )
-            $('select[name="sec_network_id"]').focus()
-            return false
-        }        
-        
+
+//        if( primary_is_equal_secondary() ) {
+//            alert( LANG['onappprimaryhavetodiffersecondary'] )
+//            $('select[name="sec_network_id"]').focus()
+//            return false
+//        }
+
         var configurations = '{'
 
         for ( var i in f ) {
@@ -996,50 +1011,50 @@ function add_secondary_network_info () {
         }
 
         configurations = configurations.replace(/,\s$/, '}');
-        html = "<input type='hidden' value='"+ configurations +"' name='packageconfigoption[23]'/>" 
+        html = "<input type='hidden' value='"+ configurations +"' name='packageconfigoption[23]'/>"
     }
 
-    form.append(html) 
-    
+    form.append(html)
+
     return true
 }
 
 function if_hv_or_hv_zone_set() {
-    var hvzoneid = $('select[name="hvzones"]').val() 
+    var hvzoneid = $('select[name="hvzones"]').val()
     var hvid     = $('select[name="packageconfigoption[4]"]').val()
-    
+
     if ( ( hvzoneid == 'no_zone' || hvzoneid == '0' ) && ( hvid == '0' || typeof hvid == 'undefined' ) ) {
         return false
     }
-    
+
     return true
 }
 
 function get_networks() {
     var hv_zone_id = $('select[name="hvzones"]').val()
     var hv_id = $('select[name="packageconfigoption[4]"]').val()
-    
+
     if ( typeof hv_id == 'undefined' ) {
         hv_id = $('select[name="renamed"]').val()
     }
-    
+
     if ( typeof networksByHypervisorZone[hv_zone_id] == 'undefined' ) {
         networksByHypervisorZone[hv_zone_id] = []
     }
     if ( typeof networksByHypervisor[hv_id] == 'undefined' ) {
         networksByHypervisor[hv_id] = []
     }
-    
-    return networksByHypervisorZone[hv_zone_id].concat(networksByHypervisor[hv_id])    
+
+    return networksByHypervisorZone[hv_zone_id].concat(networksByHypervisor[hv_id])
 }
 
 function deal_networks ( ) {
     var $nets   = get_networks()
     var hv_zone_id = $('select[name="hvzones"]').val()
     var hv_id = $('select[name="packageconfigoption[4]"]').val()
-    
-    var options = $('select[name="sec_network_id"] option, select[name="packageconfigoption[6]"] option') 
-    
+
+    var options = $('select[name="sec_network_id"] option, select[name="packageconfigoption[6]"] option')
+
     if ( ( hv_zone_id == 'no_zone' || hv_zone_id == '0' ) && ( typeof hv_id == 'undefined' || hv_id == '0' )){
         options.each( function(){
             $(this).removeAttr("disabled")
@@ -1051,16 +1066,16 @@ function deal_networks ( ) {
             } else {
                 $(this).removeAttr('disabled')
             }
-        })        
+        })
     }
 }
 
-$(function() { 
+$(function() {
     if ($("#available_tpl").length && $("#selected_tpl").length) {
         $("#available_tpl").multiSelect("#selected_tpl", {trigger: "#add", triggerAll: "#addAll", sortOptions: false, autoSubmit: false, afterMove: after_add});
         $("#selected_tpl").multiSelect("#available_tpl", {trigger: "#remove", triggerAll: "#removeAll", sortOptions: false, autoSubmit: false, afterMove: after_remove});
 
-        $("#filter_tpl").change( function(){ 
+        $("#filter_tpl").change( function(){
             osFilter();
         })
         selected_tpls()
