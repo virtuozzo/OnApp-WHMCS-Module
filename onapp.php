@@ -961,7 +961,8 @@ function productcpuusage() {
 
 	foreach( $list as $key => $stat ) {
 		$hourly_stat[ $key ][ 'date' ]  = strtotime( $stat->_created_at ) * 1000;
-		$hourly_stat[ $key ][ 'usage' ] = number_format( $stat->_cpu_time / 360 / 100, 2 );
+//        $hourly_stat[ $key ][ 'usage' ] = number_format( $stat->_cpu_time / 360 / 100, 2 );
+		$hourly_stat[ $key ][ 'usage' ] = number_format( $stat->_cpu_time, 2 );
 	}
 
 	$content = '';
