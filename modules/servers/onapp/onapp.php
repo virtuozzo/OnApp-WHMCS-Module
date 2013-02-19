@@ -130,8 +130,6 @@ function onapp_createTables() {
 
 function onapp_ConfigOptions() {
 	global $packageconfigoption, $_GET, $_POST, $_LANG;
-	var_dump( $packageconfigoption );
-
 
 	$serviceid = $_GET[ 'id' ] ? $_GET[ 'id' ] : $_POST[ 'id' ];
 	$serviceid = addslashes( $serviceid );
