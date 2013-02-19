@@ -982,6 +982,7 @@ function productcpuusage() {
 			'address' => $onapp_config[ "adress" ],
 			'error'   => isset( $_ONAPPVARS[ 'error' ] ) ? $_ONAPPVARS[ 'error' ] : null,
 			'data'    => $data,
+            'configoptionsupgrade' => $_ONAPPVARS[ 'service' ][ 'configoptionsupgrade' ],
 		)
 	);
 }
