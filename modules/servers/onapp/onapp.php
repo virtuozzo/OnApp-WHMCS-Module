@@ -830,16 +830,16 @@ function onapp_CreateAccount( $params ) {
 		$hvid     = $hvid = $hv_info[ 0 ] ? $hv_info[ 0 ] : $vm->_obj->_hypervisor_id;
 
 		if( ( $hvzoneid && is_numeric( $hvzoneid ) ) && ( $hvid && is_numeric( $hvid ) ) ) {
-			_add_sec_network_intetface( $vm->_obj->_id, array(
+			_add_sec_network_interface( $vm->_obj->_id, array(
 				$hvzoneid,
 				$hvid
 			), $service, $options[ 'sec_network_id' ], $options[ 'sec_net_port_speed' ], 'hv_hvzone' );
 		}
 		elseif( $hvzoneid && is_numeric( $hvzoneid ) ) {
-			_add_sec_network_intetface( $vm->_obj->_id, $hvzoneid, $service, $options[ 'sec_network_id' ], $options[ 'sec_net_port_speed' ], 'hvzone' );
+			_add_sec_network_interface( $vm->_obj->_id, $hvzoneid, $service, $options[ 'sec_network_id' ], $options[ 'sec_net_port_speed' ], 'hvzone' );
 		}
 		elseif( $hvid && is_numeric( $hvid ) ) {
-			_add_sec_network_intetface( $vm->_obj->_id, $hvid, $service, $options[ 'sec_network_id' ], $options[ 'sec_net_port_speed' ], 'hv' );
+			_add_sec_network_interface( $vm->_obj->_id, $hvid, $service, $options[ 'sec_network_id' ], $options[ 'sec_net_port_speed' ], 'hv' );
 		}
 	}
 
