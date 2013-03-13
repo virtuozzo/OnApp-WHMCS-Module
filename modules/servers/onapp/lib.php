@@ -616,7 +616,7 @@ function get_templates( $serverid, $templatesid ) {
  * @return mixed network interface
  */
 
-function _add_sec_network_intetface( $vmid, $id, $service, $networkid, $portspeed, $jointype ) {
+function _add_sec_network_interface( $vmid, $id, $service, $networkid, $portspeed, $jointype ) {
 	$onapp_config = get_onapp_config( $service[ 'serverid' ] );
 
 	$onapp = new OnApp_Factory(
@@ -626,12 +626,12 @@ function _add_sec_network_intetface( $vmid, $id, $service, $networkid, $portspee
 	);
 
 	if( $jointype == 'hv_hvzone' ) {
-		$interface = _add_sec_network_intetface( $vmid, $id[ 0 ], $service, $networkid, $portspeed, 'hvzone' );
+		$interface = _add_sec_network_interface( $vmid, $id[ 0 ], $service, $networkid, $portspeed, 'hvzone' );
 		if( $interface ) {
 			return;
 		}
 		else {
-			_add_sec_network_intetface( $vmid, $id[ 1 ], $service, $networkid, $portspeed, 'hv' );
+			_add_sec_network_interface( $vmid, $id[ 1 ], $service, $networkid, $portspeed, 'hv' );
 			return;
 		}
 	}
@@ -738,16 +738,16 @@ function get_vm_ips( $service_id ) {
 				$hvid     = $hvid = $hv_info[ 0 ] ? $hv_info[ 0 ] : $vm->_obj->_hypervisor_id;
 
 				if( ( $hvzoneid && is_numeric( $hvzoneid ) ) && ( $hvid && is_numeric( $hvid ) ) ) {
-					_add_sec_network_intetface( $vm->_obj->_id, array(
+					_add_sec_network_interface( $vm->_obj->_id, array(
 						$hvzoneid,
 						$hvid
 					), $service, $sec_network_id, $options[ 'sec_net_port_speed' ], 'hv_hvzone' );
 				}
 				elseif( $hvzoneid && is_numeric( $hvzoneid ) ) {
-					_add_sec_network_intetface( $vm->_obj->_id, $hvzoneid, $service, $sec_network_id, $options[ 'sec_net_port_speed' ], 'hvzone' );
+					_add_sec_network_interface( $vm->_obj->_id, $hvzoneid, $service, $sec_network_id, $options[ 'sec_net_port_speed' ], 'hvzone' );
 				}
 				elseif( $hvid && is_numeric( $hvid ) ) {
-					_add_sec_network_intetface( $vm->_obj->_id, $hvid, $service, $sec_network_id, $options[ 'sec_net_port_speed' ], 'hv' );
+					_add_sec_network_interface( $vm->_obj->_id, $hvid, $service, $sec_network_id, $options[ 'sec_net_port_speed' ], 'hv' );
 				}
 			}
 		}
