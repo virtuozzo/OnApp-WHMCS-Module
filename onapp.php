@@ -740,7 +740,7 @@ function _action_update_res() {
 	if( $sec_network_id ) {
 		$sec_network = get_sec_networkinterface( $service[ 'vmid' ], $service[ 'serverid' ] );
 
-                if( $sec_net_port_speed && $sec_net_port_speed != $sec_network->_rate_limit ) {
+                if($sec_network && $sec_net_port_speed && $sec_net_port_speed != $sec_network->_rate_limit ) {
 			$sec_network->_rate_limit = $sec_net_port_speed;
 			$sec_network->save();
 		}
