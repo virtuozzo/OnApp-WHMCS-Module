@@ -212,3 +212,12 @@ $_LANG['onappvmsecondarynetworkbaseips'] = 'Secondary Network IP Addresses for t
 $_LANG['onappyouhavetoselectactivenetwork'] = 'You have to select available network for selected Hypervisor Zone / Hypervisor';
 $_LANG["onappcantsuspendvm"] = "Can't suspend Virtual Machine.";
 $_LANG["onappcantunsuspendvm"] = "Can't unsuspend Virtual Machine.";
+
+#version 0.6
+
+$_LANG["onappdonotshutdownvm"] = "Do not Shutdown virtual machine";
+$_LANG["onapppoweroffvm"] = "Power OFF virtual machine";
+$_LANG["onappshutdownvm"] = "Shutdown virtual machine";
+$_LANG["onappgracefullyshutdownvm"] = "Gracefully shutdown virtual machine";
+
+$_LANG["onappgrequiredstartup"] = "Required startup";

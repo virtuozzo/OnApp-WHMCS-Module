@@ -1,6 +1,24 @@
 <link href="modules/servers/onapp/includes/onapp.css" rel="stylesheet" type="text/css">
+
+<link href="includes/jscript/css/ui.all.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="includes/jscript/jqueryui.js"></script>
+
 {literal}
 <script>
+$(document).ready(function(){
+    $("#dialog-confirm").dialog({
+    autoOpen: false,
+    resizable: false,
+    modal: true,
+    width: 430,
+	buttons: {
+        '{/literal}{$LANG.onappvmrebuildnetwork}{literal}': function() {
+            $('#rebuildnetwork').submit();
+		},
+        }
+    });
+});
+
 function showconsole(id) {
     window.open("modules/servers/onapp/console.php?id="+id,"popup","width=820,height=640,scrollbars=0,resizable=0,toolbar=0,directories=0,location=0,menubar=0,status=0,left=50,top=50");
 }
@@ -48,7 +66,10 @@ function show_logs( id, logid, date, action, status, type ) {
             jQuery('#vm_logs').html(html)
         }
      });
-                        
+}
+
+function showDialog(name) {
+    $("#"+name).dialog('open');
 }
 </script>
 {/literal}
@@ -222,7 +243,7 @@ function show_logs( id, logid, date, action, status, type ) {
         <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=reset_pass">{$LANG.onappvmresetpassword}</a>
       </td>
       <td>
-        <a href="{$smarty.server.PHP_SELF}?page=productdetails&id={$id}&action=rebuild_network">{$LANG.onappvmrebuildnetwork}</a>
+        <a href="#" onClick="showDialog('dialog-confirm');return false">{$LANG.onappvmrebuildnetwork}</a>
       </td>
       {if $overagesenabled != 0}
       <td>
@@ -279,11 +300,11 @@ function show_logs( id, logid, date, action, status, type ) {
 {if $vm_logs eq false}
     <tr><td>No logs found.</td></tr>
 {else}
-{foreach from=$vm_logs key=id item=log}
+{foreach from=$vm_logs key=logid item=log}
     <tr>
         <td>
-            <a class="logdetailslink" onclick="show_logs({$log.target_id}, {$id}, '{$log.created_at}', '{$log.action}', '{$log.status}', '{$log.target_type}'); return false;" href="#output"  >
-                {$id}
+            <a class="logdetailslink" onclick="show_logs({$log.target_id}, {$logid}, '{$log.created_at}', '{$log.action}', '{$log.status}', '{$log.target_type}'); return false;" href="#output"  >
+                {$logid}
             </a>
         </td>
         <td>{$log.created_at}</td>
@@ -299,3 +320,27 @@ function show_logs( id, logid, date, action, status, type ) {
 <div id="vm_logs"></div>
 <a name="output"> </a>
 <br/>
+
+<div id="dialog-confirm" title="{$LANG.onappvmrebuildnetwork}">
+  <p>
+      <form id="rebuildnetwork" action="{$smarty.const.ONAPP_FILE_NAME}">
+          <input type="hidden" name="id" value="{$id}">
+          <input type="hidden" name="page" value="productdetails">
+          <input type="hidden" name="action" value="rebuild_network">
+
+          <span style="padding-right: 2px;">{$LANG.onappvmstop}</span>
+          <select name="shutdown_type">
+              <option value="">{$LANG.onappdonotshutdownvm}</option>
+              <option value="hard">{$LANG.onapppoweroffvm}</option>
+              <option value="soft">{$LANG.onappshutdownvm}</option>
+              <option value="graceful">{$LANG.onappgracefullyshutdownvm}</option>
+          </select>
+          <br/>
+          <br/>
+          <span style="padding-right: 22px;">{$LANG.onappvmstart}</span>
+          <select name="required_startup">
+              <option value="0">{$LANG.no}</option>
+              <option value="1">{$LANG.yes}</option>
+          </select>
+      </p>
+</div>

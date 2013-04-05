@@ -590,7 +590,10 @@ function _actions_vm( $action ) {
 				$_ONAPPVARS[ 'vm' ]->reset_password();
 				break;
 			case 'rebuild_network':
-				$_ONAPPVARS[ 'vm' ]->rebuild_network();
+				$_ONAPPVARS[ 'vm' ]->rebuild_network(
+					get_value( 'shutdown_type' ),
+					get_value( 'required_startup' )
+				);
 				break;
 			default:
 				$_ONAPPVARS[ 'error' ] = sprintf( $_LANG[ "onappactionnotfound" ], $action );
@@ -740,7 +743,7 @@ function _action_update_res() {
 	if( $sec_network_id ) {
 		$sec_network = get_sec_networkinterface( $service[ 'vmid' ], $service[ 'serverid' ] );
 
-                if($sec_network && $sec_net_port_speed && $sec_net_port_speed != $sec_network->_rate_limit ) {
+		if($sec_network && $sec_net_port_speed && $sec_net_port_speed != $sec_network->_rate_limit ) {
 			$sec_network->_rate_limit = $sec_net_port_speed;
 			$sec_network->save();
 		}
