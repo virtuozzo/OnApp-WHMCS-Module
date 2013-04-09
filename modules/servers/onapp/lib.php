@@ -1663,13 +1663,20 @@ function ipv6_short( $ip ) {
  */
 function wrapper_check() {
 	global $_LANG;
+
 	if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
-		return
-			sprintf(
-				"%s " . realpath( dirname( __FILE__ ) . '/../../../' ) . "/includes ( %s )",
+		$file =  dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) . '/includes/wrapper/OnAppInit.php';
+
+		if( file_exists( $file ) ) {
+			require_once $file;
+		} else {
+			return sprintf(
+				"%s " . realpath( dirname( __FILE__ ) . '/../../../' ) . "/includes ( %s )" ,
 				$_LANG[ 'onappwrappernotfound' ], $_LANG[ 'onappmakesuredirectoryisaccessible' ]
 			);
+		}
 	}
+
 	return null;
 }
 
