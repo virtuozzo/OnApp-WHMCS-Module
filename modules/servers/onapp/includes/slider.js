@@ -20,6 +20,8 @@ var init_sliders = function() {
             target.interval = null;
             slider.interval = null;
 
+            slider.slider( "option", "value", parseInt(target.attr("value").toString()) );
+
             var update_target = function() {
                 update_swap_disk_size();
                 target.attr("value", parseInt(slider.slider("value").toString()) || 0);
@@ -54,8 +56,6 @@ var init_sliders = function() {
                 clearInterval(target.interval);
                 target.interval = null;
            });
-
-           update_slider();
         }
   });
 }
