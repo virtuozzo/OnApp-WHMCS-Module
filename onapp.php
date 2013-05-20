@@ -970,10 +970,10 @@ function productcpuusage() {
 	$content = '';
 
 	foreach( $hourly_stat as $stat ) {
-		$content .= '[' . $stat[ date ] . ', ' . $stat[ usage ] . '],';
+		$content .= '[' . $stat[ 'date' ] . ', ' . $stat[ 'usage' ] . '],';
 	}
 
-	$data = "[{data: [ " . $content . "], name: '" . $_LANG[ onappcpuusage ] . "'";
+	$data = "[{data: [ " . $content . "], name: '" . $_LANG[ 'onappcpuusage' ] . "'";
 
 	$data = str_replace( '],]', ']]', $data );
 
