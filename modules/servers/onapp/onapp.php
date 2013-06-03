@@ -192,6 +192,10 @@ function onapp_ConfigOptions() {
 		$onapp_config[ 'username' ],
 		$onapp_config[ 'password' ]
 	);
+
+    if(! $onapp->_apiVersion())
+        $onapp_config[ 'error' ] = 'Can\'t get OnApp version for server '. $onapp_config[ 'adress' ];
+
 // END Get OnApp Instance //
 ///////////////////////////
 
