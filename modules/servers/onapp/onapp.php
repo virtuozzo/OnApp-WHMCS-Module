@@ -160,7 +160,7 @@ function onapp_ConfigOptions() {
 	// BEGIN Load Servers     //
 
 	$sql_servers_result = full_query(
-		"SELECT id, name FROM tblservers WHERE type = 'onapp'"
+        'SELECT id, name FROM tblservers WHERE type = "onapp" AND disabled = 0 ORDER BY active desc'
 	);
 
 	$onapp_servers = array();
