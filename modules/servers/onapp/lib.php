@@ -1,7 +1,7 @@
 <?php
 
 if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) ) . '/includes/wrapper/OnAppInit.php' );
+	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( __FILE__ ) ) . '/includes/wrapper/OnAppInit.php' );
 }
 
 if( file_exists( ONAPP_WRAPPER_INIT ) ) {
@@ -1730,5 +1730,7 @@ function setFlashError( $error_message ) {
  * @return string error message
  */
 function getFlashError() {
-	return $_SESSION[ 'onapp_flash' ][ 'error' ];
+    return array_key_exists('onapp_flash', $_SESSION) 
+        ?  $_SESSION[ 'onapp_flash' ][ 'error' ]
+        : NULL;
 }

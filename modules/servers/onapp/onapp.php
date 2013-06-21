@@ -8,7 +8,7 @@ if( ! defined( 'ONAPP_FILE_NAME' ) ) {
 }
 
 if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) ) . '/includes/wrapper/OnAppInit.php' );
+	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( __FILE__ ) ) . '/includes/wrapper/OnAppInit.php' );
 }
 
 if( file_exists( ONAPP_WRAPPER_INIT ) ) {
