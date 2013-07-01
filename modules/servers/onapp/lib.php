@@ -1665,7 +1665,7 @@ function wrapper_check() {
 	global $_LANG;
 
 	if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
-		$file =  dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) . '/includes/wrapper/OnAppInit.php';
+		$file =  realpath( dirname( __FILE__ ) . '/../../../' ) . '/includes/wrapper/OnAppInit.php';
 
 		if( file_exists( $file ) ) {
 			require_once $file;
