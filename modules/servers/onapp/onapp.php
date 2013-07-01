@@ -137,12 +137,18 @@ function onapp_ConfigOptions() {
 	$configarray = array();
 
 	if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
-		return array(
-			sprintf(
-				'%s ' . realpath( dirname( __FILE__ ) . '/../../../' ) . "/includes ( %s )",
-				$_LANG[ 'onappwrappernotfound' ], $_LANG[ 'onappmakesuredirectoryisaccessible' ]
-			) => array()
-		);
+		$file =  realpath( dirname( __FILE__ ) . '/../../../' ) . '/includes/wrapper/OnAppInit.php';
+
+		if( file_exists( $file ) ) {
+			require_once $file;
+		} else {
+			return array(
+				sprintf(
+					'%s ' . realpath( dirname( __FILE__ ) . '/../../../' ) . "/includes ( %s )",
+					$_LANG[ 'onappwrappernotfound' ], $_LANG[ 'onappmakesuredirectoryisaccessible' ]
+				) => array()
+			);
+		}
 	}
 
 	$table_result = onapp_createTables();
