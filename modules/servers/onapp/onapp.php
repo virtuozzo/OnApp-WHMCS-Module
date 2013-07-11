@@ -965,7 +965,7 @@ function onapp_UnsuspendAccount( $params ) {
 function onapp_ClientArea( $params ) {
 	global $_LANG;
 
-	if( ! file_exists( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) . '/includes/wrapper/OnAppInit.php' ) ) {
+	if( ! file_exists( dirname( __FILE__ ) . '/includes/wrapper/OnAppInit.php' ) ) {
 		return
 			sprintf(
 				"%s ",

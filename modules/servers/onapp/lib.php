@@ -1665,7 +1665,7 @@ function wrapper_check() {
 	global $_LANG;
 
 	if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
-		$file =  dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) . '/includes/wrapper/OnAppInit.php';
+		$file =  dirname( __FILE__ ) . '/includes/wrapper/OnAppInit.php';
 
 		if( file_exists( $file ) ) {
 			require_once $file;
@@ -1730,7 +1730,7 @@ function setFlashError( $error_message ) {
  * @return string error message
  */
 function getFlashError() {
-    return array_key_exists('onapp_flash', $_SESSION) 
+    return array_key_exists('onapp_flash', $_SESSION)
         ?  $_SESSION[ 'onapp_flash' ][ 'error' ]
         : NULL;
 }

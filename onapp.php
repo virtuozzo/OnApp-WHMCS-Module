@@ -12,7 +12,7 @@ require_once 'includes/functions.php';
 require_once 'includes/clientareafunctions.php';
 
 if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-	define( 'ONAPP_WRAPPER_INIT', dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) . '/includes/wrapper/OnAppInit.php' );
+	define( 'ONAPP_WRAPPER_INIT', dirname( __FILE__ ) . '/includes/wrapper/OnAppInit.php' );
 }
 
 require_once dirname( __FILE__ ) . '/modules/servers/onapp/lib.php';
