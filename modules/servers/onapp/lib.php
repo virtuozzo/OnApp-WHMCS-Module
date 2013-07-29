@@ -80,44 +80,20 @@ function serviceStatus( $id, $status = null ) {
  * Load $_LANG from language file
  */
 function load_language() {
-	global $_LANG;
-	$dh = opendir( dirname( __FILE__ ) . '/lang/' );
+	global $_LANG, $CONFIG;
 
-	$arrayoflanguagefiles = array();
-	while( false !== $file2 = readdir( $dh ) ) {
-		if( ! is_dir( '' . 'lang/' . $file2 ) ) {
-			$pieces = explode( '.', $file2 );
-			if( $pieces[ 1 ] == 'txt' ) {
-				$arrayoflanguagefiles[ ] = $pieces[ 0 ];
-				continue;
-			}
-			continue;
-		}
+	chdir( dirname( __FILE__ ) . '/lang/' );
+	$availableLangs = glob( '*.txt' );
+
+	$language = isset( $_SESSION[ 'Language' ] ) ? $_SESSION[ 'Language' ] : $CONFIG[ 'Language' ];
+	$language = ucfirst( $language ) . '.txt';
+
+	if( ! in_array( $language, $availableLangs ) ) {
+		$language = 'English.txt';
 	}
 
-	closedir( $dh );
-
-	$language = 'English';
-
-	if( isset( $GLOBALS[ 'CONFIG' ][ 'Language' ] ) ) {
-		$_SESSION[ 'Language' ] = ucfirst( $GLOBALS[ 'CONFIG' ][ 'Language' ] );
-	}
-
-	if( isset( $_SESSION[ 'Language' ] ) ) {
-		$language = $_SESSION[ 'Language' ];
-	}
-
-	if( ! in_array( $language, $arrayoflanguagefiles ) ) {
-		$language = "English";
-	}
-
-	if( file_exists( dirname( __FILE__ ) . "/lang/$language.txt" ) ) {
-		ob_start();
-		include dirname( __FILE__ ) . "/lang/$language.txt";
-		$templang = ob_get_contents();
-		ob_end_clean();
-		eval ( $templang );
-	}
+	$templang = file_get_contents( dirname( __FILE__ ) . '/lang/' . $language );
+	eval ( $templang );
 }
 
 /**
