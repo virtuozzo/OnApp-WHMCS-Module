@@ -8,7 +8,7 @@ if( ! defined( 'ONAPP_FILE_NAME' ) ) {
 }
 
 if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( __FILE__ ) ) . '/includes/wrapper/OnAppInit.php' );
+	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/includes/wrapper/OnAppInit.php' );
 }
 
 if( file_exists( ONAPP_WRAPPER_INIT ) ) {
@@ -965,7 +965,7 @@ function onapp_UnsuspendAccount( $params ) {
 function onapp_ClientArea( $params ) {
 	global $_LANG;
 
-	if( ! file_exists( dirname( __FILE__ ) . '/includes/wrapper/OnAppInit.php' ) ) {
+	if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
 		return
 			sprintf(
 				"%s ",

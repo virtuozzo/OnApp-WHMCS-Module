@@ -1,7 +1,7 @@
 <?php
 
 if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( __FILE__ ) ) . '/includes/wrapper/OnAppInit.php' );
+	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/includes/wrapper/OnAppInit.php' );
 }
 
 if( file_exists( ONAPP_WRAPPER_INIT ) ) {
@@ -532,7 +532,6 @@ function get_vm( $service_id ) {
 		$vm->setErrors( $user[ 'error' ] );
 		return $vm;
 	}
-	;
 
 	$service = get_service( $service_id );
 
