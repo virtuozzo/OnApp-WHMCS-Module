@@ -10,8 +10,8 @@
 </div>
 <p>{$LANG.onappcpuusagetitle}</p>
 <br/>
-<script type="text/javascript" src="{$address}/assets/highcharts/highcharts.js"></script>
-      <div id="chart7c402aad61"></div>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highcharts/2.3.5/highcharts.js"></script>
+<div id="chart7c402aad61"></div>
       {literal}
       <script type="text/javascript">
               //<![CDATA[
