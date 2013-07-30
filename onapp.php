@@ -41,7 +41,6 @@ if( ! $user_id ) {
 	redirect( 'clientarea.php' );
 	exit();
 }
-;
 
 /**
  * Set global variables
@@ -87,7 +86,6 @@ if( $_ONAPPVARS[ 'id' ] !== null ) {
 		$_ONAPPVARS[ 'vm' ] = get_vm( $_ONAPPVARS[ 'id' ] );
 	}
 }
-;
 
 /**
  * Chose page to show
