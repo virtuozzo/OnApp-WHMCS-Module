@@ -82,6 +82,7 @@ function serviceStatus( $id, $status = null ) {
 function load_language() {
 	global $_LANG, $CONFIG;
 
+	$currentDir = getcwd();
 	chdir( dirname( __FILE__ ) . '/lang/' );
 	$availableLangs = glob( '*.txt' );
 
@@ -94,6 +95,7 @@ function load_language() {
 
 	$templang = file_get_contents( dirname( __FILE__ ) . '/lang/' . $language );
 	eval ( $templang );
+	chdir( $currentDir );
 }
 
 /**
