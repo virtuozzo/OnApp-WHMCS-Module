@@ -11,10 +11,6 @@ require_once 'dbconnect.php';
 require_once 'includes/functions.php';
 require_once 'includes/clientareafunctions.php';
 
-if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-	define( 'ONAPP_WRAPPER_INIT', dirname( __FILE__ ) . '/includes/wrapper/OnAppInit.php' );
-}
-
 require_once dirname( __FILE__ ) . '/modules/servers/onapp/lib.php';
 
 if( isset( $_POST[ 'language' ] ) ) {

@@ -7,14 +7,6 @@ if( ! defined( 'ONAPP_FILE_NAME' ) ) {
 	define( 'ONAPP_FILE_NAME', 'onapp.php' );
 }
 
-if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-	define( 'ONAPP_WRAPPER_INIT', dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/includes/wrapper/OnAppInit.php' );
-}
-
-if( file_exists( ONAPP_WRAPPER_INIT ) ) {
-	require_once ONAPP_WRAPPER_INIT;
-}
-
 require_once dirname( __FILE__ ) . '/lib.php';
 
 load_language();
