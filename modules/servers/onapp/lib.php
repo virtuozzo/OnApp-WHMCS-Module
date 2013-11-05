@@ -1243,18 +1243,30 @@ function _action_ip_delete( $service_id, $ipid ) {
  * @return boolean db query result
  */
 function update_service_ips( $service_id ) {
-	$vm = get_vm( $service_id );
+    $_ips = get_vm_ips( $service_id );
 
-	$ips = "";
-	if( is_array( $vm->_obj->_ip_addresses ) ) {
-		foreach( $vm->_obj->_ip_addresses as $ip ) {
-			$ips .= $ip->_address . '\n';
-		}
-	}
+    if($_ips['base']) {
+        $ips_base = array();
+        foreach($_ips['base'] as $ip) {
+            $ips_base[] = $ip->_address;
+        }
 
-	$sql_update = "UPDATE  tblhosting SET assignedips = '$ips' WHERE id = '$service_id'";
+        $sql_update = sprintf("UPDATE tblhosting SET dedicatedip='%s'  WHERE id = '$service_id'", implode(', ', $ips_base));
 
-	return full_query( $sql_update );
+        full_query( $sql_update );
+    }
+
+
+    if($_ips['additional']) {
+        $ips_additional = array();
+        foreach($_ips['additional'] as $ip) {
+            $ips_additional[] = $ip->_address;
+        }
+
+        $sql_update = sprintf("UPDATE tblhosting SET assignedips='%s'  WHERE id = '$service_id'", implode(",\n", $ips_additional));
+
+        full_query( $sql_update );
+    }
 }
 
 /**
