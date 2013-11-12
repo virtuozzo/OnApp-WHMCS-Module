@@ -264,7 +264,17 @@ $js_serverOptions
 
 	//////////////////////////////
 	// BEGIN Load Data Store Zones //
-	$option = explode( ",", $packageconfigoption[ 11 ] );
+// $option = explode( ",", $packageconfigoption[ 11 ] );
+	$option = array($packageconfigoption[11]);
+
+	$offset = strpos($packageconfigoption[11], ',');
+
+	if ($offset !==false) {
+		$option = explode( ",", $packageconfigoption[ 11 ]);
+
+		// Remove selected zone from data to send to output
+		$packageconfigoption[11] = substr($packageconfigoption[11], 0, $offset);
+	}
 
 	if( count( $option ) > 1 ) {
 		$ds_zone_primary_selected = $option[ 1 ];
@@ -273,7 +283,16 @@ $js_serverOptions
 		$ds_zone_primary_selected = 0;
 	}
 
-	$option = explode( ",", $packageconfigoption[ 9 ] );
+	// $option = explode( ",", $packageconfigoption[ 9 ] );
+	$option = array($packageconfigoption[9]);
+
+	$offset = strpos($packageconfigoption[9], ',');
+	if ($offset !==false) {
+		$option = explode( ",", $packageconfigoption[9]);
+
+	// Remove selected zone from data to send to output
+	$packageconfigoption[9] = substr($packageconfigoption[9], 0, $offset);
+	}
 
 	if( count( $option ) > 1 ) {
 		$ds_zone_swap_selected = $option[ 1 ];
