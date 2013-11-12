@@ -20,7 +20,11 @@ var init_sliders = function() {
             target.interval = null;
             slider.interval = null;
 
-            slider.slider( "option", "value", parseInt(target.attr("value").toString()) );
+			if( target.attr( "value" ) == '' ) {
+				target.val( 0 );
+			}
+
+			slider.slider( "option", "value", parseInt(target.attr("value").toString()) );
 
             var update_target = function() {
                 update_swap_disk_size();
@@ -85,7 +89,7 @@ var disable_inputs = function(){
 }
 
 $(document).ready(function() {
-//    disable_inputs(); 
+//    disable_inputs();
     init_sliders();
 
     try {
