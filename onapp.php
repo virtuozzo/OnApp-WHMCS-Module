@@ -854,7 +854,7 @@ function showproduct() {
 			'q' => $_ONAPPVARS[ 'vm' ]->_obj->_identifier,
 		);
 
-		$logs = $log->getList( $url_args );
+		$logs = $log->getList( null, $url_args );
 
 		foreach( $logs as $item ) {
 			$log_items[ $item->_id ][ 'target_type' ] = $item->_target_type;
