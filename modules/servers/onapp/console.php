@@ -22,7 +22,8 @@ function getSQLResult($sql) {
         tblonappservices
         LEFT JOIN tblhosting ON tblhosting.id = service_id
     WHERE
-        userid = '%s'
+        domainstatus = 'Active'
+        AND userid = '%s'
         AND vm_id = '%s';",
         stripcslashes($user_id),
         stripcslashes($vm_id));
